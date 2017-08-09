@@ -14,7 +14,8 @@ import pylab as pl
 class mlp:
     """ A Multi-Layer Perceptron"""
     
-    def __init__(self,inputs,targets,nhidden,beta=1,momentum=0.9,outtype='logistic'):
+    def __init__(self,inputs,targets,nhidden,beta=1,momentum=0.9,outtype='logistic',weights1=None,weights2=None):
+        
         """ Constructor """
         # Set up network size
         self.nin = np.shape(inputs)[1]
@@ -27,14 +28,19 @@ class mlp:
         self.outtype = outtype
     
         # Initialise network
-        self.weights1 = (np.random.rand(self.nin+1,self.nhidden)-0.5)*2/np.sqrt(self.nin)
-        self.weights2 = (np.random.rand(self.nhidden+1,self.nout)-0.5)*2/np.sqrt(self.nhidden)
+        #below is to intialize if weights are not given in parameter...see it is because I can't use 'self' inside above parenthesis
+        if not weights1:
+            weights1=(np.random.rand(self.nin+1,self.nhidden)-0.5)*2/np.sqrt(self.nin)
+        if not weights2:
+            weights2=(np.random.rand(self.nhidden+1,self.nout)-0.5)*2/np.sqrt(self.nhidden)
+        self.weights1 = weights1
+        self.weights2 = weights2
 
-    def earlystopping(self,inputs,targets,valid,validtargets,eta,niterations=100):
+    def earlystopping(self,inputs,targets,valid,validtargets,eta,niterations=100,errcaltype='squaremean'):
         """here I thought it is not ready for more than one output nodes,
         because it expects validout and validtargets as one D array ( and not 2D array ). I was wrong.. sum takes care of my concern
         because otherwise I would find the mean of errors(for input set) seperately"""
-        valid = np.concatenate((valid,-np.ones((np.shape(valid)[0],1))),axis=1)
+        #valid = np.concatenate((valid,-np.ones((np.shape(valid)[0],1))),axis=1)
         #valid is changed before calling mlpfwd
         old_val_error1 = 100002
         old_val_error2 = 100001
@@ -46,11 +52,17 @@ class mlp:
             count+=1
             print ("in earlystopping whileloop for "+str(count)+"th time")
             self.mlptrain(inputs,targets,eta,niterations)
-            meantrainerr=self.findmeantrainerr(inputs,targets)
+            if errcaltype=='squaremean':
+                meantrainerr=self.findmeantrainerr(inputs,targets)
+            else:
+                meantrainerr=self.confmat(inputs,targets)
             old_val_error2 = old_val_error1
             old_val_error1 = new_val_error
-            validout = self.mlpfwd(valid)
-            new_val_error = 0.5*np.sum((validtargets-validout)**2)
+            if errcaltype=='squaremean':
+                validout = self.mlpfwd(valid)
+                new_val_error = 0.5*np.sum((validtargets-validout)**2)
+            else:
+                new_val_error=self.confmat(valid,validtargets)
             lis.append((meantrainerr,new_val_error))
         x=np.array([[i] for i in range(count)])
         t=np.array([[lis[i][0]] for i in range(count)])
@@ -108,6 +120,9 @@ class mlp:
     def mlpfwd(self,inputs):
         """ Run the network forward """
         #print("inputs",inputs)
+        
+        if np.shape(inputs)[1]==np.shape(self.weights1)[0]-1:
+            inputs = np.concatenate((inputs,-np.ones((np.shape(inputs)[0],1))),axis=1)
         self.hidden = np.dot(inputs,self.weights1);
         self.hidden = 1.0/(1.0+np.exp(-self.beta*self.hidden))
         self.hidden = np.concatenate((self.hidden,-np.ones((np.shape(inputs)[0],1))),axis=1)
@@ -151,6 +166,7 @@ class mlp:
             for j in range(nclasses):
                 cm[i,j] = np.sum(np.where(outputs==i,1,0)*np.where(targets==j,1,0))
 
-        print ("Confusion matrix is:")
         print (cm)
-        print ("Percentage Correct: ",np.trace(cm)/np.sum(cm)*100)
+        err= 1-(np.trace(cm)/np.sum(cm)) 
+        print(err)
+        return err

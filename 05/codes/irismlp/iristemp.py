@@ -1,8 +1,11 @@
+
+
 #iris.py
 import os.path
 import mlp
 import trainedmlp
 import numpy as np
+import pylab as pl
 def makesetpool(inputs,targets,k):
 	if k>np.shape(inputs)[0]:
 		print("give k properly")
@@ -87,32 +90,69 @@ def irismain():
 	nin=4# for four features of iris
 	nout=3# for 3 sets of iris flowers
 	minerr=10000000
-	for nhidden in range(5):# range for number of hidden nodes
-		for tupoftup in nextpartition(irisdata,nin,nout):
-			train,traintarget=tupoftup[0]
-			valid,validtarget=tupoftup[1]#each row of setpool is input and their targets so we need to seperate them
-			test,testtarget=tupoftup[2]
+	lis=[]
+	order=np.arange(np.shape(irisdata)[0])
+	np.random.shuffle(order)
+	irisdata = irisdata[order,:]
+	irisdata[:,:4] = irisdata[:,:4]-irisdata[:,:4].mean(axis=0)
+	imax = np.concatenate((irisdata.max(axis=0)*np.ones((1,7)),np.abs(irisdata.min(axis=0))*np.ones((1,7))),axis=0).max(axis=0)
+	irisdata[:,:4] = irisdata[:,:4]/imax[:4]
+	errcal='confmat'
+	eta=0.29
+	niterations=500
+	tlis=[]
+	for niterations in range(10,1000,10):
+		minitererr=10000000
+		flag=0
+		for nhidden in range(1,6):# range for number of hidden nodes
+			minnhiddenerr=100000000
+			for tupoftup in nextpartition(irisdata,nin,nout):
+				train,traintarget=tupoftup[0]
+				valid,validtarget=tupoftup[1]#each row of setpool is input and their targets so we need to seperate them
+				test,testtarget=tupoftup[2]
 
-			#np.concatenate((train,valid),axis=0)
-			#np.concatenate((traintarget,validtarget),axis=0)
-			#valid is of no use on perceptron because perceptron can not overfit!! and neither is early-stopping.
-			net=mlp.mlp(train,traintarget,nhidden)
+				#np.concatenate((train,valid),axis=0)
+				#np.concatenate((traintarget,validtarget),axis=0)
+				#valid is of no use on perceptron because perceptron can not overfit!! and neither is early-stopping.
+				net=mlp.mlp(train,traintarget,nhidden,outtype='logistic')
 
-			eta=0.23
-			niterations=100
-			net.mlptrain(train,traintarget,eta,niterations//2)
-			validmeanerr=net.earlystopping(train,traintarget,valid,validtarget,eta,niterations//10)
-			print("no. of nodes",nhidden)
-			lis.append(validmeanerr)
-			trainmeanerr=net.findmeantrainerr(train,traintarget)
-			print("validation error: %f trainerr error:%f"%(validmeanerr,trainmeanerr));
-			y=np.concatenate((x,-np.ones((np.shape(x)[0],1))),axis=1)
-			if validmeanerr<minnetset:
-				minnetset=validmeanerr
-				bestnet=trainedmlp.trainedmlp(net,test,testtarget,trainmeanerr,validmeanerr,nhidden)
-	print("\n best network is attained")
+				
+				net.mlptrain(train,traintarget,eta,niterations//2)
+				validmeanerr=net.earlystopping(train,traintarget,valid,validtarget,eta,niterations//10,errcaltype=errcal)
+				print("no. of nodes",nhidden)
+				lis.append(validmeanerr)
+				if errcal=='squaremean':
+					trainmeanerr=net.findmeantrainerr(train,traintarget)
+				else:
+					trainmeanerr=net.confmat(train,traintarget)
+				print("validation error: %f trainerr error:%f"%(validmeanerr,trainmeanerr));
+				#y=np.concatenate((x,-np.ones((np.shape(x)[0],1))),axis=1)
+				minnhiddenerr=min(minnhiddenerr,validmeanerr)
+				if validmeanerr<minerr:#see I can't use equal to here so that this way it will select one with lowest num of nodes
+						minerr=validmeanerr
+						bestnet=trainedmlp.trainedmlp(net,test,testtarget,trainmeanerr,validmeanerr,nhidden)
+			if minnhiddenerr<0.07:
+				tempnhidden=nhidden
+				flag=1
+				break
+		if not flag:
+			tempnhidden=10
+		tlis.append((niterations,tempnhidden))
+	print(lis)
+	niterationslis=[i[0] for i in tlis]
+	temphiddenlis=[i[1] for i in tlis]
+	iterarr=np.array(niterationslis)*np.ones((len(niterationslis),1))
+	nhiddenarr=np.array(temphiddenlis)*np.ones((len(temphiddenlis),1))
+	pl.plot(iterarr,nhiddenarr,'.')
+	#pl.plot(x,,'o')
+	pl.xlabel('iter')
+	pl.ylabel('nhidden')
+	
+	pl.show()
+
+	print("\n best network is attained with no. of nodes as ",bestnet.numnodes)
 	leasterr=bestnet.test()
-	print("error on test is %f while on valid  is %f" %(bestnet.validmeanerr,leasterr));
+	print("error on test is %f while on valid  is %f" %(leasterr,bestnet.validmeanerr));
 	
 irismain()
 

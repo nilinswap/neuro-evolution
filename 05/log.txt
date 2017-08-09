@@ -1,1 +1,42 @@
-update this file whenever commit
+1. 'first pcn using numpy', dated:7/8/17
+	 made a perceptron for iris,  achieved 80% accuracy (best)
+	 , 	clearly not enough.
+		
+		questions raised:
+			1. why isn't there a pattern in eta_vs_error and epochs_vs_error?
+
+			2. why is normalization of input necessary here (or for that matter anywhere)?
+
+
+
+2. 'pcn with random and mlp', dated:7/8/17
+
+	 made a perceptron for iris,  achieved 
+	 avg- error: 5%
+	 max error: 6.6% 
+	 points observed:
+		 USED SHUFFLE in list and saw a boost in performance
+
+		  erratic relation between epochs and eta still did not resolve
+
+	made MLP for iris,
+		 pretty much same performance like pcn with random 
+
+		 points raised:
+		  	MLP without random has better performance than pcn without random
+
+		  	no. of nodes required if confusion matrix is used for validmeanerr is much less than squaremean( 4 and 1)
+
+		  	We don't need MLP for iris
+
+
+
+
+
+
+
+
+
+
+	 
+

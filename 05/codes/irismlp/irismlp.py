@@ -1,14 +1,11 @@
 
-import pcn
-import trainedpcn
+
+#iris.py
+import os.path
+import mlp
+import trainedmlp
 import numpy as np
 import pylab as pl
-def myrange(start,end,step):
-	i=start
-	while i+step < end:
-		i+=step
-		yield i
-
 def makesetpool(inputs,targets,k):
 	if k>np.shape(inputs)[0]:
 		print("give k properly")
@@ -54,7 +51,7 @@ def nextpartition(dataarr,nin,nout):
 			train=arr[:,:nin]
 			traintarget=arr[:,nin:]
 			returntup=((train,traintarget),(valid,validtarget),(test,testtarget))
-			yield returntup
+			yield returntup	#eventually I yielded (*smiling meekly*)
 
 def convert_iris():
 	
@@ -92,17 +89,23 @@ def irismain():
 	
 	nin=4# for four features of iris
 	nout=3# for 3 sets of iris flowers
-	minerr=minetaerr=miniterarr=10000000
-	switch=2
-	etalis=[]
-	valerrlis=[]
-	niterationslis=[]
-	eta=2.5
-	niterations=100
-	if switch==1:
-		for eta in myrange(0.05,0.31,0.0005):
-			minetaerr=10000000
-			etalis.append(eta)
+	minerr=10000000
+	lis=[]
+	order=np.arange(np.shape(irisdata)[0])
+	np.random.shuffle(order)
+	irisdata = irisdata[order,:]
+	irisdata[:,:4] = irisdata[:,:4]-irisdata[:,:4].mean(axis=0)
+	imax = np.concatenate((irisdata.max(axis=0)*np.ones((1,7)),np.abs(irisdata.min(axis=0))*np.ones((1,7))),axis=0).max(axis=0)
+	irisdata[:,:4] = irisdata[:,:4]/imax[:4]
+	errcal='confmat'
+	eta=0.29
+	niterations=500
+	tlis=[]
+	for niterations in range(10,1000,10):
+		minitererr=10000000
+		flag=0
+		for nhidden in range(1,6):# range for number of hidden nodes
+			minnhiddenerr=100000000
 			for tupoftup in nextpartition(irisdata,nin,nout):
 				train,traintarget=tupoftup[0]
 				valid,validtarget=tupoftup[1]#each row of setpool is input and their targets so we need to seperate them
@@ -111,67 +114,45 @@ def irismain():
 				#np.concatenate((train,valid),axis=0)
 				#np.concatenate((traintarget,validtarget),axis=0)
 				#valid is of no use on perceptron because perceptron can not overfit!! and neither is early-stopping.
-				net=pcn.pcn(train,traintarget)
-				
-				net.pcntrain(train,traintarget,eta,niterations)
-				print("below")
-				err=net.confmat(valid,validtarget)
-				print("\n")
-				minetaerr=min(minetaerr,err)
-				if minerr>err:
-					minerr=err
-					bestnet=trainedpcn.trainedpcn(net,test,testtarget,err,eta,niterations)
-			
-			valerrlis.append(minetaerr)#notice this minetaerr is error for each eta 
-			# and minerr is the minimum for all minetaerr that is over all eta
-		print("\n best network with eta is attained")
-		leasterr=bestnet.test()
-		print("changing eta, error on test is %f while on valid  is %f" %(bestnet.validmeanerr,leasterr));
-		etaarr=np.array(etalis)*np.ones((len(etalis),1))
-		valerrarr=np.array(valerrlis)*np.ones((len(valerrlis),1))
-		pl.plot(etaarr,valerrarr,'.')
-		#pl.plot(x,,'o')
-		pl.xlabel('eta')
-		pl.ylabel('error')
-		
-		pl.show()
-	elif switch==2:
-		for niterations in range(10,1000,10):
-			miniteraerr=10000000
-			niterationslis.append(niterations)
-			for tupoftup in nextpartition(irisdata,nin,nout):
-				train,traintarget=tupoftup[0]
-				valid,validtarget=tupoftup[1]#each row of setpool is input and their targets so we need to seperate them
-				test,testtarget=tupoftup[2]
+				net=mlp.mlp(train,traintarget,nhidden,outtype='logistic')
 
-				#np.concatenate((train,valid),axis=0)
-				#np.concatenate((traintarget,validtarget),axis=0)
-				#valid is of no use on perceptron because perceptron can not overfit!! and neither is early-stopping.
-				net=pcn.pcn(train,traintarget)
 				
-				net.pcntrain(train,traintarget,eta,niterations)
-				print("below")
-				err=net.confmat(valid,validtarget)
-				print("\n")
-				miniteraerr=min(miniteraerr,err)
-				if minerr>err:
-					minerr=err
-					bestnet=trainedpcn.trainedpcn(net,test,testtarget,err,eta,niterations)
-			
-			valerrlis.append(miniteraerr)
-		print("\n best network with eta is attained")
-		leasterr=bestnet.test()
-		print("changing eta, error on test is %f while on valid  is %f" %(bestnet.validmeanerr,leasterr));
-		iterarr=np.array(niterationslis)*np.ones((len(niterationslis),1))
-		valerrarr=np.array(valerrlis)*np.ones((len(valerrlis),1))
-		pl.plot(iterarr,valerrarr,'.')
-		#pl.plot(x,,'o')
-		pl.xlabel('iterations')
-		pl.ylabel('error')
-		
-		pl.show()		
-			
+				net.mlptrain(train,traintarget,eta,niterations//2)
+				validmeanerr=net.earlystopping(train,traintarget,valid,validtarget,eta,niterations//10,errcaltype=errcal)
+				print("no. of nodes",nhidden)
+				lis.append(validmeanerr)
+				if errcal=='squaremean':
+					trainmeanerr=net.findmeantrainerr(train,traintarget)
+				else:
+					trainmeanerr=net.confmat(train,traintarget)
+				print("validation error: %f trainerr error:%f"%(validmeanerr,trainmeanerr));
+				#y=np.concatenate((x,-np.ones((np.shape(x)[0],1))),axis=1)
+				minnhiddenerr=min(minnhiddenerr,validmeanerr)
+				if validmeanerr<minerr:#see I can't use equal to here so that this way it will select one with lowest num of nodes
+						minerr=validmeanerr
+						bestnet=trainedmlp.trainedmlp(net,test,testtarget,trainmeanerr,validmeanerr,nhidden)
+			if minnhiddenerr<0.07:
+				tempnhidden=nhidden
+				flag=1
+				break
+		if not flag:
+			tempnhidden=10
+		tlis.append((niterations,tempnhidden))
+	
+	niterationslis=[i[0] for i in tlis]
+	temphiddenlis=[i[1] for i in tlis]
+	iterarr=np.array(niterationslis)*np.ones((len(niterationslis),1))
+	nhiddenarr=np.array(temphiddenlis)*np.ones((len(temphiddenlis),1))
+	pl.plot(iterarr,nhiddenarr,'.')
+	#pl.plot(x,,'o')
+	pl.xlabel('iter')
+	pl.ylabel('nhidden')
+	
+	pl.show()
 
+	print("\n best network is attained with no. of nodes as ",bestnet.numnodes)
+	leasterr=bestnet.test()
+	print("error on test is %f while on valid  is %f" %(leasterr,bestnet.validmeanerr));
 	
 irismain()
 
