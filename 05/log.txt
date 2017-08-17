@@ -5,7 +5,9 @@
 		questions raised:
 			1. why isn't there a pattern in eta_vs_error and epochs_vs_error?
 
-			2. why is normalization of input necessary here (or for that matter anywhere)?
+			2. works without normalization
+
+
 
 
 
@@ -28,6 +30,8 @@
 		  	no. of nodes required if confusion matrix is used for validmeanerr is much less than squaremean( 4 and 1)
 
 		  	We don't need MLP for iris
+
+		  	normalization is important here
 
 
 
