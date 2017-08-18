@@ -33,6 +33,22 @@
 
 		  	normalization is important here
 
+3. 'mnist with unstable accuracy'
+		a fluctuating training accuracy between 80 to 95 %
+
+		first in theano
+
+		perceptron with softmax
+
+4. 'mnist improved'
+		
+		for a simple model, target achieved , 91 % on testing
+
+		NORMALISATION is a big fish
+
+		
+
+
 
 
 

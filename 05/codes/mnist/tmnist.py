@@ -31,7 +31,7 @@ def tconfmat(y,predictions,outputdim):# both y and predictions are vector of P
 def feednextbatch(tup):
 	i=0
 	n=len(tup[0])
-	print("here",n)
+	
 	while i<n:
 		yield (tup[0][i:i+1000],tup[1][i:i+1000])
 		i+=1000
@@ -48,26 +48,66 @@ traindata=np.array(traindata)
 trainlabel=traintup[1] #vector of 60000
 trainlabel=list(trainlabel)
 trainlabel=np.array(trainlabel)
-newtraintup=(traindata,trainlabel)
+
+# Normalizing
+
+# Convert string column to float
+
+traindata=traindata.astype(float)
+
+means= traindata.mean(axis=0)
+
+stdevs=np.std(traindata,axis=0)
+
+ 
+# standardize dataset
+def standardize_dataset(traindata, means, stdevs):
+	for row in traindata:
+		for i in range(len(row)):
+
+			row[i] = (row[i] - means[i])
+			if stdevs[i]:
+				row[i]/=stdevs[i]
+standardize_dataset(traindata,means,stdevs)#this changes traindata
 """
 traindata=traindata[:3000]
 trainlabel=trainlabel[:3000]
+"""
 
 testtup=mndata.load_testing()
 
-testdata=testtup[0]#10000 X 784
-testlabel=testtup[1] #vector of 10000
-"""
-print(type(traindata[:3]))
-print(type(newtraintup[0]),np.shape(newtraintup[0]))
-print(type(newtraintup[1]),np.shape(newtraintup[1]))
+testdata=testtup[0]#60000 X 784
+testdata=list(testdata)
+testdata=np.array(testdata)
+testlabel=testtup[1] #vector of 60000
+testlabel=list(testlabel)
+testlabel=np.array(testlabel)
+
+# Normalizing
+
+# Convert string column to float
+
+testdata=testdata.astype(float)
+
+means= testdata.mean(axis=0)
+
+stdevs=np.std(testdata,axis=0)
+
+ 
+# standardize dataset
+
+standardize_dataset(testdata,means,stdevs)#this changes testdata
+
+
+
+newtraintup=(traindata,trainlabel)
 
 
 inputdim=784
 outputdim=10
 
 
-training_steps=500
+training_steps=1000
 
 x=T.dmatrix("x") # P X i
 tar=T.ivector("tar")#vector of  P, this could be P X N, just confmat had to be different 
@@ -85,32 +125,45 @@ train = theano.function(
           outputs=[y.argmax(axis=1)-tar, cost],
           updates=((w, w - 0.1 * gw), (b, b - 0.1 * gb)))
 predict = theano.function(inputs=[x], outputs=y.argmax(axis=1))
-
+mini=100
 for i in range(training_steps):
-	#for tup in feednextbatch(newtraintup):
-	xv=newtraintup[0]
-	tarv=newtraintup[1]
-	tupu=train(xv,tarv)
-	lis=[]
-	for i in range(len(tupu[0])):
-		if tupu[0][i]!=0:
-			lis.append(1)
-		else:
-			lis.append(0)
+	
+	for tup in feednextbatch(newtraintup):
+		xv=tup[0]
+		tarv=tup[1]
+		tupu=train(xv,tarv)
+		lis=[]
+		for j in range(len(tupu[0])):
+			if tupu[0][j]!=0:
+				lis.append(1)
+			else:
+				lis.append(0)
+	mini=min(mini,np.array(lis).mean())
+	if i%100==0:
+		print(np.array(lis).mean())
 
-	print(np.array(lis).mean())
-	
-	"""temp=T.dot(x,w)+b #P X N
-	dotifun=theano.function([x],temp)
-	befactiv=dotifun(xv)
-	
-	temp=T.matrix()
-	g=T.nnet.sigmoid(temp)
-	sig=theano.function([temp],g)
-	z=sig(befactiv)"""
+print("with training achieved "+str(mini)+" \nhere testing")
 
-	
-	
+testoutp=predict(testdata)
+diff=testoutp-testlabel
+lis=[]
+for i in range(len(diff)):
+			if diff[i]!=0:
+				lis.append(1)
+			else:
+				lis.append(0)
+print(np.array(lis).mean())
+"""temp=T.dot(x,w)+b #P X N
+dotifun=theano.function([x],temp)
+befactiv=dotifun(xv)
+
+temp=T.matrix()
+g=T.nnet.sigmoid(temp)
+sig=theano.function([temp],g)
+z=sig(befactiv)"""
+
+
+
 """
 if sigac==0:
 	sigactiv=nnet.sigmoid(befactiv)#P X N
