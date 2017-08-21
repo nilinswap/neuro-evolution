@@ -2,6 +2,7 @@ import theano
 import theano.tensor as T
 from theano.tensor.nnet import nnet
 import numpy as np
+import timeit
 rng=np.random
 def tconfmat(y,predictions,outputdim):# both y and predictions are vector of P
 		
@@ -126,6 +127,7 @@ train = theano.function(
           updates=((w, w - 0.1 * gw), (b, b - 0.1 * gb)))
 predict = theano.function(inputs=[x], outputs=y.argmax(axis=1))
 mini=100
+start_time = timeit.default_timer()
 for i in range(training_steps):
 	
 	for tup in feednextbatch(newtraintup):
@@ -142,6 +144,8 @@ for i in range(training_steps):
 	if i%100==0:
 		print(np.array(lis).mean())
 
+end_time=timeit.default_timer
+
 print("with training achieved "+str(mini)+" \nhere testing")
 
 testoutp=predict(testdata)
@@ -153,6 +157,7 @@ for i in range(len(diff)):
 			else:
 				lis.append(0)
 print(np.array(lis).mean())
+print("time",(end_time-start_time)/60)
 """temp=T.dot(x,w)+b #P X N
 dotifun=theano.function([x],temp)
 befactiv=dotifun(xv)
