@@ -147,5 +147,5 @@ def load_data(dataset):
     
 
     rval = [(rest_set_x, rest_set_y),
-            (test_set_x, test_set_y)]
+            (test_set_x, test_set_y),mislis]
     return rval
