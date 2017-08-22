@@ -52,6 +52,10 @@
 
 	100 nodes taken with 1000 epochs
 
+	used crossvalidation (LSO-CV)
+
+	Theano with OOP
+	
 	improvement in design aimed
 
 		
