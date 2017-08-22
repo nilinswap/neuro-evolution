@@ -8,7 +8,7 @@ import os
 import sys
 import timeit
 
-import numpy
+import numpy as np
 
 import theano
 import theano.tensor as T
@@ -118,12 +118,13 @@ def load_data(dataset):
         variable) would lead to a large decrease in performance.
         """
         data_x, data_y = data_xy
-        shared_x = theano.shared(numpy.asarray(data_x,
+        shared_x = theano.shared(np.asarray(data_x,
                                                dtype=theano.config.floatX),
                                  borrow=borrow)
-        shared_y = theano.shared(numpy.asarray(data_y,
+        shared_y = theano.shared(np.asarray(data_y,
                                                dtype=theano.config.floatX),
                                  borrow=borrow)
+       
         # When storing data on the GPU it has to be stored as floats
         # therefore we will store the labels as ``floatX`` as well
         # (``shared_y`` does exactly that). But during our computations
@@ -135,6 +136,7 @@ def load_data(dataset):
     
     
     featarr,mislis=preprocessdata(dataset)#here mislis is list type and featar is nd.array type
+    print("hi")
     np.random.shuffle(featarr)
 
     test_set=featarr[:133,:15],featarr[:133,15]#keeping test set aside

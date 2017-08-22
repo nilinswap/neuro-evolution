@@ -279,7 +279,6 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
-    print(type(train_set_y))
 
     # compute number of minibatches for training, validation and testing
     n_train_batches = train_set_x.get_value(borrow=True).shape[0] // batch_size
