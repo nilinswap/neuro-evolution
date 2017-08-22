@@ -46,6 +46,14 @@
 
 		NORMALISATION is a big fish
 
+5.'cards completed with 87%'
+	
+	normalization again
+
+	100 nodes taken with 1000 epochs
+
+	improvement in design aimed
+
 		
 
 

@@ -109,6 +109,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	
 	rest_set=lis[0]#tuple of two shared variable of array
 	test_set=lis[1]#tuple of shared variable of array
+
 	millis=lis[2]#lis
 
 	
@@ -117,15 +118,17 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	#
 	prmsdind=T.lscalar()
 	
-	print(rest_set[0].get_value().shape)
-	print(type(rest_set[1]))
+	
 	valid_x_to_be=rest_set[0][prmsdind*par_size:(prmsdind+1)*par_size,:]
 	
-	print(type(valid_x_to_be))
+	
+
 	valid_y_to_be=rest_set[1][prmsdind*par_size:(prmsdind+1)*par_size]
 	train_x_to_be=T.concatenate((rest_set[0][:(prmsdind)*par_size,:],rest_set[0][(prmsdind+1)*par_size:,:]),axis=0)
-	train_y_to_be=(rest_set[1][:(prmsdind)*par_size]+rest_set[1][(prmsdind+1)*par_size:])
+	train_y_to_be=T.concatenate((rest_set[1][:(prmsdind)*par_size],rest_set[1][(prmsdind+1)*par_size:]))
 	#train_fun=theano.function(,givens={x:train_x_to_be,y:train_y_to_be})
+	
+	fun=theano.function([prmsdind],valid_y_to_be)
 	
 
 	#cool thing starts from here ->
@@ -150,7 +153,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	    input=x,
 	    n_in=15,
 	    n_hidden=n_hidden,
-	    n_out=1
+	    n_out=2
 	)
 
 	# start-snippet-4
@@ -166,15 +169,17 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 
 	# compiling a Theano function that computes the mistakes that are made
 	# by the model on a minibatch
-
-	"""test_model = theano.function(
+	test_x_to_be=test_set[0]
+	test_y_to_be=test_set[1]
+	test_model = theano.function(
 	    inputs=[prmsdind],
 	    outputs=classifier.errors(y),
 	    givens={
-	        x: test_set_x[prmsdind * batch_size:(prmsdind + 1) * batch_size],
-	        y: test_set_y[prmsdind * batch_size:(prmsdind + 1) * batch_size]
-	    }
-	)"""
+	    	x:test_x_to_be,
+	    	y:test_y_to_be
+	    },
+	    on_unused_input='ignore'
+	)
 
 	validate_model = theano.function(
 	    inputs=[prmsdind],
@@ -238,7 +243,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	for i in range(n_epochs):
 		if booly(i):
 			epostep.set_value(int(epostep.get_value()*freq_par))
-			print("here",epostep.get_value())
+			
 			avrg=0
 		for ind in range(n_par):
 			trainerr=train_model(ind)
@@ -251,6 +256,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	 		lasttolastavg=lastavg
 	 		lastavg=presentavg
 	 		presentavg=avrg
+	 		print(presentavg)
 	 		if not ((( lastavg- presentavg) > 0.001) or ((lasttolastavg - lastavg)>0.001)):
 	 			flag=1
 		if flag:
@@ -259,7 +265,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	if not flag:
 		print("increase epochs maybe")
 	print("achieved min err as", presentavg)
-
+	print("test error is ",test_model(0))
 
 def main():
  	test_mlp()
@@ -270,5 +276,4 @@ if __name__ == '__main__':
 
 
 
-main()
 

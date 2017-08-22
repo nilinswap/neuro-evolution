@@ -105,6 +105,26 @@ def load_data(dataset):
             featarr[np.where(featarr[:,15]=='-'),15]=0       
             featarr[np.where(featarr[:,15]=='+'),15]=1
 
+            #normalizing
+            #featarr[:,:15]=(featarr[:,:15]-np.mean(featarr[:,:15],axis=0))/(np.max(featarr[:,:15],axis=0)-np.min(featarr[:,:15],axis=0))
+
+            featarr=featarr.astype(float)
+            traindata=featarr
+            means= traindata.mean(axis=0)
+
+            stdevs=np.std(traindata,axis=0)
+
+             
+            # standardize dataset
+            def standardize_dataset(traindata, means, stdevs):
+                for row in traindata:
+                    for i in range(len(row)):
+
+                        row[i] = (row[i] - means[i])
+                        if stdevs[i]:
+                            row[i]/=stdevs[i]
+            standardize_dataset(traindata,means,stdevs)
+            
             return featarr,mislis
         else:
             print("file could not be loaded")
@@ -136,7 +156,7 @@ def load_data(dataset):
     
     
     featarr,mislis=preprocessdata(dataset)#here mislis is list type and featar is nd.array type
-    print("hi")
+    
     np.random.shuffle(featarr)
 
     test_set=featarr[:133,:15],featarr[:133,15]#keeping test set aside
