@@ -13,7 +13,7 @@ import numpy as np
 import theano
 import theano.tensor as T
 import load_data
-from logreglayer import LogisticRegression
+
 import hiddenlayer
 from tmlp import MLP
 
