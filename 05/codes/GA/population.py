@@ -48,7 +48,7 @@ def main():
 	newmuta=misc.Mutation()
 
 	for i in newsel.select_parent(popu):
-		print("before",i[0],i[1])
+		
 		child1,child2=newcros.do_crossover(i)
 
 		child1=newmuta.mutate(child1)
