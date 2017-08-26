@@ -10,7 +10,7 @@ def binsear(p,arr):
 			high=(low+high)//2
 		else:
 			low=(low+high)//2
-	return arr[high]-arr[low]
+	return low#this is the index of our chosen in poparr
 
 
 
@@ -21,28 +21,22 @@ def RoulWheel(arr):
 	n=len(arr)//2
 	for j in range(n):
 		r = np.random.uniform(0, sumarr[-1],2)
-		chosen1v=binsear(r[0],sumarr)
-		chosen2v=binsear(r[1],sumarr)
-		yield (chosen1v,chosen2v)
+		chosenind1=binsear(r[0],sumarr)
+		chosenind2=binsear(r[1],sumarr)
+		yield (chosenind1,chosenind2)
 def WeighRoulWheel(popul):
 	ar=popul.find_expecarr()
 	for tup   in   RoulWheel(ar):
-		if popul.prob.opttype==1:
-			yield (popul.map[tup[0]],popul.map[tup[1]])
+			yield popul.poparr[tup[0]],popul.poparr[tup[1]]
 
-		elif popul.prob.opttype==0:
-			h1=-(tup[0]-popul.prob.expmax-100)
-			h2=-(tup[1]-popul.prob.expmax-100)
-			yield (popul.map[round(h1,6)],popul.map[round(h2,6)])
+
+	
 def RankRoulWheel(popul):
-	ar=np.arange(1,popul.size+1)
-	par=popul.fitarr
-	if popul.prob.opttype==0:
-		par[::-1].sort()
-	elif popul.prob.opttype==1:
-		par.sort()
+	ar=np.arange(0,popul.size)
+	listup=list(zip(list(popul.poparr),list(popul.fitarr)))
+	listup.sort(key=lambda x: x[1])
 	for  tup in RoulWheel(ar):
-		yield (popul.map[par[tup[0]-1]],popul.map[par[tup[1]-1]])
+		yield listup[tup[0]][0],listup[tup[0]][0]
 
 def middlepoint(parent_tup):
 	alpha=np.random.uniform(0,1)

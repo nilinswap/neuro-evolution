@@ -2,6 +2,8 @@
 import problem
 import misc
 import numpy
+
+				
 class Population:
 	def __init__(self,prob,poparr=numpy.array([]),size=0,stadym=0):
 		self.poparr=poparr	# numpy ndarray of tuples of dim
@@ -12,15 +14,20 @@ class Population:
 	def set_fitarr(self):
 		self.fitarr=numpy.array(list(map(self.prob.find_fitness,self.poparr)))
 	def find_expecarr(self):
-		return  numpy.array(list(map(self.prob.find_expectation,self.poparr)))
+		p=self.fitarr
+		mini=min(p)
+		maxi=max(p)
+
+		newp=(p-mini)/(maxi-mini)
+		if self.prob.opttype==1:
+			return newp
+		elif self.prob.opttype==0:
+			return 1-newp
+		
 	def avg_fitness(self):
 		self.set_fitarr()
 		return numpy.mean(self.fitarr)
-	def make_map_from_value_to_input(self):
-		if len(self.fitarr):
-			bip=numpy.array([round(i,6) for i in self.fitarr])
-			self.map={p:q for p,q in zip(bip,self.poparr)}	#round helps in mapping; why 6 is just a good question.
-
+	
 
 	def randominit(self):
 		self.poparr=numpy.random.uniform(self.prob.rangetup[0],self.prob.rangetup[1],(self.size,self.prob.inputdim))
@@ -34,8 +41,6 @@ def main():
 	print(popu.poparr)
 	print(popu.avg_fitness())
 	print(popu.fitarr)
-	popu.make_map_from_value_to_input()
-	print(popu.map)
 	print(popu.find_expecarr())
 	print("problem starts here")
 	newsel=misc.Selection()
@@ -43,8 +48,9 @@ def main():
 	newmuta=misc.Mutation()
 
 	for i in newsel.select_parent(popu):
+		print("before",i[0],i[1])
 		child1,child2=newcros.do_crossover(i)
-		print("here ",child1,child2)
+
 		child1=newmuta.mutate(child1)
 		child2=newmuta.mutate(child2)
 		print(child1,child2)
