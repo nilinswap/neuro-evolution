@@ -44,6 +44,15 @@ def RankRoulWheel(popul):
 	for  tup in RoulWheel(ar):
 		yield (popul.map[par[tup[0]-1]],popul.map[par[tup[1]-1]])
 
+def middlepoint(parent_tup):
+	alpha=np.random.uniform(0,1)
+	child1=alpha*parent_tup[0]+(1-alpha)*parent_tup[1]
+	child2=alpha*parent_tup[1]+(1-alpha)*parent_tup[0]
+	return (child1,child2)
+
+def smallchange(newborn):
+	return newborn+np.random.normal(-1,1,newborn.shape)/5
+
 
 
 class Selection:
@@ -69,7 +78,7 @@ class Crossover:
 		if np.random.rand()<self.rate:
 
 			if self.type==0:
-				return doublepoint(parent_tup)	#returns a tuple of children(vectors)
+				return middlepoint(parent_tup)	#returns a tuple of children(vectors)
 
 			elif self.type==1:
 				return singlepoint()	
@@ -85,7 +94,7 @@ class Mutation:
 		self.rate=rate
 		self.stadym=stadym
 
-	def do_mutation(self,newborn):
+	def mutate(self,newborn):
 		if np.random.rand()<self.rate:
 
 			if self.type==0:
@@ -93,6 +102,8 @@ class Mutation:
 
 			elif self.type==1:
 				return None
+		else:
+			return newborn
 class Termination:
 	def __init__(self,typeh=0):
 		self.type=typeh

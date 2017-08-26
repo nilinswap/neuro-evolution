@@ -25,6 +25,7 @@ class Population:
 	def randominit(self):
 		self.poparr=numpy.random.uniform(self.prob.rangetup[0],self.prob.rangetup[1],(self.size,self.prob.inputdim))
 
+
 def main():
 	prob=problem.Problem(dim=3,prangetup=(-3,3))
 	popu=Population(prob,size=10)
@@ -38,8 +39,17 @@ def main():
 	print(popu.find_expecarr())
 	print("problem starts here")
 	newsel=misc.Selection()
+	newcros=misc.Crossover()
+	newmuta=misc.Mutation()
+
 	for i in newsel.select_parent(popu):
-		print(i)
+		child1,child2=newcros.do_crossover(i)
+		print("here ",child1,child2)
+		child1=newmuta.mutate(child1)
+		child2=newmuta.mutate(child2)
+		print(child1,child2)
+
+
 
 	#print(popu.prob.expmax)
 if __name__ == '__main__':

@@ -15,6 +15,7 @@ class Problem:
 		if self.opttype==1:
 			return find_fitness(xarr)
 		else:
+			
 			return self.expmax+100-self.find_fitness(xarr)
 
 	def find_fitness(self,xarr):#xarr  is  vector   type
