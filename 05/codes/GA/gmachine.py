@@ -4,15 +4,15 @@ import problem
 import population
 import numpy as np
 def main():
-	popsize=100
-	prob=problem.Problem(dim=3,prangetup=(-3,3))
+	popsize=1100
+	prob=problem.Problem(fitness_func=problem.rastrigin,dim=3,prangetup=(-100,100))
 	popu=population.Population(prob,size=popsize)
 	popu.randominit()
-	genlim=200
+	genlim=2000
 	print(popu.poparr)
 	print("thing starts here")
 	newsel=misc.Selection()
-	newcros=misc.Crossover()
+	newcros=misc.Crossover(rate=0.9)
 	newmuta=misc.Mutation(rate=0.1)
 	print(popu.avg_fitness())
 	for i in range(genlim):

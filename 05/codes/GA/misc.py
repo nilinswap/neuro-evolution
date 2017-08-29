@@ -67,7 +67,7 @@ def middlepoint(parent_tup):
 
 def smallchange(newborn,lim):
 	while True:															#this is important
-		p=newborn+np.random.normal(-1,1,newborn.shape)/100
+		p=newborn+np.random.normal(-1,1,newborn.shape)/1000
 		q=list(filter(lambda x : x>lim[0] and x<lim[1],p))
 
 		if len(p)==len(q):
@@ -108,6 +108,8 @@ class Crossover:
 			elif self.type==3:
 				#use alitism
 				return None
+
+		return parent_tup
 
 class Mutation:
 	def __init__(self,typeh=0,rate=0.1,stadym=0):
