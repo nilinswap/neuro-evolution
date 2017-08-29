@@ -1,8 +1,3 @@
-"""Genetic Algorithmn Implementation
-see:
-http://www.obitko.com/tutorials/genetic-algorithms/ga-basic-description.php
-"""
-
 import random
 
 class GeneticAlgorithm(object):
@@ -31,61 +26,12 @@ class GeneticAlgorithm(object):
 		return nexts[0:size]
 	
 
-class GeneticFunctions(object):
-	def probability_crossover(self):
-		r"""returns rate of occur crossover(0.0-1.0)"""
-		return 1.0
-
-	def probability_mutation(self):
-		r"""returns rate of occur mutation(0.0-1.0)"""
-		return 0.0
-
-	def initial(self):
-		r"""returns list of initial population
-		"""
-		return []
-
-	def fitness(self, chromosome):
-		r"""returns domain fitness value of chromosome
-		"""
-		return len(chromosome)
-
-	def check_stop(self, fits_populations):
-		r"""stop run if returns True
-		- fits_populations: list of (fitness_value, chromosome)
-		"""
-		return False
-
-	def parents(self, fits_populations):
-		r"""generator of selected parents
-		"""
-		gen = iter(sorted(fits_populations))
-		while True:
-			f1, ch1 = next(gen)
-			f2, ch2 = next(gen)
-			yield (ch1, ch2)
-			
-		return
-
-	def crossover(self, parents):
-		r"""breed children
-		"""
-		return parents
-
-	def mutation(self, chromosome):
-		r"""mutate chromosome
-		"""
-		return chromosome
-	
-
 """
 example: Mapped guess prepared Text
 """
-class GuessText(GeneticFunctions):
-	def __init__(self, target_text, limit=200, size=400, prob_crossover=0.9, prob_mutation=0.2):
-		self.target = self.text2chromo(target_text)
+class OptimizeFunction():
+	def __init__(self, D, limit=200, size=100, prob_crossover=0.9, prob_mutation=0.2):
 		self.counter = 0
-
 		self.limit = limit
 		self.size = size
 		self.prob_crossover = prob_crossover
@@ -104,16 +50,15 @@ class GuessText(GeneticFunctions):
 
 	def fitness(self, chromo):
 		# larger is better, matched == 0
-		return -sum(abs(c - t) for c, t in zip(chromo, self.target))
+		return sum(i*i for i in chromo)
 
 	def check_stop(self, fits_populations):
 		self.counter += 1
 		best_match = list(sorted(fits_populations))[-1][1]
 
 		if self.chromo2text(best_match) == self.chromo2text(self.target):
-			'''print(
-			"==>[G %3d] Reached: %r" %
-			(self.counter, self.chromo2text(best_match)))'''
+			print("==>[G %3d] Reached: %r" % (self.counter, self.chromo2text(best_match)))
+            
 			print("(" + str(self.size) + "," + str(self.counter) + ")")
 			return True
 
@@ -122,10 +67,10 @@ class GuessText(GeneticFunctions):
 			best = max(fits)
 			worst = min(fits)
 			ave = sum(fits) / len(fits)
-			'''print(
+			print(
 				"[G %3d] score=(%4d, %4d, %4d): %r" %
 				(self.counter, best, ave, worst, self.chromo2text(best_match)))
-			'''
+			
 
 		return self.counter >= self.limit
 
@@ -160,14 +105,7 @@ class GuessText(GeneticFunctions):
 	def select_random(self, fits_populations):
 		return fits_populations[random.randint(0, len(fits_populations)-1)]
 
-	def text2chromo(self, text):
-		return [ord(ch) for ch in text]
-
-	def chromo2text(self, chromo):
-		return "".join(chr(max(1, min(ch, 255))) for ch in chromo)
-
 	def random_chromo(self):
-		return [random.randint(1, 255) for i in range(len(self.target))]
+		return [random.uniform(-100,100) for i in range(D)]
 	
-for m in range(50, 1000, 10):
-	GeneticAlgorithm(GuessText("Hello World!", 200, m, 0.9, 0.2)).run()
+GeneticAlgorithm(GuessText("Hello World!", 200, 400, 0.9, 0.2)).run()
