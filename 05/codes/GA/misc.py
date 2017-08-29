@@ -65,9 +65,9 @@ def middlepoint(parent_tup):
 	child2=alpha*parent_tup[1]+(1-alpha)*parent_tup[0]
 	return (child1,child2)
 
-def smallchange(newborn,lim):
+def smallchange(newborn,lim,fac=1000):
 	while True:															#this is important
-		p=newborn+np.random.normal(-1,1,newborn.shape)/1000
+		p=newborn+np.random.normal(-1,1,newborn.shape)/(fac)
 		q=list(filter(lambda x : x>lim[0] and x<lim[1],p))
 
 		if len(p)==len(q):
@@ -117,27 +117,61 @@ class Mutation:
 		self.rate=rate
 		self.stadym=stadym
 
-	def mutate(self,newborn,limtup):
-		if np.random.rand()<self.rate:
+	def mutate(self,newborn,limtup,switch=None,iteri=None,switchiter=100,factup=(100,1000)):
 
-			if self.type==0:
-				return smallchange(newborn,limtup)	#returns a children (vector)
+		if not switch:
+			if np.random.rand()<self.rate:
 
-			elif self.type==1:
-				return None
+				if self.type==0:
+					return smallchange(newborn,limtup)	#returns a children (vector)
+
+				elif self.type==1:
+					return None
+			else:
+				return newborn
 		else:
-			return newborn
+			if np.random.rand()<self.rate:
+				if  iteri>switchiter:
+					if self.type==0:
+						return smallchange(newborn,limtup,fac=factup[1])	#returns a children (vector)
+
+					elif self.type==1:
+						return None
+				else:
+					if self.type==0:
+						return smallchange(newborn,limtup,fac=factup[0])	#returns a children (vector)
+
+					elif self.type==1:
+						return None
+			else:
+				return newborn
 class Termination:
 	def __init__(self,typeh=0):
 		self.type=typeh
-	def terminate(self,generationnum=None,generationlim=100):
-		if  self.type==0:
+	def terminate(self,generationnum=None,generationlim=100,popul=None,iteri=None,lim=500):
+		if  self.type==0 :
 			if generationnum>generationlim:
 				return  1
 			else:
 				return  0
 
 		elif   self.type==1:
+			if 	iteri>lim:
+				print("here")
+				from collections import Counter
+				roundar=np.round(popul.poparr,4)
+				lis=roundar.tolist()
 
-			pass
+				lis=[tuple(i) for i in lis]
+				counts=Counter(lis)
+				counts=dict(counts)
+				lis=list(counts.items())
+				lis.sort(key= lambda x: x[1],reverse=True)
+				if lis[0][1]>popul.size//4:
+					print( lis[0][0])
+					return 1
+			else:
+				return 0
+
+			
 

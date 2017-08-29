@@ -60,7 +60,7 @@ def main():
 		
 		child1,child2=newcros.do_crossover(i)
 
-		child1=newmuta.mutate(child1,prob.rangetup)
+		child1=newmuta.mutate(child1,prob.rangetup,switch=True,)
 		child2=newmuta.mutate(child2,prob.rangetup)
 		print(child1,child2)
 
