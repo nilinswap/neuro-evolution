@@ -5,7 +5,7 @@ import population
 import numpy as np
 def main():
 	popsize=1100
-	prob=problem.Problem(fitness_func=problem.rastrigin,dim=3,prangetup=(-100,100))
+	prob=problem.Problem(fitness_func=problem.rastrigin,dim=7,prangetup=(-100,100))
 	popu=population.Population(prob,size=popsize)
 	popu.randominit()
 	genlim=2000
@@ -13,7 +13,7 @@ def main():
 	print("thing starts here")
 	newsel=misc.Selection()
 	newcros=misc.Crossover(rate=0.9)
-	newmuta=misc.Mutation(rate=0.1)
+	newmuta=misc.Mutation(rate=0.01)
 	print(popu.avg_fitness())
 	for i in range(genlim):
 		lis=[]

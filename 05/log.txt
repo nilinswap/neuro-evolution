@@ -58,6 +58,14 @@
 	
 	improvement in design aimed
 
+6. 'rastrigin doing fine' 
+
+	only got close to 0 by +- 1.5 worst and +- .9 avg.
+
+	used generation limit 2000, mutation  rate 0.01, and mutation scale .0001
+
+	
+
 		
 
 
