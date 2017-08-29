@@ -12,15 +12,33 @@ def binsear(p,arr):
 			low=(low+high)//2
 	return low#this is the index of our chosen in poparr
 
-
+def gen_randuniform(low,high,size):
+	while True:
+		try:
+			r=np.random.uniform(low,high,size)
+			return r
+		except:
+			try:
+				r=np.random.normal(low,high,size)
+				return r
+			except:
+				continue
+			
+state=0
 
 def RoulWheel(arr):
 	sumarr=[0]
+
 	for i in range(len(arr)):
 		sumarr.append(sumarr[i]+arr[i])
 	n=len(arr)//2
+	global state
+	np.random.seed(state)#this was important so that the random stream does not run out .... may be 
+	#RANDOM COULD BE A PROBLEM, AND ITS SEEDING. 
+	state+=1
+	
 	for j in range(n):
-		r = np.random.uniform(0, sumarr[-1],2)
+		r = np.random.uniform(0,sumarr[-1],2)#gen_randuniform(0,sumarr[-1],2)
 		chosenind1=binsear(r[0],sumarr)
 		chosenind2=binsear(r[1],sumarr)
 		yield (chosenind1,chosenind2)
@@ -35,8 +53,11 @@ def RankRoulWheel(popul):
 	ar=np.arange(0,popul.size)
 	listup=list(zip(list(popul.poparr),list(popul.fitarr)))
 	listup.sort(key=lambda x: x[1])
+
 	for  tup in RoulWheel(ar):
-		yield listup[tup[0]][0],listup[tup[0]][0]
+		
+
+		yield listup[tup[0]][0],listup[tup[1]][0]
 
 def middlepoint(parent_tup):
 	alpha=np.random.uniform(0,1)
@@ -44,8 +65,14 @@ def middlepoint(parent_tup):
 	child2=alpha*parent_tup[1]+(1-alpha)*parent_tup[0]
 	return (child1,child2)
 
-def smallchange(newborn):
-	return newborn+np.random.normal(-1,1,newborn.shape)/5
+def smallchange(newborn,lim):
+	while True:															#this is important
+		p=newborn+np.random.normal(-1,1,newborn.shape)/1000
+		q=list(filter(lambda x : x>lim[0] and x<lim[1],p))
+
+		if len(p)==len(q):
+			break
+	return p
 
 
 
@@ -82,17 +109,19 @@ class Crossover:
 				#use alitism
 				return None
 
+		return parent_tup
+
 class Mutation:
 	def __init__(self,typeh=0,rate=0.1,stadym=0):
 		self.type=typeh
 		self.rate=rate
 		self.stadym=stadym
 
-	def mutate(self,newborn):
+	def mutate(self,newborn,limtup):
 		if np.random.rand()<self.rate:
 
 			if self.type==0:
-				return smallchange(newborn)	#returns a children (vector)
+				return smallchange(newborn,limtup)	#returns a children (vector)
 
 			elif self.type==1:
 				return None

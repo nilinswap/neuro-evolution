@@ -12,20 +12,29 @@ class Population:
 		self.stadym=stadym	#that size is static or dynamic
 		self.fitarr=numpy.array([])
 	def set_fitarr(self):
-		self.fitarr=numpy.array(list(map(self.prob.find_fitness,self.poparr)))
+		if not len(self.fitarr):
+			self.fitarr=numpy.array(list(map(self.prob.find_fitness,self.poparr)))
 	def find_expecarr(self):
+		
+		if not len(self.fitarr):
+			self.set_fitarr()
 		p=self.fitarr
+		
+
 		mini=min(p)
 		maxi=max(p)
-
+		numpy.seterr(divide='ignore', invalid='ignore') 	#here  could be an error
 		newp=(p-mini)/(maxi-mini)
+		
+		#now it is normalized
 		if self.prob.opttype==1:
 			return newp
 		elif self.prob.opttype==0:
 			return 1-newp
 		
 	def avg_fitness(self):
-		self.set_fitarr()
+		if not len(self.fitarr):
+			self.set_fitarr()
 		return numpy.mean(self.fitarr)
 	
 
@@ -51,8 +60,8 @@ def main():
 		
 		child1,child2=newcros.do_crossover(i)
 
-		child1=newmuta.mutate(child1)
-		child2=newmuta.mutate(child2)
+		child1=newmuta.mutate(child1,prob.rangetup)
+		child2=newmuta.mutate(child2,prob.rangetup)
 		print(child1,child2)
 
 
