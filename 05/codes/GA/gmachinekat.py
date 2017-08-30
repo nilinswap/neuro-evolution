@@ -5,7 +5,7 @@ import population
 import numpy as np
 def main():
 	popsize=1100
-	prob=problem.Problem(fitness_func=problem.rastrigin,dim=10,prangetup=(-100,100))
+	prob=problem.Problem(fitness_func=problem.katsuura,dim=5,prangetup=(-100,100))
 	popu=population.Population(prob,size=popsize)
 	popu.randominit()
 	genlim=2000
@@ -13,7 +13,7 @@ def main():
 	print("thing starts here")
 	newsel=misc.Selection()
 	newcros=misc.Crossover(rate=0.9)
-	newmuta=misc.Mutation(rate=0.01)
+	newmuta=misc.Mutation(rate=0.1)
 	newterm=misc.Termination(1)
 	print(popu.avg_fitness())
 	for i in range(genlim):
@@ -36,7 +36,7 @@ def main():
 			break									#these two conditionals have pen-ultimate IMPORTANCE, as my normalization fails heavily if all are same
 		if np.all(popu.fitarr==popu.fitarr[0]):
 			break
-		print(popu.avg_fitness(),i)
+		print(popu.avg_fitness())
 		if  newterm.terminate(popul=popu,iteri=i,lim=500):
 			print("breaking bad")
 			break

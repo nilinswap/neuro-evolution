@@ -157,7 +157,7 @@ class Termination:
 
 		elif   self.type==1:
 			if 	iteri>lim:
-				print("here")
+				
 				from collections import Counter
 				roundar=np.round(popul.poparr,4)
 				lis=roundar.tolist()
@@ -167,7 +167,7 @@ class Termination:
 				counts=dict(counts)
 				lis=list(counts.items())
 				lis.sort(key= lambda x: x[1],reverse=True)
-				if lis[0][1]>popul.size//4:
+				if lis[0][1]>popul.size//2:
 					print( lis[0][0])
 					return 1
 			else:
