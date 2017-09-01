@@ -51,7 +51,8 @@ def WeighRoulWheel(popul):
 	
 def RankRoulWheel(popul):
 	ar=np.arange(0,popul.size)
-	listup=list(zip(list(popul.poparr),list(popul.fitarr)))
+	par=list(-popul.fitarr)
+	listup=list(zip(list(popul.poparr),par))
 	listup.sort(key=lambda x: x[1])
 
 	for  tup in RoulWheel(ar):

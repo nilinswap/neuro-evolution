@@ -11,10 +11,10 @@ def main():
 	genlim=2000
 	print(popu.poparr)
 	print("thing starts here")
-	newsel=misc.Selection()
+	newsel=misc.Selection(1)
 	newcros=misc.Crossover(rate=0.9)
 	newmuta=misc.Mutation(rate=0.01)
-	newterm=misc.Termination(1)
+	newterm=misc.Termination(0)
 	print(popu.avg_fitness())
 	for i in range(genlim):
 		lis=[]
@@ -37,7 +37,7 @@ def main():
 		if np.all(popu.fitarr==popu.fitarr[0]):
 			break
 		print(popu.avg_fitness(),i)
-		if  newterm.terminate(popul=popu,iteri=i,lim=500):
+		if  newterm.terminate(popul=popu,generationnum=i,generationlim=genlim):
 			print("breaking bad")
 			break
 		

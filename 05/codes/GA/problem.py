@@ -6,7 +6,7 @@ def testfun(arr):	#np.array of 1 dim for one vector.
 
 def  hcef(arr):
 	n=len(arr)
-	lis=[((i-1)/(n-1))*10**6*arr[i-1]**2 for i in range(1,n+1)] 
+	lis=[((i-1)/(n-1))*arr[i-1]**2 for i in range(1,n+1)] 
 	return sum(lis)
 
 def rastrigin(arr):
@@ -14,6 +14,10 @@ def rastrigin(arr):
 	lis=[arr[i-1]**2-10*np.cos(2*np.pi*arr[i-1])+10 for i in range(1,n+1)] 
 	return sum(lis)
 
+def rastrigint(arr):
+	n=len(arr)
+	lis=[(arr[i-1]-4)**2-10*np.cos(2*np.pi*(arr[i-1]-4))+10 for i in range(1,n+1)] 
+	return sum(lis)
 
 def katsuura(arr):
 	n=len(arr)

@@ -11,11 +11,12 @@ def main():
 	genlim=2000
 	print(popu.poparr)
 	print("thing starts here")
-	newsel=misc.Selection()
+	newsel=misc.Selection(1)
 	newcros=misc.Crossover(rate=0.9)
 	newmuta=misc.Mutation(rate=0.1)
 	newterm=misc.Termination(1)
 	print(popu.avg_fitness())
+	
 	for i in range(genlim):
 		lis=[]
 		if (i==200):
