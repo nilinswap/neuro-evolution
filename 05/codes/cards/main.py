@@ -70,7 +70,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	    input=x,
 	    n_in=15,
 	    n_hidden=n_hidden,
-	    n_out=2
+	    n_out=2			#this was important
 	)
 
 	# start-snippet-4

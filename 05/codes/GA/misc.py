@@ -42,16 +42,57 @@ def RoulWheel(arr):
 		chosenind1=binsear(r[0],sumarr)
 		chosenind2=binsear(r[1],sumarr)
 		yield (chosenind1,chosenind2)
+def NewRoulWheel(arr):
+	sumarr=[0]
+
+	for i in range(len(arr)):
+		sumarr.append(sumarr[i]+arr[i])
+	n=len(arr)//2
+	global state
+	np.random.seed(state)#this was important so that the random stream does not run out .... may be 
+	#RANDOM COULD BE A PROBLEM, AND ITS SEEDING. 
+	state+=1
+	
+	for j in range(n):
+		r = np.random.uniform(0,sumarr[-1],4)#gen_randuniform(0,sumarr[-1],2)
+		chosenind1a=binsear(r[0],sumarr)
+		chosenind2a=binsear(r[1],sumarr)
+		chosenind1b=binsear(r[2],sumarr)
+		chosenind2b=binsear(r[3],sumarr)
+
+		if chosenind1a>chosenind1b:
+			chosenind1=chosenind1a
+		else:
+			chosenind1=chosenind1b
+
+		if chosenind2a>chosenind2b:
+			chosenind2=chosenind2a
+		else:
+			chosenind2=chosenind2b
+
+		yield (chosenind1,chosenind2)
+	
 def WeighRoulWheel(popul):
 	ar=popul.find_expecarr()
 	for tup   in   RoulWheel(ar):
 			yield popul.poparr[tup[0]],popul.poparr[tup[1]]
 
 
+def NewRankRoulWheel(popul):
+	ar=np.arange(0,popul.size)
+	par=list(-popul.fitarr)
 	
+	listup=list(zip(list(popul.poparr),par))
+	listup.sort(key=lambda x: x[1])
+
+	for  tup in NewRoulWheel(ar):
+		
+
+		yield listup[tup[0]][0],listup[tup[1]][0]
 def RankRoulWheel(popul):
 	ar=np.arange(0,popul.size)
 	par=list(-popul.fitarr)
+	
 	listup=list(zip(list(popul.poparr),par))
 	listup.sort(key=lambda x: x[1])
 
@@ -89,6 +130,8 @@ class Selection:
 		elif self.type==2:
 			#use alitism
 			return None
+		elif self.type==3:
+			return NewRankRoulWheel(popul)
 
 class Crossover:
 	def __init__(self,typeh=0,rate=1,stadym=0):
