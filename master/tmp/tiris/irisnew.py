@@ -12,7 +12,7 @@ def myrange(start,end,step):
 
 def convert_iris():
 	
-	fileo=open("/home/swapnil/forgit/neuro-evolution/05/dataset/iris/iris.data","r+")
+	fileo=open("../../../05/dataset/iris/newiris.data","r+")
 	stlis=fileo.readlines()
 	stlis=[i.split(',') for i in stlis]
 	fileo.close()
@@ -27,7 +27,7 @@ def convert_iris():
 			stlis[i][4]='0,0,1\n'#using 1 of N encoding
 	stlis=[','.join(i) for i in stlis]
 	st=''.join(stlis)
-	fileob=open("/home/swapnil/forgit/neuro-evolution/05/dataset/iris/newiris.data","w")
+	fileob=open("../../../05/dataset/iris/newiris.data","w")
 	fileob.write(st)
 	fileob.close()
 	return len(stlis)-1
@@ -49,7 +49,7 @@ def give_data():
 
 
 	convert_iris()
-	irisdata=np.loadtxt("/home/swapnil/forgit/neuro-evolution/05/dataset/iris/newiris.data", delimiter=',')
+	irisdata=np.loadtxt("../../../05/dataset/iris/newiris.data", delimiter=',')
 	order=np.arange(np.shape(irisdata)[0])
 	np.random.shuffle(order)
 	irisdata = irisdata[order,:]
