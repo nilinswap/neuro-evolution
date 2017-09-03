@@ -40,6 +40,7 @@ class HiddenLayer(object):
                            layer
         """
         self.input = input
+        
         # end-snippet-1
 
         # `W` is initialized with `W_values` which is uniformely sampled

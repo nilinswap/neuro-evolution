@@ -123,8 +123,8 @@ def load_data(dataset):
                         row[i] = (row[i] - means[i])
                         if stdevs[i]:
                             row[i]/=stdevs[i]
-            standardize_dataset(traindata,means,stdevs)
-            
+            standardize_dataset(traindata[:,:15],means,stdevs)
+            print(featarr[:,15])
             return featarr,mislis
         else:
             print("file could not be loaded")

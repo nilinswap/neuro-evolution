@@ -12,7 +12,7 @@ import numpy as np
 
 import theano
 import theano.tensor as T
-import load_data
+import load_datair
 
 import hiddenlayer
 from tmlp import MLP
@@ -22,7 +22,8 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	
 	
 	
-	lis=load_data.load_data(dataset)
+	convert_iris()
+	irisdata=np.loadtxt("/home/swapnil/forgit/neuro-evolution/05/dataset/iris/newiris.data", delimiter=',')
 	
 	rest_set=lis[0]#tuple of two shared variable of array
 	test_set=lis[1]#tuple of shared variable of array

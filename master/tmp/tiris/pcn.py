@@ -13,7 +13,7 @@ import numpy as np
 class pcn:
 	""" A basic Perceptron"""
 	
-	def __init__(self,inputs,targets):
+	def __init__(self,inputs,targets,weightarr):
 		""" Constructor """
 		# Set up network size
 		if np.ndim(inputs)>1:
@@ -28,7 +28,7 @@ class pcn:
 
 		self.nData = np.shape(inputs)[0]
 	# Initialise network
-		self.weights = np.random.rand(self.nIn+1,self.nOut)*0.1-0.05
+		self.weights = weightarr
 
 	def pcntrain(self,inputs,targets,eta,nIterations):
 		""" Train the thing """	

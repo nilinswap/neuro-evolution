@@ -42,7 +42,7 @@ def RoulWheel(arr):
 		chosenind1=binsear(r[0],sumarr)
 		chosenind2=binsear(r[1],sumarr)
 		yield (chosenind1,chosenind2)
-def NewRoulWheel(arr):
+def NewRoulWheel(arr):#this uses tournament inside it, which sounds crazy but accuracy is imporved for inputs we tested on.
 	sumarr=[0]
 
 	for i in range(len(arr)):

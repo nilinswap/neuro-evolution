@@ -47,7 +47,7 @@ class MLP(object):
         which the labels lie
 
         """
-
+        self.n_hidden=n_hidden
         # Since we are dealing with a one hidden layer MLP, this will translate
         # into a HiddenLayer with a tanh activation function connected to the
         # LogisticRegression layer; the activation function can be replaced by
