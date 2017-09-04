@@ -66,14 +66,13 @@ class OptimizeFunction():
 		if self.counter % 10 == 0:	
 			fits = [f for f, ch in fits_populations]
 			best = min(fits)
-			worst = max(fits)
 			ave = sum(fits) / len(fits)
 			print(
-				"[G %3d] score=(%.4f, %.4f, %.4f): %f" %
-				(self.counter, best, ave, worst, f[0][0]))
+				"[G %3d] score=(%.4f, %.4f)" %
+				(self.counter, best, ave))
 
 		if self.counter == 500:
-			print(fits_populations)
+			print("The array: " + str(f[0][1]) + " gives fitness " + str(f[0][0]) + ".")
 		return self.counter >= self.limit
 
 	def crossover(self, parents, method=1):
@@ -95,27 +94,18 @@ class OptimizeFunction():
 		
 		return (child1, child2)
 
-	def parents(self, fits_populations, method=2):
-		if method == 1:
-			father = self.tournament(fits_populations)
-			mother = self.tournament(fits_populations)
-			return (father, mother)
+	def parents(self, fits_populations):
+		ranks = sorted(fits_populations, reverse = True)
+		rank_array = []
+		for i in range(len(fits_populations)):
+			for x in range(i+1):
+				rank_array.append(fits_populations[i][1])
 
-		elif method == 2:
-			ranks = sorted(fits_populations, reverse = True)
-			rank_array = []
-			for i in range(len(fits_populations)):
-				for x in range(i+1):
-					rank_array.append(fits_populations[i][1])
-
-			father = rank_array[random.randint(0, len(rank_array)-1)]
-			mother = rank_array[random.randint(0, len(rank_array)-1)]
-			return (father, mother)
-
-	def tournament(self, fits_populations):
-		alicef, alice = self.select_random(fits_populations)
-		bobf, bob = self.select_random(fits_populations)
-		return alice if alicef > bobf else bob
+		father = rank_array[random.randint(0, len(rank_array)-1)]
+		if self.counter == 2:
+			print(type(father))
+		mother = rank_array[random.randint(0, len(rank_array)-1)]
+		return (father, mother)
 
 	def mutation(self, chromosome):
 		mutated = chromosome
@@ -124,9 +114,6 @@ class OptimizeFunction():
 				vary = np.random.randn(1,1)/3
 				mutated[x] += vary
 		return mutated
-
-	def select_random(self, fits_populations):
-		return fits_populations[random.randint(0, len(fits_populations)-1)]
 
 	def random_chromo(self):
 		return [random.uniform(-1,1) for i in range(self.D)]
