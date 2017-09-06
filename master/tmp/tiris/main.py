@@ -3,14 +3,15 @@ import numpy as np
 from irisnew import give_data
 from irisnew import find_fitness
 
+rest_setx, rest_sety = give_data()[0]
+test_setx, test_sety = give_data()[1]
+
 class GeneticAlgorithm(object):
 	def __init__(self, genetics):
 		self.genetics = genetics
 
 	def run(self):
 		population = self.genetics.initial()
-		rest_setx, rest_sety = give_data()[0]
-		test_setx, test_sety = give_data()[1]
 		while True:
 			#Calculate fitness for each chromosome in population
 			fits_pops = [(find_fitness(rest_setx, rest_sety, ch),  ch) for ch in population]
@@ -36,14 +37,14 @@ example: Mapped guess prepared Text
 """
 class OptimizeFunction():
 	def __init__(self, D, limit=500, size=100, prob_crossover=0.9, prob_mutation=0.2):
+		self.D = D
 		self.counter = 0
 		self.limit = limit
-		self.D = D
 		self.size = size
 		self.prob_crossover = prob_crossover
 		self.prob_mutation = prob_mutation
+		self.best = (np.inf, [])
 		
-	# GeneticFunctions interface impls
 	def probability_crossover(self):
 		return self.prob_crossover
 
@@ -54,11 +55,17 @@ class OptimizeFunction():
 		return [self.random_chromo() for j in range(self.size)]
 
 	#>>>>>>======== Put your fitness function here ===========<<<<<<
+	def fitness(self, chromosome):
+		pass
+
 	def check_stop(self, fits_populations):
 		self.counter += 1
 		f = sorted(fits_populations, reverse = True)
 
-		if self.counter < 100:
+		if f[-1][0] < self.best[0]:
+			self.best = f[-1]
+
+		if self.counter < 300:
 			self.prob_mutation = 0.2
 		else:
 			self.prob_mutation = 0.02
@@ -71,9 +78,12 @@ class OptimizeFunction():
 				"[G %3d] score=(%.4f, %.4f)" %
 				(self.counter, best, ave))
 
-		if self.counter == 500:
-			print("The array: " + str(f[0][1]) + " gives fitness " + str(f[0][0]) + ".")
-		return self.counter >= self.limit
+		if self.counter >= self.limit:
+			#print("Best fitness achieved: " + str(self.best))
+			#print(type(self.best[1]))
+			print(find_fitness(test_setx, test_sety, self.best[1]))
+			return True
+		return False
 
 	def crossover(self, parents, method=1):
 		father, mother = parents
@@ -82,12 +92,12 @@ class OptimizeFunction():
 			child2 = []
 			alpha = random.uniform(0,1)
 			for x in range(len(father)):
-				child1.append(alpha*father[0] + (1-alpha)*mother[0])
+				child1.append(alpha*father[x] + (1-alpha)*mother[x])
 				child2.append((1-alpha)*father[x] + alpha*mother[x])
 
 		elif method == 2:
-			index1 = random.randint(1, len(self.target) - 2)
-			index2 = random.randint(1, len(self.target) - 2)
+			index1 = random.randint(1, len(father) - 2)
+			index2 = random.randint(1, len(father) - 2)
 			if index1 > index2: index1, index2 = index2, index1
 			child1 = father[:index1] + mother[index1:index2] + father[index2:]
 			child2 = mother[:index1] + father[index1:index2] + mother[index2:]
@@ -97,13 +107,11 @@ class OptimizeFunction():
 	def parents(self, fits_populations):
 		ranks = sorted(fits_populations, reverse = True)
 		rank_array = []
-		for i in range(len(fits_populations)):
+		for i in range(len(ranks)):
 			for x in range(i+1):
-				rank_array.append(fits_populations[i][1])
+				rank_array.append(ranks[i][1])
 
 		father = rank_array[random.randint(0, len(rank_array)-1)]
-		if self.counter == 2:
-			print(type(father))
 		mother = rank_array[random.randint(0, len(rank_array)-1)]
 		return (father, mother)
 
