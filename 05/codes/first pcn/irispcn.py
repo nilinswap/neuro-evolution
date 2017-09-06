@@ -95,7 +95,7 @@ def irismain():
 	nin=4# for four features of iris
 	nout=3# for 3 sets of iris flowers
 	minerr=minetaerr=miniterarr=10000000
-	switch=4#to see epoch vs error or eta vs error
+	switch=10#to see epoch vs error or eta vs error
 	etalis=[]
 	valerrlis=[]
 	niterationslis=[]

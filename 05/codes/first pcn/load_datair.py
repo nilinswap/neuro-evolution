@@ -18,7 +18,7 @@ def convert_iris():
 	fileob=open("/home/swapnil/forgit/neuro-evolution/05/dataset/iris/newiris.data","w")
 	fileob.write(st)
 	fileob.close()
-	return len(stlis)-1
+	return len(stlis)-1`
 
 def standardize_dataset(traindata, means, stdevs):
     for row in traindata:

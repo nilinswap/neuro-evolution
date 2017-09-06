@@ -52,7 +52,7 @@ class pcn:
 	def pcnfwd(self,inputs):
 		""" Run the network forward """
 		# Compute activations
-		inputs = np.concatenate((inputs,-np.ones((self.nData,1))),axis=1)
+		#inputs = np.concatenate((inputs,-np.ones((self.nData,1))),axis=1)
 		activations =  np.dot(inputs,self.weights)
 
 		# Threshold the activations

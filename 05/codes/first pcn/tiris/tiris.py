@@ -22,13 +22,15 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	
 	
 	
-	convert_iris()
+	load_datair.convert_iris()
 	irisdata=np.loadtxt("/home/swapnil/forgit/neuro-evolution/05/dataset/iris/newiris.data", delimiter=',')
+	order=np.arange(np.shape(irisdata)[0])
+	np.random.shuffle(order)
+	irisdata = irisdata[order,:]
+	rest_set=irisdata[:120,:]#tuple of two shared variable of array
+	test_set=lis[120:,:]#tuple of shared variable of array
 	
-	rest_set=lis[0]#tuple of two shared variable of array
-	test_set=lis[1]#tuple of shared variable of array
-
-	millis=lis[2]#lis
+	
 
 	
 	par_size=int(rest_set[0].get_value().shape[0]/n_par)

@@ -49,7 +49,7 @@ for i in range(100000):
             if(values[k]==temp_values[j]):
                 flag=k
                 break;
-        for l in range(int(math.pow(1.05,j+1))):
+        for l in range(int(math.pow(1.05,(j+1)))):
             mating_pool.append(population[flag])
     
     
