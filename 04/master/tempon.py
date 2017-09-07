@@ -1,8 +1,7 @@
 import GeneticFunctions
 import numpy as np
-import random
 class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
-	def __init__(self, limit=500,  prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
+	def __init__(self, D, limit=500, size=100, prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
 	#	self.D = D
 		self.counter = 0
 		self.limit = limit
@@ -10,8 +9,8 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		self.prob_crossover = prob_crossover
 		self.prob_mutation = prob_mutation
 		self.scale_mutation = scale_mutation
-		self.best = ( [],np.inf,0) #Add in class diagrams
-		self.fits_pops=None
+		self.best = (np.inf, []) #Add in class diagrams
+		
 
 	def probability_crossover(self):
 		return self.prob_crossover
@@ -22,16 +21,17 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def crossover(self, parents):
 		father, mother = parents
 		
-
+		child1 = []
+		child2 = []
 		alpha = random.uniform(0,1)
-		child1 = alpha*father+(1-alpha)*mother
-		child2 = alpha*mother+(1-alpha)*father		
+		for x in range(len(father)):
+			child1.append(alpha*father[x] + (1-alpha)*mother[x])
+			child2.append((1-alpha)*father[x] + alpha*mother[x])
 		return (child1, child2)
 
-	def selection(self,popul):
-		if not len(popul.fits_pops):
-			popul.set_fitness()
-		ranks = sorted(popul.fits_pops, reverse = True)
+	def selection(self, fitness_func):
+		fits_pops=population.find_fitness(fitness_func)
+		ranks = sorted(fits_pops, reverse = True)
 		rank_array = []
 		for i in range(len(ranks)):
 			for x in range(i+1):
@@ -44,20 +44,17 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def mutation(self, chromosome):
 		mutated = chromosome
 		for x in range(len(chromosome)):
-			if np.random.random() < self.prob_mutation:
-				vary = np.random.normal()*self.scale_mutation
+			if random.random() < self.prob_mutation:
+				vary = np.random.randn(1,1)/3
 				mutated[x] += vary
 		return mutated
 	
-	def terminate(self,popul):
+	def terminate(self):
 		self.counter += 1
+		f = sorted(fits_populations, reverse = True)
 
-		#f = sorted(fits_populations, reverse = True)
-		f=popul.get_best()# a tuple with first being x and second being fitness
-		if f[1] < self.best[1]:
-			self.best = (f[0],f[1],popul.net.hid_nodes)
-
-
+		if f[-1][0] < self.best[0]:
+			self.best = f[-1]
 
 		if self.counter < 300:
 			self.prob_mutation = 0.2
@@ -65,9 +62,9 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 			self.prob_mutation = 0.02
 
 		if self.counter % 10 == 0:  
-			#fits = [f for f, ch in fits_populations]
-			best = f[1]
-			ave = popul.get_average()
+			fits = [f for f, ch in fits_populations]
+			best = min(fits)
+			ave = sum(fits) / len(fits)
 			print(
 				"[G %3d] score=(%.4f, %.4f)" %
 				(self.counter, best, ave))
@@ -75,26 +72,12 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		if self.counter >= self.limit:
 			#print("Best fitness achieved: " + str(self.best))
 			#print(type(self.best[1]))
-			print(popul.net.test(hid_nodes,self.best[0]))
+			print(find_fitness(test_setx, test_sety, self.best[1]))
 			return True
 		return False
-	def run(self,popul):
-
-		while not terminate(self,popul):
-			lis=[]
-			for i in range(popul.size//2):
-				parent_tup=selection(self,popul)
-				newborn_tup=crossover(self,parent_tup)
-				child1=mutation(self,newborn_tup[0])
-				child2=mutation(self,newborn_tup[1])
-				lis.append(child1)
-				lis.append(child2)
-			popul.set_list_chromo(np.array(lis))
-
 def main():
-	on=OptimizeNetwork()
+	on=OptimizeNetwork(4)
 	parents=(np.array([1,2,3,4]),np.array([5,6,7,8]))
 	print(on.crossover(parents))
-	print(on.mutation(parents[0].astype(float)))
 if __name__=="__main__":
 	main()

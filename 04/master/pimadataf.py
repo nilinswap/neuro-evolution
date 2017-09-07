@@ -44,21 +44,7 @@ def give_data():
     print(rest_setx)
     print(rest_sety)
     return ((rest_setx,rest_sety),(test_setx,test_sety))
-def find_fitness(rest_setx,rest_sety,weightarr):
-    
-    
-    rows=np.shape(rest_setx)[1]+1   #for bias
-    cols=np.shape(rest_sety)[1]
-    
-    #weightarr=np.array([[weightarr[i*rows+j] for j in range(cols) ] for i in range(rows) ])
-    weightarr=np.reshape(weightarr,(9,2))
-    
-    net=pcn.pcn(rest_setx,rest_sety,weightarr)
-    arr=net.pcnfwd(rest_setx)
-    
-    er_arr=(1/2)*np.mean((arr-rest_sety)**2)
-    
-    return (er_arr)    
+
 def main():
     print(give_data()[1])
 if __name__=="__main__":

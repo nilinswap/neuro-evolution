@@ -31,3 +31,9 @@ class Network:
             name='testy',
             borrow=True
         )
+
+    def feedforward(hid_nodes,weight_arr):
+    	fir_weight=weight_arr[:(self.inputdim+1)*hid_nodes].reshape(self.inputdim+1,hid_nodes)
+    	sec_weight=weight_arr[(self.inputdim+1)*hid_nodes:].reshape((hid_nodes+1),self.outputdim)
+    	
+
