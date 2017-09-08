@@ -2,6 +2,39 @@ import GeneticFunctions
 import numpy as np
 import random
 
+def binsear(p,arr):
+	
+	low=0
+	high=len(arr)-1
+	while (high-low)>1:
+		mid=arr[(low+high)//2]
+		if mid>p:
+			high=(low+high)//2
+		else:
+			low=(low+high)//2
+	return low#this is the index of our chosen in poparr
+
+state=0
+
+def RoulWheel(arr):
+	
+	sumarr=[0]
+
+	for i in range(len(arr)):
+		sumarr.append(sumarr[i]+arr[i])
+	n=len(arr)//2
+	global state
+	np.random.seed(state)#this was important so that the random stream does not run out .... may be 
+	#RANDOM COULD BE A PROBLEM, AND ITS SEEDING. 
+	state+=1
+	
+	for j in range(n):
+		r = np.random.uniform(0,sumarr[-1],2)#gen_randuniform(0,sumarr[-1],2)
+		chosenind1=binsear(r[0],sumarr)
+		chosenind2=binsear(r[1],sumarr)
+		yield (chosenind1,chosenind2)
+
+
 class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def __init__(self, limit=500,switch_iter=200 , prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
 		self.counter = 0
@@ -26,20 +59,19 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		child1 = alpha*father+(1-alpha)*mother
 		child2 = alpha*mother+(1-alpha)*father		
 		return (child1, child2)
+	def RankRoulWheel(self,popul):
+		ar=np.arange(0,popul.size)
+		if not len(popul.fits_pops):
+				popul.set_fitness()
+		
+		par=list(-popul.fits_pops)
+		listup=list(zip(list(ar),par))
+		listup.sort(key=lambda x: x[1])
+		for  tup in RoulWheel(ar):
+			yield popul.list_chromo[listup[tup[0]][0]],popul.list_chromo[listup[tup[1]][0]]
 
 	def selection(self,popul):
-		if not len(popul.fits_pops):
-			popul.set_fitness()
-		newarr=[(i,j) for i,j in zip(popul.fits_pops,np.arange(0,popul.size))]
-		ranks = sorted(newarr, reverse = True)
-		rank_array = []
-		for i in range(len(ranks)):
-			for x in range(i+1):
-				rank_array.append(popul.list_chromo[ranks[i][1]])
-
-		father = rank_array[random.randint(0, len(rank_array)-1)]
-		mother = rank_array[random.randint(0, len(rank_array)-1)]
-		return (father, mother)
+		return self.RankRoulWheel(popul)
 
 	def mutation(self, chromosome):
 		mutated = chromosome
@@ -81,8 +113,8 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def run(self,popul):
 		while not self.terminate(popul):
 			lis=[]
-			for i in range(popul.size//2):
-				parent_tup=self.selection(popul)
+			for parent_tup in self.selection(popul):
+				
 				newborn_tup=self.crossover(parent_tup)
 				child1=self.mutation(newborn_tup[0])
 				child2=self.mutation(newborn_tup[1])
