@@ -41,8 +41,7 @@ def give_data():
     rest_sety=pimadata[:538,8:]
     test_setx=pimadata[538:,:8]
     test_sety=pimadata[538:,8:]
-    print(rest_setx)
-    print(rest_sety)
+  
     return ((rest_setx,rest_sety),(test_setx,test_sety))
 
 def main():
