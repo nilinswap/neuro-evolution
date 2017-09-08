@@ -1,18 +1,17 @@
 import GeneticFunctions
 import numpy as np
 import random
+
 class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def __init__(self, limit=500,switch_iter=200 , prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
-	#	self.D = D
 		self.counter = 0
 		self.limit = limit
-	#	self.size = size
 		self.prob_crossover = prob_crossover
 		self.prob_mutation = prob_mutation
 		self.scale_mutation = scale_mutation
-		self.switch_iter=switch_iter
-		self.best = ( [],np.inf,0) #Add in class diagrams
-		self.fits_pops=None
+		self.switch_iter = switch_iter
+		self.best = ([],np.inf, 0) #Add in class diagrams
+		self.fits_pops = None
 
 	def probability_crossover(self):
 		return self.prob_crossover
@@ -23,7 +22,6 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def crossover(self, parents):
 		father, mother = parents
 		
-
 		alpha = random.uniform(0,1)
 		child1 = alpha*father+(1-alpha)*mother
 		child2 = alpha*mother+(1-alpha)*father		
@@ -55,18 +53,16 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		self.counter += 1
 		#print("here in term",popul.list_chromo[:2])
 		#f = sorted(fits_populations, reverse = True)
-		f=popul.get_best()# a tuple with first being x and second being fitness
+		f = popul.get_best()# a tuple with first being x and second being fitness
 		if f[1] < self.best[1]:
 			self.best = (f[0],f[1],popul.net.hid_nodes)
-
-
 
 		if self.counter < self.switch_iter:
 			self.prob_mutation = 0.2
 		else:
 			self.prob_mutation = 0.02
 
-		if self.counter % 10 == 0:  
+		if self.counter % 10 == 0:
 			#fits = [f for f, ch in fits_populations]
 			best = f[1]
 			ave = popul.get_average()
@@ -81,8 +77,8 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 			self.counter=0
 			return True
 		return False
-	def run(self,popul):
 
+	def run(self,popul):
 		while not self.terminate(popul):
 			lis=[]
 			for i in range(popul.size//2):
