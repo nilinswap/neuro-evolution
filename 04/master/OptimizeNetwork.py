@@ -2,7 +2,7 @@ import GeneticFunctions
 import numpy as np
 import random
 class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
-	def __init__(self, limit=500,switch_iter=200 , prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
+	def __init__(self, limit=700,switch_iter=300 , prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
 	#	self.D = D
 		self.counter = 0
 		self.limit = limit
