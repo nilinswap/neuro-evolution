@@ -13,6 +13,15 @@ class Population(object):
 		self.list_chromo = np.random.uniform(limittup[0],limittup[1],(self.size,(self.net.inputdim+1)*self.net.hid_nodes+(self.net.hid_nodes+1)*self.net.outputdim))#a numpy array
 		self.fits_pops=[]
 	
+	def aux_pop(self, size,limittup, no_of_hidden_units):	
+		population = np.array([])
+		for i in range(1,no_of_hidden_units+1):
+			for j in range(size//no_of_hidden_units):
+				population.append(np.concatenate([[i],np.random.uniform(limittup[0],limittup[1],((self.net.inputdim+1)*i + (i+1)*self.net.outputdim))]))
+
+		for i in range(1,size%no_of_hidden_units+1):
+			population.append(np.concatenate([[i],np.random.uniform(limittup[0],limittup[1],((self.net.inputdim+1)*i + (i+1)*self.net.outputdim))]))
+		return population
 	def set_list_chromo(self,newlist_chromo):
 		p=self.list_chromo
 		self.list_chromo=newlist_chromo# ndarray
