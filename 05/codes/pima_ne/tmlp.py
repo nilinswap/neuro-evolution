@@ -88,9 +88,6 @@ class MLP(object):
         self.negative_log_likelihood = (
             self.logRegressionLayer.negative_log_likelihood
         )
-        self.mean_square_error=(
-            self.logRegressionLayer.mean_square_error
-        )
         # same holds for the function computing the number of errors
         self.errors = self.logRegressionLayer.errors
 

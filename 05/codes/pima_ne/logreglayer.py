@@ -146,8 +146,6 @@ class LogisticRegression(object):
         # i.e., the mean log-likelihood across the minibatch.
         return -T.mean(T.log(self.p_y_given_x)[T.arange(y.shape[0]), y])
         # end-snippet-2
-    def mean_square_error(self,y)
-        return 0.5*T.mean((self.p_y_given_x-y)**2)
 
     def errors(self, y):
         """Return a float representing the number of errors in the minibatch

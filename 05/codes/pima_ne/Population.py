@@ -23,6 +23,7 @@ class Population(object):
 		rest_set, test_set = pimadataf.give_data()#one time thing #RTC required here
 		self.trainx = rest_set[0]
 		self.trainy = rest_set[1]
+		#print("hmm",self.trainy)
 		self.testx = test_set[0]
 		self.testy = test_set[1]
 		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy)
@@ -112,6 +113,8 @@ def main():
 	print(pop.sortedlistup)
 	print(pop.sumar)
 	print(pop.sum_dict)
+	neter = network.Neterr(dimtup[0],dimtup[1],pop.list_chromo,pop.trainx,pop.trainy,pop.testx,pop.testy)
+	#network.Backnet(4,neter)
 	#print(pop.get_best())
 	#print(pop.get_average())
 

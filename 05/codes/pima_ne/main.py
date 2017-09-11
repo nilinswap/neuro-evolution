@@ -15,7 +15,7 @@ def main():
 	
 	#net = network.Network(inputdim, outputdim, hid_nodes, rest_set[0], rest_set[1], test_set[0], test_set[1])
 		
-	popul = Population.Population(max_no_of_hidden_units=max_no_of_hidden_units,dimtup=(inputdim,outputdim), size=pop_size,  limittup=(-1,1))
+	popul = Population.Population(max_no_of_hidden_units=max_no_of_hidden_units,dimtup=(inputdim,outputdim), size=pop_size,  limittup=(-3,3))
 	print("here above run")
 	ONet.run(popul)
 	print(ONet.best)
