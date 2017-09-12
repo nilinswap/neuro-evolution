@@ -1,27 +1,77 @@
 import numpy as np
 import network
-
+import pimadataf
+def givesumar(size):
+		ar=[0]
+		for i in range(1,size+1):
+			ar+=[ar[i-1]+i]
+		return ar
 class Population(object):
 	"""Class to create population object, and handle its methods"""
-	list_chromo = []
-	fits_pops = []
+	#list_chromo = []
+	#fits_pops = []
 
-	def __init__(self, D, size,net,limittup=(-1,1)):
-		self.D = D
+	def __init__(self,max_no_of_hidden_units,dimtup, size=5,limittup=(-1,1)):
+		
+		
 		self.size = size
-		self.net=net
-		self.list_chromo = np.random.uniform(limittup[0],limittup[1],(self.size,(self.net.inputdim+1)*self.net.hid_nodes+(self.net.hid_nodes+1)*self.net.outputdim))#a numpy array
+		self.max_no_of_hidden_units=max_no_of_hidden_units
+		self.dimtup=dimtup
+		self.list_chromo = self.aux_pop(size,limittup)#a numpy array
 		self.fits_pops=[]
-	
-	def aux_pop(self, size,limittup, no_of_hidden_units):	
-		population = np.array([])
-		for i in range(1,no_of_hidden_units+1):
-			for j in range(size//no_of_hidden_units):
-				population.append(np.concatenate([[i],np.random.uniform(limittup[0],limittup[1],((self.net.inputdim+1)*i + (i+1)*self.net.outputdim))]))
 
-		for i in range(1,size%no_of_hidden_units+1):
-			population.append(np.concatenate([[i],np.random.uniform(limittup[0],limittup[1],((self.net.inputdim+1)*i + (i+1)*self.net.outputdim))]))
-		return population
+		rest_set, test_set = pimadataf.give_data()#one time thing #RTC required here
+		self.trainx = rest_set[0]
+		self.trainy = rest_set[1]
+		#print("hmm",self.trainy)
+		self.testx = test_set[0]
+		self.testy = test_set[1]
+		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy)
+
+	
+	def create_dict(self):
+		k_dict = {}
+		par=list(-self.fits_pops)
+		ar=np.arange(0,self.size)
+		sumar=[0]
+		for i in range(1,self.size+1):
+			sumar.append(sumar[i-1]+i)
+		self.sumar=sumar
+		listup=list(zip(list(ar),par))
+		listup.sort(key=lambda x: x[1])
+		self.sortedlistup=listup
+		sum_dict={}
+		#sum_fit=[0]
+		for i in range(len(self.list_chromo)):
+			#sum_fit.append(sum(sum_fit)+self.fits_pops[i])
+			if int(self.list_chromo[i][0]) in k_dict:
+				k_dict[int(self.list_chromo[i][0])].append(i)
+				#sum_dict[int(self.list_chromo[i][0])].append(sum(sum_dict[int(self.list_chromo[i][0])])+self.fits_pops[i])	
+			else:
+				k_dict[int(self.list_chromo[i][0])]=[i]
+				#sum_dict[int(self.list_chromo[i][0])]=[0,self.fits_pops[i]]
+		
+		for lis in k_dict.values():
+			lis.sort(key=lambda x: -self.fits_pops[x])
+		for k in k_dict.keys():
+			sum_dict[k]=givesumar(len(k_dict[k]))
+		self.sum_dict=sum_dict
+		self.k_dict=k_dict
+
+		#self.sum_dict=sum_dict
+		#self.sum_fit=sum_fit
+
+	def aux_pop(self, size,limittup):	
+		population = []
+		inputdim=self.dimtup[0]
+		outputdim=self.dimtup[1]
+		for i in range(1,self.max_no_of_hidden_units+1):
+			for j in range(size//self.max_no_of_hidden_units):
+				population.append(np.concatenate([[i],np.random.uniform(limittup[0],limittup[1],((inputdim+1)*i + (i+1)*outputdim))]))
+
+		for i in range(1,size%self.max_no_of_hidden_units+1):
+			population.append(np.concatenate([[i],np.random.uniform(limittup[0],limittup[1],((inputdim+1)*i + (i+1)*outputdim))]))
+		return np.array(population)
 	def set_list_chromo(self,newlist_chromo):
 		p=self.list_chromo
 		self.list_chromo=newlist_chromo# ndarray
@@ -29,8 +79,12 @@ class Population(object):
 		del(p)
 
 	def set_fitness(self):
-		fitness_func=self.net.feedforward
-		self.fits_pops=fitness_func(self.list_chromo)#another np array
+		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy)
+		fitness_func=self.net_err.feedforward
+		self.fits_pops=fitness_func()#another np array
+		#print(self.fits_pops)
+		
+		self.create_dict()
 
 	def get_best(self):
 		if not len(self.fits_pops):
@@ -48,25 +102,21 @@ def squa_test(x):
 
 def main():	
 	import copy
-	trainarr = np.concatenate((np.arange(0,9).reshape(3,3),np.array([[1,0],[0,1],[1,0]])),axis=1)
-	testarr = copy.deepcopy(trainarr)
-	#print(net.trainx,net.trainy)
-	hid_nodes = 4
-	indim = 3
-	outdim = 2
-	size = 5
-	net = network.Network(indim,outdim,hid_nodes,trainarr,testarr)
-	arr_of_net = np.random.uniform(-1,1,(size,(indim+1)*hid_nodes+(hid_nodes+1)*outdim))
-	#print(arr_of_net)
-	#print(net.feedforward(hid_nodes,arr_of_net))
-	pop = Population(3,5,net)
-	#pop.set_list_chromo(arr_of_net)
+	dimtup=(8,1)
+	pop=Population(4,dimtup,size=9)
 
 	print(pop.list_chromo)
+	#print()
 	pop.set_fitness()
 	print(pop.fits_pops)
-	print(pop.get_best())
-	print(pop.get_average())
+	print(pop.k_dict)
+	print(pop.sortedlistup)
+	print(pop.sumar)
+	print(pop.sum_dict)
+	neter = network.Neterr(dimtup[0],dimtup[1],pop.list_chromo,pop.trainx,pop.trainy,pop.testx,pop.testy)
+	network.Backnet(4,neter)
+	#print(pop.get_best())
+	#print(pop.get_average())
 
 if __name__=='__main__':
 	main()

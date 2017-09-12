@@ -1,6 +1,7 @@
 import GeneticFunctions
 import numpy as np
 import random
+import Population
 
 def binsear(p,arr):
 	
@@ -34,7 +35,27 @@ def RoulWheel(arr):
 		chosenind2=binsear(r[1],sumarr)
 		yield (chosenind1,chosenind2)
 
+def roul_wheel(sumarr):
+		#r = np.random.uniform(0,sumarr[-1],1)
+		#return binsear(r,fit)
+		#ar=np.arange(0,size)
+		#sumarr=[0]
 
+		#for i in range(len(arr)):
+		#	sumarr.append(sumarr[i]+arr[i])
+		#n=len(arr)//2
+		global state
+		np.random.seed(state)#this was important so that the random stream does not run out .... may be 
+		#RANDOM COULD BE A PROBLEM, AND ITS SEEDING. 
+		state+=1
+		
+		
+		r = np.random.uniform(0,sumarr[-1],1)#gen_randuniform(0,sumarr[-1],2)
+		chosenind1=binsear(r,sumarr)
+		
+		return chosenind1
+
+		
 class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def __init__(self, limit=500,switch_iter=200 , prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
 		self.counter = 0
@@ -54,10 +75,12 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 
 	def crossover(self, parents):
 		father, mother = parents
-		
+		hid_nodes=father[0]
 		alpha = random.uniform(0,1)
-		child1 = alpha*father+(1-alpha)*mother
-		child2 = alpha*mother+(1-alpha)*father		
+		child1 = alpha*father[1:]+(1-alpha)*mother[1:]
+		child2 = alpha*mother[1:]+(1-alpha)*father[1:]
+		child1=np.concatenate((np.array([hid_nodes]),child1))		
+		child2=np.concatenate((np.array([hid_nodes]),child2))
 		return (child1, child2)
 	def RankRoulWheel(self,popul):
 		ar=np.arange(0,popul.size)
@@ -70,24 +93,36 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		for  tup in RoulWheel(ar):
 			yield popul.list_chromo[listup[tup[0]][0]],popul.list_chromo[listup[tup[1]][0]]
 
+	
+		
+		
+		
 	def selection(self,popul):
-		return self.RankRoulWheel(popul)
+		father=popul.list_chromo[popul.sortedlistup[roul_wheel(popul.sumar)][0]]
+		#mother_i=popul.k_dict[father[0]][popul.k_dict[roul_wheel(popul.sum_dict[father[0]])]]
+		mother_i=popul.k_dict[father[0]][roul_wheel(popul.sum_dict[father[0]])]
+		mother = popul.list_chromo[mother_i]
+		return (father, mother)
 
 	def mutation(self, chromosome):
 		mutated = chromosome
-		for x in range(len(chromosome)):
+		for x in range(1,len(chromosome)):
 			if np.random.random() < self.prob_mutation:
 				vary = np.random.normal()*self.scale_mutation
 				mutated[x] += vary
 		return mutated
 	
-	def terminate(self,popul):
+	def terminate(self,popul,nowgoback=10):
 		self.counter += 1
+		if self.counter%nowgoback==0:
+#			popul.net_err.modify_thru_backprop(popul)#this modifies almost all the string #RTC required here
+			pass
 		#print("here in term",popul.list_chromo[:2])
 		#f = sorted(fits_populations, reverse = True)
 		f = popul.get_best()# a tuple with first being x and second being fitness
+		print(f[0][0])
 		if f[1] < self.best[1]:
-			self.best = (f[0],f[1],popul.net.hid_nodes)
+			self.best = (f[0],f[1])
 
 		if self.counter < self.switch_iter:
 			self.prob_mutation = 0.2
@@ -100,12 +135,13 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 			ave = popul.get_average()
 			print(
 				"[G %3d] score=(%.4f, %.4f) for %d hidden nodes" %
-				(self.counter, best, ave, popul.net.hid_nodes))
+				(self.counter, best, ave, f[0][0]))
+			#print(popul.k_dict.keys())
 
 		if self.counter >= self.limit:
 			#print("Best fitness achieved: " + str(self.best))
 			#print(type(self.best[1]))
-			print("sub-finally ", popul.net.test(f[0]))
+			print("sub-finally ", popul.net_err.test(f[0]))
 			self.counter=0
 			return True
 		return False
@@ -113,8 +149,8 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def run(self,popul):
 		while not self.terminate(popul):
 			lis=[]
-			for parent_tup in self.selection(popul):
-				
+			for i in range(popul.size//2):
+				parent_tup=self.selection(popul)
 				newborn_tup=self.crossover(parent_tup)
 				child1=self.mutation(newborn_tup[0])
 				child2=self.mutation(newborn_tup[1])
@@ -127,6 +163,18 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 			#print(popul.get_best())
 
 def main():
+	import copy
+	dimtup=(8,1)
+	pop=Population.Population(4,dimtup,size=9)
+
+	#print(pop.list_chromo)
+	#print()
+	pop.set_fitness()
+	"""print(pop.fits_pops)
+	print(pop.k_dict)
+	print(pop.sortedlistup)
+	print(pop.sumar)
+	print(pop.sum_dict)"""
 	on=OptimizeNetwork()
 	parents=(np.array([1,2,3,4]),np.array([5,6,7,8]))
 	print(on.crossover(parents))
