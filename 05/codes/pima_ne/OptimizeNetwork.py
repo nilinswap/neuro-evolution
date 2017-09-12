@@ -54,6 +54,7 @@ def roul_wheel(sumarr):
 		chosenind1=binsear(r,sumarr)
 		
 		return chosenind1
+
 		
 class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def __init__(self, limit=500,switch_iter=200 , prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
@@ -111,8 +112,11 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 				mutated[x] += vary
 		return mutated
 	
-	def terminate(self,popul):
+	def terminate(self,popul,nowgoback=10):
 		self.counter += 1
+		if self.counter%nowgoback==0:
+#			popul.net_err.modify_thru_backprop(popul)#this modifies almost all the string #RTC required here
+			pass
 		#print("here in term",popul.list_chromo[:2])
 		#f = sorted(fits_populations, reverse = True)
 		f = popul.get_best()# a tuple with first being x and second being fitness
@@ -132,6 +136,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 			print(
 				"[G %3d] score=(%.4f, %.4f) for %d hidden nodes" %
 				(self.counter, best, ave, f[0][0]))
+			#print(popul.k_dict.keys())
 
 		if self.counter >= self.limit:
 			#print("Best fitness achieved: " + str(self.best))

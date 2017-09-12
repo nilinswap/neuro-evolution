@@ -50,7 +50,15 @@ class Neterr:
 		output = sigmoid(output)
 		er_arr = (1/2)*np.mean((output-self.testy)**2)
 		return er_arr
-
+	def modify_thru_backprop(popul):
+		lis_of_keys=list(popul.k_dict.keys())
+		for k in lis_of_keys:
+			newfullnet=Backnet(k,popul.net_err)
+			for ind in popul.k_dict[k]:
+				newfullnet.set_weights(popul.list_chromo[ind])
+				newfullnet.train()
+				popul.list_chromo[ind]=newfullnet.get_new_weight()
+		popul.set_fitness()
 def squa_test(x):
 	return (x**2).sum(axis=1)
 
