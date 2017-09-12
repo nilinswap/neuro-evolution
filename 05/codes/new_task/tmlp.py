@@ -25,7 +25,7 @@ class MLP(object):
     class).
     """
 
-    def __init__(self, rng, input, n_in, n_hidden, n_out,weight_str=[]):
+    def __init__(self, rng, input, n_in, n_hidden, n_out):
         """Initialize the parameters for the multilayer perceptron
 
         :type rng: numpy.random.RandomState
@@ -47,62 +47,25 @@ class MLP(object):
         which the labels lie
 
         """
-        self.n_in=n_in
-        self.n_out=n_out
         self.n_hidden=n_hidden
         # Since we are dealing with a one hidden layer MLP, this will translate
         # into a HiddenLayer with a tanh activation function connected to the
         # LogisticRegression layer; the activation function can be replaced by
         # sigmoid or any other nonlinear function
-        if len(weight_str):
-            fir_weight = weight_str[1:(self.n_in+1)*self.n_hidden+1].reshape(self.n_in+1,self.n_hidden)
-            fir_weightb=fir_weight[-1,:].reshape((self.n_hidden,))
-            fir_weightrest=fir_weight[:-1,:]
-            sec_weight = weight_str[(self.n_in+1)*self.n_hidden+1:].reshape((self.n_hidden+1),self.n_out)
-            sec_weightb=sec_weight[-1,:].reshape((self.n_out,))
-            sec_weightrest=sec_weight[:-1,:]
-            fir_W_values = numpy.asarray(
-                    fir_weightrest,
-                    dtype=theano.config.floatX
-                )
-                
-
-            self.fir_weight = theano.shared(value=fir_W_values, name='fir_W', borrow=True)
-
-            fir_b_values =numpy.asarray(
-                    fir_weightb,
-                    dtype=theano.config.floatX
-                )
-            self.fir_b = theano.shared(value=fir_b_values, name='fir_b', borrow=True)
-            
-            sec_W_values = numpy.asarray(
-                    sec_weightrest,
-                    dtype=theano.config.floatX
-                )
-            self.sec_weight = theano.shared(value=sec_W_values, name='sec_W', borrow=True)
-            sec_b_values =numpy.asarray(
-                    sec_weightb,
-                    dtype=theano.config.floatX
-                )
-            self.sec_b = theano.shared(value=sec_b_values, name='sec_b', borrow=True)
-            print(self.fir_weight,self.fir_b)
         self.hiddenLayer = hiddenlayer.HiddenLayer(
             rng=rng,
             input=input,
             n_in=n_in,
             n_out=n_hidden,
-            activation=T.tanh,
-            W=self.fir_weight,
-            b=self.fir_b
-            )
+            activation=T.tanh
+        )
+
         # The logistic regression layer gets as input the hidden units
         # of the hidden layer
         self.logRegressionLayer = LogisticRegression(
             input=self.hiddenLayer.output,
             n_in=n_hidden,
-            n_out=n_out,
-            W=self.sec_weight,
-            b=self.sec_b
+            n_out=n_out
         )
         # end-snippet-2 start-snippet-3
         # L1 norm ; one regularization option is to enforce L1 norm to
@@ -129,8 +92,8 @@ class MLP(object):
             self.logRegressionLayer.mean_square_error
         )
         # same holds for the function computing the number of errors
-        self.errors = self.logRegressionLayer.errors
-
+        #self.errors = self.logRegressionLayer.errors
+        self.newerrors=self.logRegressionLayer.mean_square_error
         # the parameters of the model are the parameters of the two layer it is
         # made out of
         self.params = self.hiddenLayer.params + self.logRegressionLayer.params

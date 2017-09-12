@@ -7,15 +7,11 @@ class GeneticFunctions(object):
 		r"""returns rate of occur mutation(0.0-1.0)"""
 		return 0.0
 
-	def initial(self):
-		r"""returns list of initial population"""
-		return []
-
 	def fitness(self, chromosome):
 		r"""returns domain fitness value of chromosome"""
 		return len(chromosome)
 
-	def check_stop(self, fits_populations):
+	def terminate(self, fits_populations):
 		r"""stop run if returns True
 		- fits_populations: list of (fitness_value, chromosome)
 		"""
