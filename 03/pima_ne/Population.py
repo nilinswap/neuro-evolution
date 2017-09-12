@@ -3,11 +3,7 @@ import network
 
 class Population(object):
 	"""Class to create population object, and handle its methods"""
-	#list_chromo = []
-	#fits_pops = []
 	
-
-			
 	def __init__(self, D, size,limittup=(-1,1)):
 		self.D = D
 		self.size = size
@@ -29,15 +25,16 @@ class Population(object):
 				sum_dict[self.list_chromo[i][0]]=[0,self.fits_pops[i]]
 	
 	def set_list_chromo(self,newlist_chromo):
-		p=self.list_chromo
+		p = self.list_chromo
 		self.list_chromo=newlist_chromo# ndarray
 		self.set_fitness()
 		del(p)
 
 	def set_fitness(self):
-		fitness_func=self.net.feedforward
-		self.fits_pops=fitness_func()#another np array
+		fitness_func = self.net.feedforward
+		self.fits_pops = fitness_func() #another np array
 		self.create_dict()
+
 	def get_best(self):
 		if not len(self.fits_pops):
 			self.set_fitness()
