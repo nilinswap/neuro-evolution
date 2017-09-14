@@ -115,7 +115,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def terminate(self,popul,nowgoback=10):
 		self.counter += 1
 		if self.counter%nowgoback==0:
-#			popul.net_err.modify_thru_backprop(popul)#this modifies almost all the string #RTC required here
+			popul.net_err.modify_thru_backprop(popul)#this modifies almost all the string #RTC required here
 			pass
 		#print("here in term",popul.list_chromo[:2])
 		#f = sorted(fits_populations, reverse = True)

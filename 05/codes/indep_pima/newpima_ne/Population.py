@@ -26,8 +26,11 @@ class Population(object):
 		#print("hmm",self.trainy)
 		self.testx = test_set[0]
 		self.testy = test_set[1]
-		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy)
-
+		tup=pimadataf.give_datainshared()
+		self.strainx,self.strainy=tup[0]
+		self.stestx,self.stesty=tup[1]
+		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy,strainx=self.strainx,strainy=self.strainy,stestx=self.stestx,stesty=self.stesty)
+		self.net_dict={}#dictionary of networks for back-propagation, one for each n_hid
 	
 	def create_dict(self):
 		k_dict = {}
@@ -79,7 +82,7 @@ class Population(object):
 		del(p)
 
 	def set_fitness(self):
-		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy)
+		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy,strainx=self.strainx,strainy=self.strainy,stestx=self.stestx,stesty=self.stesty)
 		fitness_func=self.net_err.feedforward
 		self.fits_pops=fitness_func()#another np array
 		#print(self.fits_pops)

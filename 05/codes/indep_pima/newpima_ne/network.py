@@ -3,6 +3,7 @@ import numpy as np
 import theano
 import tmlp
 import theano.tensor as T
+import tmlp
 rng=np.random
 def sigmoid(arr):
 	return 1/(1+np.exp(-arr))
@@ -32,7 +33,7 @@ def shared_dataset(data_xy, borrow=True):
         # lets ous get around this issue
         return shared_x, T.cast(shared_y, 'int32')
 class Neterr:	
-	def __init__(self,inputdim,outputdim,arr_of_net,trainx,trainy,testx,testy):
+	def __init__(self,inputdim,outputdim,arr_of_net,trainx,trainy,testx,testy,strainx,strainy,stestx,stesty):
 		"""trainx=trainarr[:,:inputdim]
 		trainy=trainarr[:,inputdim:]
 		testx=testarr[:,:inputdim]
@@ -44,7 +45,13 @@ class Neterr:
 		self.trainy = trainy
 		self.testx = testx
 		self.testy = testy
+		
+		self.strainx = strainx
+		self.strainy = strainy
+		self.stestx = stestx
+		self.stesty = stesty
 		self.arr_of_net=arr_of_net
+		self.fundam=theano.function([],self.strainy)
 
 	def feedforward(self):
 		#weight_arr = np.array(weight_arr)
@@ -78,127 +85,50 @@ class Neterr:
 		er_arr = (1/2)*np.mean((output-self.testy)**2)
 		return er_arr
 
-	def modify_thru_backprop(popul):
-		"""lis_of_keys=list(popul.k_dict.keys())
-		for hid_nodes in lis_of_keys:
-			newfullnet=Backnet(hid_nodes,popul.net_err)
-			for ind in popul.k_dict[hid_nodes]:
-				newfullnet.set_weights(popul.list_chromo[ind])
-				newfullnet.train()
-				popul.list_chromo[ind]=newfullnet.get_new_weight()"""
+	def modify_thru_backprop(self,popul):
+		x=T.matrix('x')
+		y=T.ivector('y')
 		lis=[]
+		lis_of_keys=list(popul.k_dict.keys())
+		for hid_nodes in lis_of_keys:
+			if hid_nodes not in popul.net_dict:
+				newmlp=tmlp.MLP(x,self.inputdim,self.outputdim,hid_nodes)
+				popul.net_dict[hid_nodes]=newmlp
+
+			fullnet=popul.net_dict[hid_nodes]
+			params=fullnet.params
+			cost=fullnet.cost_func(y)
+			learning_rate=0.01
+			gparams=[T.grad(cost,j) for j in params]
+			updates = [
+					    (param, param - learning_rate * gparam)
+					    for param, gparam in zip(params, gparams)
+					]
+
+			train_model=theano.function([x,y],cost,updates=updates,on_unused_input='ignore')
+			#fun1=theano.function([x],output.reshape((x.shape[0],)))
+			test_model=theano.function([],fullnet.find_error(y),givens={x:self.stestx,y:self.stesty},on_unused_input='ignore')
+
+			epochs=10
+			for ind in popul.k_dict[hid_nodes]:
+				fullnet.set_weights_from_chromosome(popul.list_chromo[ind])
+				
+				for i in range(1,epochs):
+				    #p=train_model(rest_setx.get_value(),fun())
+
+				    p=train_model(self.strainx.get_value(),self.fundam())
+				    
+				    print("in back  training",p)
+				print("here sub testing",test_model())
+				lis.append(fullnet.turn_weights_into_chromosome())
+
+		"""lis=[]
 		for i in range(popul.size):
 			lis.append(Backnet(i,popul.net_err))#here backnet should return a new numpy 1d array
-		
+		"""
 		popul.set_list_chromo(np.array(lis))
 		#popul.set_fitness()
-def Backnet(ind,net_err,n_par=10,n_epochs=300):
-	weight_str=net_err.arr_of_net[ind]
-	hid_nodes=int(weight_str[0])
-	
-	outputdim=2####	COMPLETE SHIT BUT CAN'T HELP
-	inputdim=net_err.inputdim
-	
-	trainx=net_err.trainx
-	trainy=net_err.trainy
-	##very much 'net_err dependent the below part is , if net_err's trainy was a 1d array, below would be different
-	#print("in backnet",trainy)
-	if trainy.shape[1]==1:
-		newtrainy=np.zeros((trainy.shape[0],2))
-		for i in range(trainy.shape[0]):
-			newtrainy[i][int(trainy[i][0])]=1
 
-	else:
-		newtrainy=trainy
-	rest_setx,rest_sety=shared_dataset((trainx,newtrainy))#returns shared variable
-	del(trainx)
-	del(trainy)
-	del(newtrainy)
-	#here rest_sety, due to casting it is converted into tensor_variable, can only be accessed using function.
-	#fun=theano.function([],rest_sety)
-	#print(rest_setx.get_value(),fun())
-	par_size=int(rest_setx.get_value().shape[0]//n_par)
-	#print(par_size)
-	prmsdind=T.lscalar()
-	
-	
-	valid_x_to_be=rest_setx[prmsdind*par_size:(prmsdind+1)*par_size,:]
-	valid_y_to_be=rest_sety[prmsdind*par_size:(prmsdind+1)*par_size]
-	train_x_to_be=T.concatenate((rest_setx[:(prmsdind)*par_size,:],rest_setx[(prmsdind+1)*par_size:,:]),axis=0)
-	train_y_to_be=T.concatenate((rest_sety[:(prmsdind)*par_size],rest_sety[(prmsdind+1)*par_size:]))
-	fun=theano.function([prmsdind],valid_y_to_be)
-	#print("here",fun(0))
-	x = T.matrix('x')  # the data is presented as rasterized images
-	y = T.ivector('y')
-
-	classifier= tmlp.MLP(
-		    rng=rng,
-		    input=x,
-		    n_in=8,
-		    n_hidden=hid_nodes,
-		    n_out=2,			#this was important, I tried taking 1 gave fatal results, decided to fix this later.
-			weight_str=weight_str #unaltered string
-		)
-	cost = (
-		    classifier.mean_square_error(y)
-		    
-		)
-	validate_model = theano.function(
-	    inputs=[prmsdind],
-	    outputs=classifier.mean_square_error(y),
-	    givens={
-	        x: valid_x_to_be,
-	        y: valid_y_to_be
-	    }
-	)
-
-	# start-snippet-5
-	# compute the gradient of cost with respect to theta (sorted in params)
-	# the resulting gradients will be stored in a list gparams
-	gparams = [T.grad(cost, param) for param in classifier.params]
-
-	# specify how to update the parameters of the model as a list of
-	# (variable, update expression) pairs
-
-	# given two lists of the same length, A = [a1, a2, a3, a4] and
-	# B = [b1, b2, b3, b4], zip generates a list C of same size, where each
-	# element is a pair formed from the two lists :
-	#    C = [(a1, b1), (a2, b2), (a3, b3), (a4, b4)]
-	updates = [
-	    (param, param - learning_rate * gparam)
-	    for param, gparam in zip(classifier.params, gparams)
-	]
-
-	# compiling a Theano function `train_model` that returns the cost, but
-	# in the same time updates the parameter of the model based on the rules
-	# defined in `updates`
-	train_model = theano.function(
-	    inputs=[prmsdind],
-	    outputs=cost,
-	    updates=updates,
-	    givens={
-	        x: train_x_to_be,
-	        y: train_y_to_be 
-	        }
-	)
-
-	for i in range(n_epochs):
-		avrg=0
-		for ind in range(n_par):
-			trainerr=train_model(ind)
-		if i%10==0:
-			validerr=validate_model(ind)
-			avrg=(avrg*(ind)+validerr)/(ind+1)
-			print("		in training",i,avrg)
-	fir_weight=classifier.fir_weight.get_value()
-	fir_b=classifier.fir_b.get_value()
-	sec_weight=classifier.sec_weight.get_value()
-	sec_b=classifier.sec_b.get_value()
-	fullfirwei=np.concatenate((fir_weight,fir_b),axis=0).reshape(((inputdim+1)*hid_nodes,))
-	fullsecwei=np.concatenate((sec_weight,sec_b),axis=0).reshape(((hid_nodes+1)*ouptutdim,))
-
-	w_str=[float(hid_nodes)]+list(fullfirwei)+list(fullsecwei)
-	return np.array(w_str)
 
 
 def squa_test(x):

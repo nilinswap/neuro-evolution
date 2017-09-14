@@ -83,11 +83,11 @@ def give_datainshared():
     stdevs=np.std(traindata,axis=0)
     # standardize dataset
     standardize_dataset(traindata[:,:8],means,stdevs)
-    rest_setx=pimadata[:538,:8]#tuple of two shared variable of array
-    rest_sety=pimadata[:538,8:]
+    rest_setx=pimadata[:431,:8]#tuple of two shared variable of array
+    rest_sety=pimadata[:431,8:]
     rest_sety=rest_sety.reshape((rest_sety.shape[0],))
-    test_setx=pimadata[538:,:8]
-    test_sety=pimadata[538:,8:]
+    test_setx=pimadata[431:538,:8]
+    test_sety=pimadata[431:538,8:]
     test_sety=test_sety.reshape((test_sety.shape[0],))
     print(rest_sety.reshape((rest_sety.shape[0],)))
     srest_setx,srest_sety=shared_dataset((rest_setx,rest_sety))
