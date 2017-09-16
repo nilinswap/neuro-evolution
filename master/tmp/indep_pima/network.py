@@ -4,6 +4,7 @@ import theano
 import tmlp
 import theano.tensor as T
 import tmlp
+import time
 rng=np.random
 def sigmoid(arr):
 	return 1/(1+np.exp(-arr))
@@ -69,6 +70,13 @@ class Neterr:
 			output = np.dot(midout, sec_weight)
 			output = sigmoid(output)
 			er_arr = (1/2)*np.mean((output-self.trainy)**2)
+			"""import copy
+			p=copy.deepcopy(output)
+
+			q=copy.deepcopy(self.trainy)
+			p=p.ravel()
+			q=q.ravel()
+			er_arr=np.mean(-q*np.log(p))"""
 			lis.append(er_arr)
 		return np.array(lis)
 
@@ -82,10 +90,17 @@ class Neterr:
 		midout = np.concatenate((midout,-np.ones((midout.shape[0],1))),axis=1)
 		output = np.dot(midout,sec_weight)
 		output = sigmoid(output)
-		er_arr = (1/2)*np.mean((output-self.testy)**2)
+		for i in range(len(output)):
+			if output[i]>0.5:
+				output[i]=1
+			else:
+				output[i]=0
+		er_arr=np.mean(abs(output-self.testy))
+		#er_arr = (1/2)*np.mean((output-self.testy)**2)
+		
 		return er_arr
 
-	def modify_thru_backprop(self,popul,epochs=10,learning_rate=0.01):
+	def modify_thru_backprop(self,popul,epochs=100,learning_rate=0.01):
 		
 		y=T.ivector('y')
 		lis=[]
@@ -119,7 +134,8 @@ class Neterr:
 
 				    p=train_model()
 				    
-				    #print("in back  training",p)
+				    print("in back  training",i,hid_nodes,p)
+				    
 				print("here sub testing",test_model())
 				lis.append(fullnet.turn_weights_into_chromosome())
 
@@ -128,6 +144,7 @@ class Neterr:
 			lis.append(Backnet(i,popul.net_err))#here backnet should return a new numpy 1d array
 		"""
 		popul.set_list_chromo(np.array(lis))
+		
 		#popul.set_fitness()
 
 

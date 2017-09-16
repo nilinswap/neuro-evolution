@@ -99,6 +99,13 @@ class MLP:
 
     def cost_func(self,y):
         return 0.5*T.mean((y-self.output.ravel())**2)
+    def newcost_func(self,y):
+        z=self.output.ravel()
+        results,updates=theano.scan(fn=lambda p,q:- p*T.log(q),sequences=[y,z])
+        #fun=theano.function([y,z],T.mean(results))
+
+
+        return T.mean(results)  
     def find_error(self,y):
         p=self.toutput.ravel()
         results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=p)
