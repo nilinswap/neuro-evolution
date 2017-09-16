@@ -112,10 +112,13 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 				mutated[x] += vary
 		return mutated
 	
-	def terminate(self,popul,nowgoback=4):
+	def terminate(self,popul,nowgoback=100):
 		self.counter += 1
-		if self.counter%nowgoback==0:
-			popul.net_err.modify_thru_backprop(popul ,epochs=100,learning_rate=0.1)#this modifies almost all the string #RTC required here
+		if self.counter%nowgoback==4:
+			#print("here before",(popul.list_chromo))
+			popul.net_err.modify_thru_backprop(popul ,epochs=200,learning_rate=0.1)#this modifies almost all the string #RTC required here
+			#print("here after",popul.list_chromo[:5])
+			
 			pass
 		#print("here in term",popul.list_chromo[:2])
 		#f = sorted(fits_populations, reverse = True)
@@ -141,7 +144,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		if self.counter >= self.limit:
 			#print("Best fitness achieved: " + str(self.best))
 			#print(type(self.best[1]))
-			print("sub-finally ", popul.net_err.test(f[0]))
+			print("sub-finally ", popul.net_err.test(self.best[0]))
 			self.counter=0
 			return True
 		return False

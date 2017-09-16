@@ -75,7 +75,13 @@ class Neterr:
 		midout = np.concatenate((midout,-np.ones((midout.shape[0],1))),axis=1)
 		output = np.dot(midout,sec_weight)
 		output = sigmoid(output)
-		er_arr = (1/2)*np.mean((output-self.testy)**2)
+		for i in range(len(output)):
+			if output[i]>0.5:
+				output[i]=1
+			else:
+				output[i]=0
+		print(output.shape,self.testy.shape,output-self.testy)
+		er_arr = np.mean(abs(output-self.testy))
 		return er_arr
 
 	def modify_thru_backprop(popul):
