@@ -17,24 +17,6 @@ def binsear(p,arr):
 
 state=0
 
-def RoulWheel(arr):
-	
-	sumarr=[0]
-
-	for i in range(len(arr)):
-		sumarr.append(sumarr[i]+arr[i])
-	n=len(arr)//2
-	global state
-	np.random.seed(state)#this was important so that the random stream does not run out .... may be 
-	#RANDOM COULD BE A PROBLEM, AND ITS SEEDING. 
-	state+=1
-	
-	for j in range(n):
-		r = np.random.uniform(0,sumarr[-1],2)#gen_randuniform(0,sumarr[-1],2)
-		chosenind1=binsear(r[0],sumarr)
-		chosenind2=binsear(r[1],sumarr)
-		yield (chosenind1,chosenind2)
-
 def roul_wheel(sumarr):
 		#r = np.random.uniform(0,sumarr[-1],1)
 		#return binsear(r,fit)
@@ -82,20 +64,6 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		child1=np.concatenate((np.array([hid_nodes]),child1))		
 		child2=np.concatenate((np.array([hid_nodes]),child2))
 		return (child1, child2)
-	def RankRoulWheel(self,popul):
-		ar=np.arange(0,popul.size)
-		if not len(popul.fits_pops):
-				popul.set_fitness()
-		
-		par=list(-popul.fits_pops)
-		listup=list(zip(list(ar),par))
-		listup.sort(key=lambda x: x[1])
-		for  tup in RoulWheel(ar):
-			yield popul.list_chromo[listup[tup[0]][0]],popul.list_chromo[listup[tup[1]][0]]
-
-	
-		
-		
 		
 	def selection(self,popul):
 		father=popul.list_chromo[popul.sortedlistup[roul_wheel(popul.sumar)][0]]
