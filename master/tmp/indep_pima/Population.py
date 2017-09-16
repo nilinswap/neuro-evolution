@@ -1,32 +1,31 @@
 import numpy as np
 import network
 import pimadataf
+
 def givesumar(size):
 		ar=[0]
 		for i in range(1,size+1):
 			ar+=[ar[i-1]+i]
 		return ar
+
 class Population(object):
 	"""Class to create population object, and handle its methods"""
-	#list_chromo = []
-	#fits_pops = []
 
-	def __init__(self,max_no_of_hidden_units,dimtup, size=5,limittup=(-1,1)):
-		
-		
+	def __init__(self, max_hidden_units, size=5, limittup=(-1,1)):
 		self.size = size
-		self.max_no_of_hidden_units=max_no_of_hidden_units
-		self.dimtup=dimtup
-		self.list_chromo = self.aux_pop(size,limittup)#a numpy array
-		self.fits_pops=[]
+		self.max_hidden_units = max_hidden_units
+		self.list_chromo = self.aux_pop(size, limittup) #a numpy array
+		self.fits_pops = []
 
-		rest_set, test_set = pimadataf.give_data()#one time thing #RTC required here
+		self.dimtup = pimadataf.get_dimension()
+		rest_set, test_set = pimadataf.give_data() #one time thing #RTC required here
+		tup = pimadataf.give_datainshared()
+		
 		self.trainx = rest_set[0]
 		self.trainy = rest_set[1]
-		#print("hmm",self.trainy)
 		self.testx = test_set[0]
 		self.testy = test_set[1]
-		tup=pimadataf.give_datainshared()
+		
 		self.strainx,self.strainy=tup[0]
 		self.stestx,self.stesty=tup[1]
 		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy,strainx=self.strainx,strainy=self.strainy,stestx=self.stestx,stesty=self.stesty)
@@ -68,11 +67,11 @@ class Population(object):
 		population = []
 		inputdim=self.dimtup[0]
 		outputdim=self.dimtup[1]
-		for i in range(1,self.max_no_of_hidden_units+1):
-			for j in range(size//self.max_no_of_hidden_units):
+		for i in range(1,self.max_hidden_units+1):
+			for j in range(size//self.max_hidden_units):
 				population.append(np.concatenate([[i],np.random.uniform(limittup[0],limittup[1],((inputdim+1)*i + (i+1)*outputdim))]))
 
-		for i in range(1,size%self.max_no_of_hidden_units+1):
+		for i in range(1,size%self.max_hidden_units+1):
 			population.append(np.concatenate([[i],np.random.uniform(limittup[0],limittup[1],((inputdim+1)*i + (i+1)*outputdim))]))
 		return np.array(population)
 	def set_list_chromo(self,newlist_chromo):
@@ -109,7 +108,6 @@ def main():
 	pop=Population(4,dimtup,size=9)
 
 	print(pop.list_chromo)
-	#print()
 	pop.set_fitness()
 	print(pop.fits_pops)
 	print(pop.k_dict)
