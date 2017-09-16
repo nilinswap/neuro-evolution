@@ -2,7 +2,13 @@
 import theano
 import theano.tensor as T
 import numpy as np
-import pylab as pl
+#import pylab as pl
+
+def get_dimension():
+    in_dem = 8
+    out_dem = 1
+    return (in_dem, out_dem)
+
 def myrange(start,end,step):
     i=start
     while i+step < end:
