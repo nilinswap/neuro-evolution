@@ -12,38 +12,37 @@ class Population(object):
 	"""Class to create population object, and handle its methods"""
 
 	def __init__(self, max_hidden_units, size=5, limittup=(-1,1)):
+		self.dimtup = pimadataf.get_dimension()
+		rest_set, test_set = pimadataf.give_data()
+		tup = pimadataf.give_datainshared()
+
 		self.size = size
 		self.max_hidden_units = max_hidden_units
 		self.list_chromo = self.aux_pop(size, limittup) #a numpy array
 		self.fits_pops = []
-
-		self.dimtup = pimadataf.get_dimension()
-		rest_set, test_set = pimadataf.give_data() #one time thing #RTC required here
-		tup = pimadataf.give_datainshared()
-		
+				
 		self.trainx = rest_set[0]
 		self.trainy = rest_set[1]
 		self.testx = test_set[0]
 		self.testy = test_set[1]
 		
-		self.strainx,self.strainy=tup[0]
-		self.stestx,self.stesty=tup[1]
-		self.net_err=network.Neterr(inputdim=self.dimtup[0],outputdim=self.dimtup[1],arr_of_net=self.list_chromo,trainx=self.trainx,trainy=self.trainy,testx=self.testx,testy=self.testy,strainx=self.strainx,strainy=self.strainy,stestx=self.stestx,stesty=self.stesty)
-		self.net_dict={}#dictionary of networks for back-propagation, one for each n_hid
+		self.strainx, self.strainy = tup[0]
+		self.stestx, self.stesty = tup[1]
+		self.net_err = network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo, trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
+		self.net_dict={} #dictionary of networks for back-propagation, one for each n_hid
 	
 	def create_dict(self):
 		k_dict = {}
-		par=list(-self.fits_pops)
-		ar=np.arange(0,self.size)
-		sumar=[0]
-		for i in range(1,self.size+1):
+		par = list(-self.fits_pops)
+		ar = np.arange(0,self.size)
+		sumar = [0]
+		for i in range(1, self.size+1):
 			sumar.append(sumar[i-1]+i)
-		self.sumar=sumar
-		listup=list(zip(list(ar),par))
+		self.sumar = sumar
+		listup = list(zip(list(ar),par))
 		listup.sort(key=lambda x: x[1])
-		self.sortedlistup=listup
-		sum_dict={}
-		#sum_fit=[0]
+		self.sortedlistup = listup
+		sum_dict = {}
 		for i in range(len(self.list_chromo)):
 			#sum_fit.append(sum(sum_fit)+self.fits_pops[i])
 			if int(self.list_chromo[i][0]) in k_dict:
