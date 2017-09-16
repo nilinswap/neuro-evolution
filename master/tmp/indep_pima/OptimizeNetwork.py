@@ -18,14 +18,7 @@ def binsear(p,arr):
 state=0
 
 def roul_wheel(sumarr):
-		#r = np.random.uniform(0,sumarr[-1],1)
-		#return binsear(r,fit)
-		#ar=np.arange(0,size)
-		#sumarr=[0]
-
-		#for i in range(len(arr)):
-		#	sumarr.append(sumarr[i]+arr[i])
-		#n=len(arr)//2
+	
 		global state
 		np.random.seed(state)#this was important so that the random stream does not run out .... may be 
 		#RANDOM COULD BE A PROBLEM, AND ITS SEEDING. 
@@ -83,15 +76,9 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def terminate(self,popul,nowgoback=100):
 		self.counter += 1
 		if self.counter%nowgoback==4:
-			#print("here before",(popul.list_chromo))
-			popul.net_err.modify_thru_backprop(popul ,epochs=200,learning_rate=0.1)#this modifies almost all the string #RTC required here
-			#print("here after",popul.list_chromo[:5])
-			
-			pass
-		#print("here in term",popul.list_chromo[:2])
-		#f = sorted(fits_populations, reverse = True)
-		f = popul.get_best()# a tuple with first being x and second being fitness
-		print(f[0][0])
+			popul.net_err.modify_thru_backprop(popul ,epochs=200,learning_rate=0.1)
+		f = popul.get_best() # a tuple with first being x and second being fitness
+
 		if f[1] < self.best[1]:
 			self.best = (f[0],f[1])
 
@@ -101,18 +88,14 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 			self.prob_mutation = 0.02
 
 		if self.counter % 10 == 0:
-			#fits = [f for f, ch in fits_populations]
 			best = f[1]
 			ave = popul.get_average()
 			print(
 				"[G %3d] score=(%.4f, %.4f) for %d hidden nodes" %
 				(self.counter, best, ave, f[0][0]))
-			#print(popul.k_dict.keys())
 
 		if self.counter >= self.limit:
-			#print("Best fitness achieved: " + str(self.best))
-			#print(type(self.best[1]))
-			print("sub-finally ", popul.net_err.test(self.best[0]))
+			print("Result: ", popul.net_err.test(self.best[0]))
 			self.counter=0
 			return True
 		return False

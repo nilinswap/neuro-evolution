@@ -1,4 +1,3 @@
-#network.py
 import numpy as np
 import theano
 import tmlp
