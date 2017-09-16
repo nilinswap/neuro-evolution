@@ -147,7 +147,7 @@ class MLP:
 		self.input=self.trainx
 		self.tinput=self.testx
 		lin_midout=T.dot(self.input,self.w1)+self.b1
-		midout=T.tanh(lin_midout)
+		midout=T.nnet.sigmoid(lin_midout)
 		
 		
 		lin_out=T.dot(midout,self.w2)+self.b2
@@ -155,7 +155,7 @@ class MLP:
 		self.output=output
 
 		tlin_midout=T.dot(self.tinput,self.w1)+self.b1
-		tmidout=T.tanh(tlin_midout)
+		tmidout=T.nnet.sigmoid(tlin_midout)
 		
 		
 		tlin_out=T.dot(tmidout,self.w2)+self.b2
