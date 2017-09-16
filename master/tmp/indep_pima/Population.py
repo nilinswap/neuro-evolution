@@ -1,5 +1,5 @@
 import numpy as np
-import network
+import Network
 import pimadataf
 
 def givesumar(size):
@@ -28,7 +28,7 @@ class Population(object):
 		
 		self.strainx, self.strainy = tup[0]
 		self.stestx, self.stesty = tup[1]
-		self.net_err = network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo, trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
+		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo, trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
 		self.net_dict={} #dictionary of networks for back-propagation, one for each n_hid
 	
 	def create_dict(self):
@@ -79,7 +79,7 @@ class Population(object):
 		del(p)
 
 	def set_fitness(self):
-		self.net_err = network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo, trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
+		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo, trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
 		fitness_func = self.net_err.feedforward
 		self.fits_pops = fitness_func()#another np array
 		self.create_dict()
@@ -110,8 +110,8 @@ def main():
 	print(pop.sortedlistup)
 	print(pop.sumar)
 	print(pop.sum_dict)
-	neter = network.Neterr(dimtup[0],dimtup[1],pop.list_chromo,pop.trainx,pop.trainy,pop.testx,pop.testy)
-	network.Backnet(4,neter)
+	neter = Network.Neterr(dimtup[0],dimtup[1],pop.list_chromo,pop.trainx,pop.trainy,pop.testx,pop.testy)
+	Network.Backnet(4,neter)
 
 if __name__=='__main__':
 	main()
