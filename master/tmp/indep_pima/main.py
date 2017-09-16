@@ -9,6 +9,5 @@ def main():
 
 	popul = Population.Population(max_hidden_units=17, size=200, limittup=(-3,3))
 	ONet.run(popul)
-	print(ONet.best)
 
 main()
