@@ -13,8 +13,8 @@ class Population(object):
 
 	def __init__(self,rng, max_hidden_units, size=5, limittup=(-1,1)):
 		self.dimtup = pimadataf.get_dimension()
-		rest_set, test_set = pimadataf.give_data(rng)
-		tup = pimadataf.give_datainshared(rng)
+		rest_set, test_set = pimadataf.give_data()
+		tup = pimadataf.give_datainshared()
 		self.rng=rng
 		self.size = size
 		self.max_hidden_units = max_hidden_units
