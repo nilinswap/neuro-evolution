@@ -8,7 +8,6 @@ n_in=8
 n_out=1
 n_hid=120
 class MLP:
-<<<<<<< HEAD
 	def __init__(self,n_in,n_out,n_hid,trainx,trainy,testx,testy):
 
 		W_values = np.asarray(
@@ -105,7 +104,7 @@ class MLP:
 		results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=p)
 
 		return (T.mean(abs(results-y)))
-=======
+
     def __init__(self,n_in,n_out,n_hid,trainx,trainy,testx,testy):
 
         W_values = np.asarray(
@@ -209,7 +208,7 @@ class MLP:
         results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=p)
 
         return (T.mean(abs(results-y)))
->>>>>>> acc8af24a0c4772c4da35b85776d04c87dead104
+
 def main():
 	lis=pimadataf.give_datainshared()
 		
