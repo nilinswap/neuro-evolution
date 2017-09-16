@@ -21,7 +21,7 @@ def standardize_dataset(traindata, means, stdevs):
             row[i] = (row[i] - means[i])
             if stdevs[i]:
                 row[i]/=stdevs[i]
-def give_data():
+def give_data(rng):
     #1. make iris.data in usable form
     #2. make input set and output set out of it
     #3. make setpool out of the dataset
@@ -33,7 +33,7 @@ def give_data():
     
     pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
     
-    np.random.shuffle(pimadata)
+    rng.shuffle(pimadata)
     
     nin =8;
     nout=2;
@@ -75,10 +75,10 @@ def shared_dataset(data_xy, borrow=True):
         # ``shared_y`` we will have to cast it to int. This little hack
         # lets ous get around this issue
         return shared_x, T.cast(shared_y, 'int32')
-def give_datainshared():
+def give_datainshared(rng):
     pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
     
-    np.random.shuffle(pimadata)
+    rng.shuffle(pimadata)
     
     nin =8;
     nout=1;

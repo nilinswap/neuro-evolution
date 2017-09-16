@@ -5,7 +5,7 @@ import tmlp
 import theano.tensor as T
 import tmlp
 import time
-rng=np.random
+
 def sigmoid(arr):
 	return 1/(1+np.exp(-arr))
 def shared_dataset(data_xy, borrow=True):
@@ -65,7 +65,7 @@ class Neterr:
 			sec_weight = self.arr_of_net[i][((self.inputdim+1)*hid_nodes)+1:].reshape((hid_nodes+1), self.outputdim)
 			trainx = np.concatenate((self.trainx,-np.ones((self.trainx.shape[0],1))),axis=1)
 			midout = np.dot(trainx,fir_weight)
-			midout = sigmoid(midout)
+			midout = np.tanh(midout)
 			midout = np.concatenate((midout, -np.ones((midout.shape[0],1))), axis=1)
 			output = np.dot(midout, sec_weight)
 			output = sigmoid(output)
@@ -86,7 +86,7 @@ class Neterr:
 		sec_weight = weight_arr[(self.inputdim+1)*hid_nodes+1:].reshape((hid_nodes+1),self.outputdim)
 		testx = np.concatenate((self.testx,-np.ones((self.testx.shape[0],1))),axis=1)
 		midout = np.dot(testx,fir_weight)
-		midout = sigmoid(midout)
+		midout = np.tanh(midout)
 		midout = np.concatenate((midout,-np.ones((midout.shape[0],1))),axis=1)
 		output = np.dot(midout,sec_weight)
 		output = sigmoid(output)

@@ -11,11 +11,11 @@ def givesumar(size):
 class Population(object):
 	"""Class to create population object, and handle its methods"""
 
-	def __init__(self, max_hidden_units, size=5, limittup=(-1,1)):
+	def __init__(self,rng, max_hidden_units, size=5, limittup=(-1,1)):
 		self.dimtup = pimadataf.get_dimension()
-		rest_set, test_set = pimadataf.give_data()
-		tup = pimadataf.give_datainshared()
-
+		rest_set, test_set = pimadataf.give_data(rng)
+		tup = pimadataf.give_datainshared(rng)
+		self.rng=rng
 		self.size = size
 		self.max_hidden_units = max_hidden_units
 		self.list_chromo = self.aux_pop(size, limittup) #a numpy array
@@ -66,10 +66,10 @@ class Population(object):
 		outputdim = self.dimtup[1]
 		for i in range(1, self.max_hidden_units+1):
 			for j in range(size//self.max_hidden_units):
-				population.append(np.concatenate([[i], np.random.uniform(limittup[0],limittup[1], ((inputdim+1)*i + (i+1)*outputdim))]))
+				population.append(np.concatenate([[i], self.rng.uniform(limittup[0],limittup[1], ((inputdim+1)*i + (i+1)*outputdim))]))
 
 		for i in range(1,size%self.max_hidden_units+1):
-			population.append(np.concatenate([[i], np.random.uniform(limittup[0], limittup[1], ((inputdim+1)*i + (i+1)*outputdim))]))
+			population.append(np.concatenate([[i], self.rng.uniform(limittup[0], limittup[1], ((inputdim+1)*i + (i+1)*outputdim))]))
 		return np.array(population)
 
 	def set_list_chromo(self,newlist_chromo):

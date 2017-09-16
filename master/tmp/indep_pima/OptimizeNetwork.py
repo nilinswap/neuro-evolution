@@ -1,6 +1,6 @@
 import GeneticFunctions
 import numpy as np
-import random
+#import random
 import Population
 
 def binsear(p,arr):
@@ -17,7 +17,8 @@ def binsear(p,arr):
 
 state=0
 
-def roul_wheel(sumarr):
+def roul_wheel(rng,sumarr):
+		
 		#r = np.random.uniform(0,sumarr[-1],1)
 		#return binsear(r,fit)
 		#ar=np.arange(0,size)
@@ -26,20 +27,16 @@ def roul_wheel(sumarr):
 		#for i in range(len(arr)):
 		#	sumarr.append(sumarr[i]+arr[i])
 		#n=len(arr)//2
-		global state
-		np.random.seed(state)#this was important so that the random stream does not run out .... may be 
-		#RANDOM COULD BE A PROBLEM, AND ITS SEEDING. 
-		state+=1
 		
 		
-		r = np.random.uniform(0,sumarr[-1],1)#gen_randuniform(0,sumarr[-1],2)
+		r = rng.uniform(0,sumarr[-1],1)#gen_randuniform(0,sumarr[-1],2)
 		chosenind1=binsear(r,sumarr)
 		
 		return chosenind1
 
 		
 class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
-	def __init__(self, limit=500,switch_iter=200 , prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
+	def __init__(self,rng, limit=500,switch_iter=200 , prob_crossover=0.9, prob_mutation=0.2,scale_mutation=0.33333):
 		self.counter = 0
 		self.limit = limit
 		self.prob_crossover = prob_crossover
@@ -49,6 +46,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		self.best = ([],np.inf, 0) #Add in class diagrams
 		self.fits_pops = None
 
+		self.rng=rng
 	def probability_crossover(self):
 		return self.prob_crossover
 
@@ -58,7 +56,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def crossover(self, parents):
 		father, mother = parents
 		hid_nodes=father[0]
-		alpha = random.uniform(0,1)
+		alpha = self.rng.uniform(0,1)
 		child1 = alpha*father[1:]+(1-alpha)*mother[1:]
 		child2 = alpha*mother[1:]+(1-alpha)*father[1:]
 		child1=np.concatenate((np.array([hid_nodes]),child1))		
@@ -66,17 +64,17 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		return (child1, child2)
 		
 	def selection(self,popul):
-		father=popul.list_chromo[popul.sortedlistup[roul_wheel(popul.sumar)][0]]
+		father=popul.list_chromo[popul.sortedlistup[roul_wheel(self.rng,popul.sumar)][0]]
 		#mother_i=popul.k_dict[father[0]][popul.k_dict[roul_wheel(popul.sum_dict[father[0]])]]
-		mother_i=popul.k_dict[father[0]][roul_wheel(popul.sum_dict[father[0]])]
+		mother_i=popul.k_dict[father[0]][roul_wheel(self.rng,popul.sum_dict[father[0]])]
 		mother = popul.list_chromo[mother_i]
 		return (father, mother)
 
 	def mutation(self, chromosome):
 		mutated = chromosome
 		for x in range(1,len(chromosome)):
-			if np.random.random() < self.prob_mutation:
-				vary = np.random.normal()*self.scale_mutation
+			if self.rng.random() < self.prob_mutation:
+				vary = self.rng.normal()*self.scale_mutation
 				mutated[x] += vary
 		return mutated
 	
