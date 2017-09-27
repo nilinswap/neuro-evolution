@@ -55,22 +55,22 @@ class HiddenLayer(object):
         #        We have no info for other function, so we use the same as
         #        tanh.
         if W is None:
-            W_values = numpy.asarray(
+            W_values = np.asarray(
                 rng.uniform(
-                    low=-numpy.sqrt(6. / (n_in + n_out)),
-                    high=numpy.sqrt(6. / (n_in + n_out)),
+                    low=-np.sqrt(6. / (n_in + n_out)),
+                    high=np.sqrt(6. / (n_in + n_out)),
                     size=(n_in, n_out)
                 ),
                 dtype='float64'
             )
-            if activation == theano.tensor.nnet.sigmoid:
+            if activation == tf.nn.sigmoid:
                 W_values *= 4
 
-            W = tf.Varible(initial_value=W_values, name='W', dtype='float64')
+            W = tf.Variable(initial_value=W_values, name='W', dtype='float64')
 
         if b is None:
-            b_values = numpy.zeros((n_out,))
-            b = tf.Varible(initial_value=b_values, name='b', dtype='float64')
+            b_values = np.zeros((n_out,))
+            b = tf.Variable(initial_value=b_values, name='b', dtype='float64')
 
         self.W = W
         self.b = b

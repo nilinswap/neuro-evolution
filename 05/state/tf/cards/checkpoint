@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/robita/forgit/neuro-evolution/05/state/tf/cards/model.ckpt"
+all_model_checkpoint_paths: "/home/robita/forgit/neuro-evolution/05/state/tf/cards/model.ckpt"

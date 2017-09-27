@@ -123,7 +123,7 @@ def load_data(dataset):
                         if stdevs[i]:
                             row[i]/=stdevs[i]
             standardize_dataset(traindata[:,:15],means,stdevs)
-            print(featarr[:,15])
+            
             return featarr,mislis
         else:
             print("file could not be loaded")
@@ -135,9 +135,14 @@ def load_data(dataset):
     test_set=featarr[:133,:15],featarr[:133,15]#keeping test set aside
     rest_set=featarr[133:,:15],featarr[133:,15]# have to apply cross-validation on the rest
 
-    
+    print("test",test_set[0].shape,"rest",rest_set[0].shape)
 
     
 
     rval = [test_set,rest_set,mislis]
     return rval
+
+def main():
+    load_data('cards.data')
+if __name__=='__main__':
+    main()

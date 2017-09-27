@@ -12,7 +12,7 @@ import timeit
 import numpy 
 from tf_logreglayer import LogisticRegression
 import theano
-import theano.tensor as T
+import tensorflow as tf
 import tf_hiddenlayer
 class MLP(object):
     """Multi-Layer Perceptron Class
