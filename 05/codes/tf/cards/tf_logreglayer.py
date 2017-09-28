@@ -57,6 +57,7 @@ class LogisticRegression(object):
         self.input = input
 
     
+        
 
     def negative_log_likelihood(self, y):
        
@@ -65,7 +66,8 @@ class LogisticRegression(object):
        q=tf.scan(fn=func,elems=y,initializer=[dadum,dadum])
        z=tf.transpose(tf.stack([q[0],q[1]]))
        print("hello---------------------------")
-       w=tf.scan(fn=(lambda last,current: tf.log(self.p_y_given_x[current[0]][current[1]])),elems=z,initializer=dum)
+       w=tf.scan(lambda last,current: tf.log(self.p_y_given_x[current[0]][current[1]]),elems=z,initializer=dum)
+       #print(-tf.reduce_mean(w))
        return -tf.reduce_mean(w)
         
 

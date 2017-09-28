@@ -81,18 +81,20 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	cost = tf.add(
 	    classifier.negative_log_likelihood(y)
 	    ,L1_reg * classifier.L1
-	    ,L2_reg * classifier.L2_sqr
+	    #,L2_reg * classifier.L2_sqr
 	)
 
-	
+	print(cost)
 
 	optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost,var_list=[valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be])
-
+	zhero=0
 	with tf.Session() as sess:
+		
 		savo.restore(sess, "/home/robita/forgit/neuro-evolution/05/state/tf/cards/model.ckpt")
+		sess.run([classifier.logRegressionLayer.W.initializer,classifier.logRegressionLayer.b.initializer,classifier.hiddenLayer.W.initializer,classifier.hiddenLayer.b.initializer])
 		print("------------------------------------------------------------------")
 		print(sess.run([valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be],feed_dict={prmsdind:0}))
-	
+		print(sess.run(cost,feed_dict={x:train_x_to_be.eval(feed_dict={prmsdind:zhero}),y:train_y_to_be.eval(feed_dict={prmsdind:zhero})}))
 
 		#cool thing starts from here ->
 	    ######################
@@ -101,12 +103,13 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 
 		print('...building the model')
 
-		
+	"""	
 		for epoch in range(n_epochs):
 			for ind in range(n_par):
 				sess.run([optmzr,cost],feed_dict={prmsdind:ind,x:train_x_to_be,y:train_y_to_be})
 			if epoch%10==0:
 				print(sess.run([classifier.errors(y)],feed_dict={prmsdind:ind,x:valid_x_to_be,y:valid_y_to_be}))
+	"""	
 		#setting condition to increase frequency of validation with epochs done as first thing inside 'i in n_epochs' loop
 	"""
 		epo=T.lscalar()
