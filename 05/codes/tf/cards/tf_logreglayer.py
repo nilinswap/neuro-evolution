@@ -15,6 +15,8 @@ import numpy as np
 import tensorflow as tf
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+def func(last,current):
+        return [last[0]+1,current]
 
 class LogisticRegression(object):
     """Multi-class Logistic Regression Class
@@ -54,15 +56,17 @@ class LogisticRegression(object):
         # keep track of model input
         self.input = input
 
+    
+
     def negative_log_likelihood(self, y):
-       lis=[]
-
-       for i in range(len(y)):
-
-            tup=(i,y[i])
-            
-            lis.append(tup)
-       return -tf.reduce_mean([tf.log(self.p_y_given_x[p][q]) for p,q in lis])
+       
+       dum=tf.constant(0.5,dtype=tf.float64) #dum for dummy
+       dadum=tf.constant(-1,dtype=tf.int32)
+       q=tf.scan(fn=func,elems=y,initializer=[dadum,dadum])
+       z=tf.transpose(tf.stack([q[0],q[1]]))
+       print("hello---------------------------")
+       w=tf.scan(fn=(lambda last,current: tf.log(self.p_y_given_x[current[0]][current[1]])),elems=z,initializer=dum)
+       return -tf.reduce_mean(w)
         
 
     def errors(self, y):

@@ -64,7 +64,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	# allocate symbolic variables for the data
 		#index = T.lscalar()  # index to a [mini]batch
 	x = tf.placeholder(dtype=tf.float64,name='x',shape=[None,nin]) 
-	y = tf.placeholder(dtype=tf.int32,name='y')  
+	y = tf.placeholder(dtype=tf.int32,name='y',shape=[None,])  
 
 	rng = np.random.RandomState(1234)
 
