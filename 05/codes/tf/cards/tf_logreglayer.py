@@ -38,13 +38,15 @@ class LogisticRegression(object):
             borrow=True
         )
         """
-        self.W=tf.Variable(initial_value=np.zeros((n_in, n_out)),  name='W', dtype='float64')
+        self.W=tf.Variable(initial_value=np.random.random((n_in, n_out)),  name='W', dtype='float64')
         # initialize the biases b as a vector of n_out 0s
-        self.b = tf.Variable(initial_value=np.zeros(( n_out,)),  name='b', dtype='float64')
+        self.b = tf.Variable(initial_value=np.random.random(( n_out,)),  name='b', dtype='float64')
 
-        
-        self.p_y_given_x = tf.nn.softmax(tf.add(tf.matmul(input, self.W),self.b))
+        if int(self.b.shape[0])!=1:
 
+            self.p_y_given_x = tf.nn.softmax(tf.add(tf.matmul(input, self.W),self.b))
+        else:
+            self.p_y_given_x = tf.nn.sigmoid(tf.add(tf.matmul(input, self.W),self.b))
         # symbolic description of how to compute prediction as class whose
         # probability is maximal
         half=tf.constant(0.5,dtype=self.p_y_given_x.dtype)
@@ -55,8 +57,9 @@ class LogisticRegression(object):
             dadum=tf.constant(0.5,dtype=self.p_y_given_x.dtype)
             q=tf.scan(lambda last,current: current[0],elems=self.p_y_given_x,initializer=dadum)
             s=tf.scan(lambda y,x: tf.greater_equal(x,half),elems=q,initializer=False)
+            print("herehrerhehrehrehrehrhe",s)
             #print("hi",s)
-            self.Y_pred=tf.cast(s,dtype=tf.int32)
+            self.y_pred=tf.cast(s,dtype=tf.int32)
 
         # end-snippet-1
 
@@ -70,16 +73,27 @@ class LogisticRegression(object):
         
 
     def negative_log_likelihood(self, y):
-       
-       dum=tf.constant(0.5,dtype=tf.float64) #dum for dummy
-       dadum=tf.constant(-1,dtype=tf.int32)# dum-dadum-dadum mast h
-       q=tf.scan(fn=func,elems=y,initializer=[dadum,dadum])
-       z=tf.transpose(tf.stack([q[0],q[1]]))
-       #print("hello---------------------------")
-       w=tf.scan(lambda last,current: tf.log(self.p_y_given_x[current[0]][current[1]]),elems=z,initializer=dum)
-       #print(-tf.reduce_mean(w))
-       return -tf.reduce_mean(w)
-        
+        if int(self.b.shape[0])!=1: 
+           dum=tf.constant(0.5,dtype=tf.float64) #dum for dummy
+           dadum=tf.constant(-1,dtype=tf.int32)# dum-dadum-dadum mast h
+           q=tf.scan(fn=func,elems=y,initializer=[dadum,dadum])
+           z=tf.transpose(tf.stack([q[0],q[1]]))
+           #print("hello---------------------------")
+           w=tf.scan(lambda last,current: tf.log(self.p_y_given_x[current[0]][current[1]]),elems=z,initializer=dum)
+           #print(-tf.reduce_mean(w))
+           return -tf.reduce_mean(w)
+        else:
+
+            dum=tf.constant(0.5,dtype=tf.float64)
+            minusone=tf.constant(-1,dtype=tf.int32)
+            one=tf.constant(1,dtype=y.dtype)
+            r=tf.scan(lambda last,current:last+1,elems=y,initializer=minusone)
+
+            w=tf.scan(lambda last,current: tf.add(tf.multiply(tf.cast(y[current],dtype=self.p_y_given_x.dtype),tf.log(self.p_y_given_x[current][0])),tf.multiply(tf.cast(tf.add(one,-y[current]),dtype=self.p_y_given_x.dtype),tf.log(tf.add(tf.cast(one,dtype=self.p_y_given_x.dtype),-self.p_y_given_x[current][0])))),elems=r,initializer=dum)
+            z=-tf.reduce_mean(w)
+            return z
+
+
 
     def errors(self, y):
         """Return a float representing the number of errors in the minibatch

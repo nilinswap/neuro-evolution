@@ -24,7 +24,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	restn=520
 	testn=133
 	nin=15
-	nout=2
+	nout=1
 	rest_setx=tf.Variable(initial_value=np.zeros((restn,nin)),name='rest_setx',dtype=tf.float64)
 	rest_sety=tf.Variable(initial_value=np.zeros((restn,)),name='rest_sety',dtype=tf.int32)
 	test_setx=tf.Variable(initial_value=np.zeros((testn,nin)),name='rest_sety',dtype=tf.float64)
@@ -96,8 +96,9 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 		sess.run([classifier.logRegressionLayer.W.initializer,classifier.logRegressionLayer.b.initializer,classifier.hiddenLayer.W.initializer,classifier.hiddenLayer.b.initializer])
 		#print("------------------------------------------------------------------")
 		#print(sess.run([valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be],feed_dict={prmsdind:0}))
-		print(sess.run(cost,feed_dict={x:train_x_to_be.eval(feed_dict={prmsdind:zhero}),y:train_y_to_be.eval(feed_dict={prmsdind:zhero})}))
-		print("herehrerhehrehrehrehrhe")
+		
+		print(sess.run([cost],feed_dict={x:train_x_to_be.eval(feed_dict={prmsdind:zhero}),y:train_y_to_be.eval(feed_dict={prmsdind:zhero})}))
+		
 		#cool thing starts from here ->
 	    ######################
 	    # BUILD ACTUAL MODEL #
@@ -115,6 +116,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 				print(sess.run([classifier.errors(y)],feed_dict={x:valid_x_to_be.eval(feed_dict={prmsdind:ind}),y:valid_y_to_be.eval(feed_dict={prmsdind:ind})}))
 		
 		print("testing",sess.run(classifier.errors(y),feed_dict={x:test_setx.eval(),y:test_sety.eval()}))
+	
 		#setting condition to increase frequency of validation with epochs done as first thing inside 'i in n_epochs' loop
 	"""
 		epo=T.lscalar()
