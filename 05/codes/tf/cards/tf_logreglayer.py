@@ -82,16 +82,23 @@ class LogisticRegression(object):
         """
 
         # check if y has same dimension of y_pred
-        if y.ndim != len(self.y_pred.shape):
+        """if len(y.shape) != len(self.y_pred.shape):
             raise TypeError(
                 'y should have the same shape as self.y_pred',
                 ('y', y.type, 'y_pred', self.y_pred.type)
             )
+        """
         # check if y is of the correct datatype
+
         if y.dtype:
             # the T.neq operator returns a vector of 0s and 1s, where 1
             # represents a mistake in prediction
-            return reduce((lambda p,q: p+q),[1 for i in range(len(y)) if self.y_pred[i]!=y[i]])/len(y)
+            r=tf.scan(lambda last,current:last+1,elems=y,initializer=-1)
+            qn=tf.scan(lambda last,current: tf.not_equal(tf.cast(self.y_pred[current],dtype=tf.int32),y[current]),elems=r,initializer=False)
+            q=tf.cast(qn,dtype=tf.int32)
+            
+            #r=tf.scan((lambda last,current: current[1]),q)
+            return tf.reduce_mean(tf.cast(q,dtype=tf.float64))
         else:
             raise NotImplementedError()
 

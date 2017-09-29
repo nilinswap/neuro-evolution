@@ -86,7 +86,9 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 
 	print(cost)
 
-	optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost,var_list=[valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be])
+	optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+	#optmzr = tf.train.AdamOptimizer().minimize(cost,var_list=[valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be])
+	
 	zhero=0
 	with tf.Session() as sess:
 		
@@ -103,13 +105,16 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 
 		print('...building the model')
 
-	"""	
+	
 		for epoch in range(n_epochs):
 			for ind in range(n_par):
-				sess.run([optmzr,cost],feed_dict={prmsdind:ind,x:train_x_to_be,y:train_y_to_be})
+				_,bost=sess.run([optmzr,cost],feed_dict={x:train_x_to_be.eval(feed_dict={prmsdind:ind}),y:train_y_to_be.eval(feed_dict={prmsdind:ind})})
+			print(bost)
 			if epoch%10==0:
-				print(sess.run([classifier.errors(y)],feed_dict={prmsdind:ind,x:valid_x_to_be,y:valid_y_to_be}))
-	"""	
+
+				print(sess.run([classifier.errors(y)],feed_dict={x:valid_x_to_be.eval(feed_dict={prmsdind:ind}),y:valid_y_to_be.eval(feed_dict={prmsdind:ind})}))
+		
+		print("testing",sess.run(classifier.errors(y),feed_dict={x:test_setx.eval(),y:test_sety.eval()}))
 		#setting condition to increase frequency of validation with epochs done as first thing inside 'i in n_epochs' loop
 	"""
 		epo=T.lscalar()
