@@ -1,17 +1,16 @@
 import tensorflow as tf
 import numpy  as np 
 
-y=tf.placeholder(dtype=tf.int32,shape=[None,])
-yi=tf.placeholder(dtype=tf.int32,shape=[None,])
-yar=np.random.randint(0,2,(7,))
-yiar=np.random.randint(0,2,(7,))
-print(yar,yiar)
-r=tf.scan(lambda last,current:last+1,elems=y,initializer=-1)
-qn=tf.scan(lambda last,current: tf.not_equal(y[current],yi[current]),elems=r,initializer=False)
-q=tf.cast(qn,dtype=tf.int32)
-#q=tf.scan(lambda last,current: (lambda i:),elems=qn,initializer=0)
-#r=tf.scan((lambda last,current: current[1]),q)
-#s=tf.reduce_mean(tf.cast(q,dtype=tf.float64))
-#print(s)
+ap=tf.placeholder(dtype=tf.float64,shape=[None,1])
+
+a=np.random.random((6,1))
+half=tf.constant(0.5,dtype=ap.dtype)
+dadum=tf.constant(0.5,dtype=ap.dtype)
+q=tf.scan(lambda last,current: current[0],elems=ap,initializer=dadum)
+s=tf.scan(lambda y,x: tf.greater_equal(x,half),elems=q,initializer=False)
+print("hi",s)
+r=tf.cast(s,dtype=tf.int32)
+
 with tf.Session() as sess:
-	print(sess.run([q,yi,y],feed_dict={yi:yiar,y:yar}))
+	print(sess.run([ap,r],feed_dict={ap:a}))
+

@@ -11,7 +11,7 @@ import timeit
 import numpy as np
 
 
-def load_data(dataset):
+def load_data(rng,dataset):
 
     def preprocessdata(dataset):
         path="/home/robita/forgit/neuro-evolution/05/dataset/"
@@ -130,7 +130,7 @@ def load_data(dataset):
    
     featarr,mislis=preprocessdata(dataset)#here mislis is list type and featar is nd.array type
     
-    np.random.shuffle(featarr)
+    rng.shuffle(featarr)
 
     test_set=featarr[:133,:15],featarr[:133,15]#keeping test set aside
     rest_set=featarr[133:,:15],featarr[133:,15]# have to apply cross-validation on the rest

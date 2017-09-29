@@ -19,7 +19,7 @@ from tf_mlp import MLP
 
 def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
              dataset='cards.data', n_par=10, n_hidden=100,freq_par=0.1):
-	
+	rng = np.random.RandomState(1234)
 	savo=None          #so that 'if' block sees the global savo
 	restn=520
 	testn=133
@@ -30,7 +30,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	test_setx=tf.Variable(initial_value=np.zeros((testn,nin)),name='rest_sety',dtype=tf.float64)
 	test_sety=tf.Variable(initial_value=np.zeros((testn,)),name='test_sety',dtype=tf.int32)
 	if not os.path.isfile('/home/robita/forgit/neuro-evolution/05/state/tf/cards/model.ckpt.meta'):
-		lis=tf_load_data.load_data(dataset)
+		lis=tf_load_data.load_data(rng,dataset)
 		
 		rest_set=lis[1]#tuple of two shared variable of array
 		test_set=lis[0]#tuple of shared variable of array
@@ -66,7 +66,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	x = tf.placeholder(dtype=tf.float64,name='x',shape=[None,nin]) 
 	y = tf.placeholder(dtype=tf.int32,name='y',shape=[None,])  
 
-	rng = np.random.RandomState(1234)
+	
 
 	##yen_hidden=T.lscalar()
 	n_hid=5
@@ -78,10 +78,10 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 		    n_out=nout		#this was important, I tried taking 1 gave fatal results, decided to fix this later.
 		)
 
-	cost = tf.add(
+	cost = tf.add(tf.add(
 	    classifier.negative_log_likelihood(y)
 	    ,L1_reg * classifier.L1
-	    #,L2_reg * classifier.L2_sqr
+	    ),L2_reg * classifier.L2_sqr
 	)
 
 	print(cost)
@@ -94,10 +94,10 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 		
 		savo.restore(sess, "/home/robita/forgit/neuro-evolution/05/state/tf/cards/model.ckpt")
 		sess.run([classifier.logRegressionLayer.W.initializer,classifier.logRegressionLayer.b.initializer,classifier.hiddenLayer.W.initializer,classifier.hiddenLayer.b.initializer])
-		print("------------------------------------------------------------------")
-		print(sess.run([valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be],feed_dict={prmsdind:0}))
+		#print("------------------------------------------------------------------")
+		#print(sess.run([valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be],feed_dict={prmsdind:0}))
 		print(sess.run(cost,feed_dict={x:train_x_to_be.eval(feed_dict={prmsdind:zhero}),y:train_y_to_be.eval(feed_dict={prmsdind:zhero})}))
-
+		print("herehrerhehrehrehrehrhe")
 		#cool thing starts from here ->
 	    ######################
 	    # BUILD ACTUAL MODEL #
@@ -294,7 +294,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	print("minavg was ",minminavg , "and for ", minclassifier.n_hidden, "nodes")
 	print("test error is ",test_model(0))"""
 def main():
- 	test_mlp(n_hidden=200)
+ 	test_mlp(n_hidden=200,n_epochs=200)
 if __name__ == '__main__':
     main()
 
