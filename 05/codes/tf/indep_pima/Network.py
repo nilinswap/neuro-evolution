@@ -1,39 +1,13 @@
 import numpy as np
-import theano
-import tmlp
-import theano.tensor as T
-import tmlp
+#import theano
+import tf_mlp
+import tensorflow as tf
 import time
 
 def sigmoid(arr):
 	return 1/(1+np.exp(-arr))
-def shared_dataset(data_xy, borrow=True):
-        """ Function that loads the dataset into shared variables
-
-        The reason we store our dataset in shared variables is to allow
-        Theano to copy it into the GPU memory (when code is run on GPU).
-        Since copying data into the GPU is slow, copying a minibatch everytime
-        is needed (the default behaviour if the data is not in a shared
-        variable) would lead to a large decrease in performance.
-        """
-        data_x, data_y = data_xy
-        shared_x = theano.shared(np.asarray(data_x,
-                                               dtype=theano.config.floatX),
-                                 borrow=borrow)
-        shared_y = theano.shared(np.asarray(data_y,
-                                               dtype=theano.config.floatX),
-                                 borrow=borrow)
-       
-        # When storing data on the GPU it has to be stored as floats
-        # therefore we will store the labels as ``floatX`` as well
-        # (``shared_y`` does exactly that). But during our computations
-        # we need them as ints (we use labels as index, and if they are
-        # floats it doesn't make sense) therefore instead of returning
-        # ``shared_y`` we will have to cast it to int. This little hack
-        # lets ous get around this issue
-        return shared_x, T.cast(shared_y, 'int32')
 class Neterr:	
-	def __init__(self,inputdim,outputdim,arr_of_net,trainx,trainy,testx,testy,strainx,strainy,stestx,stesty):
+	def __init__(self,inputdim,outputdim,arr_of_net,rest_setx,rest_sety,test_setx,test_sety,rng,n_par=10):
 		"""trainx=trainarr[:,:inputdim]
 		trainy=trainarr[:,inputdim:]
 		testx=testarr[:,:inputdim]
@@ -41,17 +15,31 @@ class Neterr:
 		"""
 		self.inputdim=inputdim
 		self.outputdim=outputdim
-		self.trainx = trainx
-		self.trainy = trainy
-		self.testx = testx
-		self.testy = testy
+		self.srest_setx=rest_setx
+		self.srest_sety=rest_sety
+		self.stest_setx=test_setx
+		self.stest_sety=test_sety
+		self.rng=rng
+		self.x=tf.placeholder(name='x',dtype=tf.float64,shape=[None,self.inputdim])
+		self.y=tf.placeholder(name='y',dtype=tf.int32,shape=[None,])
+		savo1=tf.train.Saver(var_list=[self.srest_setx,self.srest_sety,self.stest_setx,self.stest_sety])
+		with tf.Session() as sess:
+			savo1.restore(sess, "/home/placements2018/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")		#only restored for this session
+			self.trainx=self.srest_setx.eval()
+			self.trainy=self.srest_sety.eval()
+			self.testx=self.stest_setx.eval()
+			self.testy=self.stest_sety.eval()
+		self.n_par=n_par
+		par_size=int(self.trainx.shape[0]/n_par)
+		self.prmsdind=tf.placeholder(name='prmsdind',dtype=tf.int32)
+		self.valid_x_to_be=self.srest_setx[self.prmsdind*par_size:(self.prmsdind+1)*par_size,:]
+		self.valid_y_to_be=self.srest_sety[self.prmsdind*par_size:(self.prmsdind+1)*par_size]
+		self.train_x_to_be=tf.concat((self.srest_setx[:(self.prmsdind)*par_size,:],self.srest_setx[(self.prmsdind+1)*par_size:,:]),axis=0)
+		self.train_y_to_be=tf.concat((self.srest_sety[:(self.prmsdind)*par_size],self.srest_sety[(self.prmsdind+1)*par_size:]),axis=0)
 		
-		self.strainx = strainx
-		self.strainy = strainy
-		self.stestx = stestx
-		self.stesty = stesty
+		
 		self.arr_of_net=arr_of_net
-		self.fundam=theano.function([],self.strainy)
+		#
 
 	def feedforward(self):
 		#weight_arr = np.array(weight_arr)
@@ -99,54 +87,81 @@ class Neterr:
 		
 		return er_arr
 
-	def modify_thru_backprop(self,popul,epochs=100,learning_rate=0.01):
+	def modify_thru_backprop(self,popul,epochs=10,learning_rate=0.01,L1_reg=0.00001,L2_reg=0.0001):
 		
-		y=T.ivector('y')
+		
 		lis=[]
 		lis_of_keys=list(popul.k_dict.keys())
+
 		for hid_nodes in lis_of_keys:
 			if hid_nodes not in popul.net_dict:
-				newmlp=tmlp.MLP(self.inputdim,self.outputdim,hid_nodes,self.strainx,self.strainy,self.stestx,self.stesty)
+				newmlp=tf_mlp.MLP(self.x,self.inputdim,self.outputdim,hid_nodes,self.rng)
 				popul.net_dict[hid_nodes]=newmlp
 
 			fullnet=popul.net_dict[hid_nodes]
-			params=fullnet.params
-			cost=fullnet.cost_func(y)
 			
-			gparams=[T.grad(cost,j) for j in params]
-			updates = [
-					    (param, param - learning_rate * gparam)
-					    for param, gparam in zip(params, gparams)
-					]
-
-			train_model=theano.function([],cost,updates=updates,givens={y:self.strainy},on_unused_input='ignore')
-			#fun1=theano.function([x],output.reshape((x.shape[0],)))
-			#
-			test_model=theano.function([],fullnet.find_error(y),givens={y:self.stesty},on_unused_input='ignore')
-
+			cost = tf.add(tf.add(
+			    fullnet.negative_log_likelihood(self.y)
+			    ,L1_reg * fullnet.L1
+			    ),L2_reg * fullnet.L2_sqr
+			)
 			
-			for ind in popul.k_dict[hid_nodes]:
-				fullnet.set_weights_from_chromosome(popul.list_chromo[ind])
+			optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+			savo1=tf.train.Saver(var_list=[self.srest_setx,self.srest_sety,self.stest_setx,self.stest_sety])
+			with tf.Session() as sess:
+		
+				savo1.restore(sess, "/home/placements2018/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")
+				sess.run([fullnet.logRegressionLayer.W.initializer,fullnet.logRegressionLayer.b.initializer,fullnet.hiddenLayer.W.initializer,fullnet.hiddenLayer.b.initializer])
+				#print("------------------------------------------------------------------")
+				#print(sess.run([valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be],feed_dict={self.prmsdind:0}))
 				
-				for i in range(1,epochs):
-				    #p=train_model(rest_setx.get_value(),fun())
+				#print(sess.run([cost],feed_dict={x:train_x_to_be.eval(feed_dict={self.prmsdind:zhero}),y:train_y_to_be.eval(feed_dict={self.prmsdind:zhero})}))
+				
+				#cool thing starts from here ->
+			    ######################
+			    # BUILD ACTUAL MODEL #
+			    ######################
 
-				    p=train_model()
-				    
-				    print("in back  training",i,hid_nodes,p)
-				    
-				print("here sub testing",test_model())
-				lis.append(fullnet.turn_weights_into_chromosome())
+				print('...building the model')
+				print("nhid", hid_nodes)
+				for pind in popul.k_dict[hid_nodes]:
+					print("switch")
+					fullnet.set_weights_from_chromosome(popul.list_chromo[pind])
+					prevtoprev=10#just any no. which does not satisfy below condition
+					prev=7
+					current=5
+					for epoch in range(epochs):
+						listisi=[]
+						for ind in range(self.n_par):
+							_,bost=sess.run([optmzr,cost],feed_dict={self.x:self.train_x_to_be.eval(feed_dict={self.prmsdind:ind}),self.y:self.train_y_to_be.eval(feed_dict={self.prmsdind:ind})})
+				
+							if epoch%(epochs//4)==0:
 
-		"""lis=[]
-		for i in range(popul.size):
-			lis.append(Backnet(i,popul.net_err))#here backnet should return a new numpy 1d array
-		"""
+								q=fullnet.errors(self.y).eval(feed_dict={self.x:self.valid_x_to_be.eval(feed_dict={self.prmsdind:ind}),self.y:self.valid_y_to_be.eval(feed_dict={self.prmsdind:ind})})
+								listisi.append(q)
+						if epoch%(epochs//4)==0:
+							
+							prevtoprev=prev
+							prev=current
+							current=np.mean(listisi)
+							print('validation',current,prevtoprev,prev)
+						
+						if prev-current <0.002 and prevtoprev-prev<0.002:
+							break;
+								
+
+					lis.append(fullnet.turn_weights_into_chromosome())	
+				
+
+			
+			
+
+		
 		popul.set_list_chromo(np.array(lis))
 		
 		#popul.set_fitness()
 
-
+		
 
 def squa_test(x):
 	return (x**2).sum(axis=1)

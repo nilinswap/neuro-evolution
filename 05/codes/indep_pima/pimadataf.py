@@ -2,12 +2,7 @@
 import theano
 import theano.tensor as T
 import numpy as np
-import pylab as pl
-def myrange(start,end,step):
-    i=start
-    while i+step < end:
-        i+=step
-        yield i
+#import pylab as pl
 def standardize_dataset(traindata, means, stdevs):
     for row in traindata:
         for i in range(len(row)):
@@ -15,6 +10,31 @@ def standardize_dataset(traindata, means, stdevs):
             row[i] = (row[i] - means[i])
             if stdevs[i]:
                 row[i]/=stdevs[i]
+rng=np.random
+rng.seed(1234)
+pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
+
+rng.shuffle(pimadata)
+
+
+pimadata=pimadata.astype(float)
+traindata=pimadata
+means= traindata.mean(axis=0)
+
+stdevs=np.std(traindata,axis=0)
+# standardize dataset
+standardize_dataset(traindata[:,:8],means,stdevs)
+def get_dimension():
+    in_dem = 8
+    out_dem = 1
+    return (in_dem, out_dem)
+
+def myrange(start,end,step):
+    i=start
+    while i+step < end:
+        i+=step
+        yield i
+
 def give_data():
     #1. make iris.data in usable form
     #2. make input set and output set out of it
@@ -25,19 +45,7 @@ def give_data():
 
 
     
-    pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
     
-    np.random.shuffle(pimadata)
-    
-    nin =8;
-    nout=2;
-    pimadata=pimadata.astype(float)
-    traindata=pimadata
-    means= traindata.mean(axis=0)
-
-    stdevs=np.std(traindata,axis=0)
-    # standardize dataset
-    standardize_dataset(traindata[:,:8],means,stdevs)
     rest_setx=pimadata[:538,:8]#tuple of two shared variable of array
     rest_sety=pimadata[:538,8:]
     test_setx=pimadata[538:,:8]
@@ -70,19 +78,7 @@ def shared_dataset(data_xy, borrow=True):
         # lets ous get around this issue
         return shared_x, T.cast(shared_y, 'int32')
 def give_datainshared():
-    pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
-    
-    np.random.shuffle(pimadata)
-    
-    nin =8;
-    nout=1;
-    pimadata=pimadata.astype(float)
-    traindata=pimadata
-    means= traindata.mean(axis=0)
 
-    stdevs=np.std(traindata,axis=0)
-    # standardize dataset
-    standardize_dataset(traindata[:,:8],means,stdevs)
     rest_setx=pimadata[:431,:8]#tuple of two shared variable of array
     rest_sety=pimadata[:431,8:]
     rest_sety=rest_sety.reshape((rest_sety.shape[0],))

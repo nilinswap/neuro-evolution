@@ -43,7 +43,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		self.scale_mutation = scale_mutation
 		self.switch_iter = switch_iter
 		self.best = ([],np.inf, 0) #Add in class diagrams
-		self.fits_pops = None
+		#self.fits_pops = None
 
 		self.rng=rng
 	def probability_crossover(self):

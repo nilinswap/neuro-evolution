@@ -80,7 +80,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	def terminate(self,popul,nowgoback=100):
 		self.counter += 1
 		if self.counter%nowgoback==4:
-			popul.net_err.modify_thru_backprop(popul ,epochs=200,learning_rate=0.1)
+			popul.net_err.modify_thru_backprop(popul ,epochs=5,learning_rate=0.1)
 		f = popul.get_best() # a tuple with first being x and second being fitness
 
 		if f[1] < self.best[1]:
@@ -114,6 +114,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 				child2=self.mutation(newborn_tup[1])
 				lis.append(child1)
 				lis.append(child2)
+			
 			#print(lis[:2])
 			popul.set_list_chromo(np.array(lis))
 			#print("here in func",popul.list_chromo[:2])

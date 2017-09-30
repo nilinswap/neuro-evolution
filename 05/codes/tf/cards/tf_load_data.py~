@@ -10,12 +10,11 @@ import timeit
 
 import numpy as np
 
-import theano
-import theano.tensor as T
+
 def load_data(dataset):
 
     def preprocessdata(dataset):
-        path="/home/swapnil/forgit/neuro-evolution/05/dataset/"
+        path="/home/robita/forgit/neuro-evolution/05/dataset/"
         import os.path
         filename=path+"cards/"+dataset
         if  os.path.isfile(filename):
@@ -124,37 +123,11 @@ def load_data(dataset):
                         if stdevs[i]:
                             row[i]/=stdevs[i]
             standardize_dataset(traindata[:,:15],means,stdevs)
-            print(featarr[:,15])
+            
             return featarr,mislis
         else:
             print("file could not be loaded")
-    def shared_dataset(data_xy, borrow=True):
-        """ Function that loads the dataset into shared variables
-
-        The reason we store our dataset in shared variables is to allow
-        Theano to copy it into the GPU memory (when code is run on GPU).
-        Since copying data into the GPU is slow, copying a minibatch everytime
-        is needed (the default behaviour if the data is not in a shared
-        variable) would lead to a large decrease in performance.
-        """
-        data_x, data_y = data_xy
-        shared_x = theano.shared(np.asarray(data_x,
-                                               dtype=theano.config.floatX),
-                                 borrow=borrow)
-        shared_y = theano.shared(np.asarray(data_y,
-                                               dtype=theano.config.floatX),
-                                 borrow=borrow)
-       
-        # When storing data on the GPU it has to be stored as floats
-        # therefore we will store the labels as ``floatX`` as well
-        # (``shared_y`` does exactly that). But during our computations
-        # we need them as ints (we use labels as index, and if they are
-        # floats it doesn't make sense) therefore instead of returning
-        # ``shared_y`` we will have to cast it to int. This little hack
-        # lets ous get around this issue
-        return shared_x, T.cast(shared_y, 'int32')
-    
-    
+   
     featarr,mislis=preprocessdata(dataset)#here mislis is list type and featar is nd.array type
     
     np.random.shuffle(featarr)
@@ -162,12 +135,14 @@ def load_data(dataset):
     test_set=featarr[:133,:15],featarr[:133,15]#keeping test set aside
     rest_set=featarr[133:,:15],featarr[133:,15]# have to apply cross-validation on the rest
 
+    print("test",test_set[0].shape,"rest",rest_set[0].shape)
+
     
 
-    test_set_x, test_set_y = shared_dataset(test_set)
-    rest_set_x, rest_set_y = shared_dataset(rest_set)
-    
-
-    rval = [(rest_set_x, rest_set_y),
-            (test_set_x, test_set_y),mislis]
+    rval = [test_set,rest_set,mislis]
     return rval
+
+def main():
+    load_data('cards.data')
+if __name__=='__main__':
+    main()

@@ -1,7 +1,8 @@
 import numpy as np
 import Network
 import pimadataf
-
+import tensorflow as tf
+import os
 def givesumar(size):
 		ar=[0]
 		for i in range(1,size+1):
@@ -14,21 +15,45 @@ class Population(object):
 	def __init__(self,rng, max_hidden_units, size=5, limittup=(-1,1)):
 		self.dimtup = pimadataf.get_dimension()
 		rest_set, test_set = pimadataf.give_data()
-		tup = pimadataf.give_datainshared()
+		restx=rest_set[0]
+		resty=rest_set[1]
+		testx=test_set[0]
+		testy=test_set[1]
+		resty=np.ravel(resty)
+		testy=np.ravel(testy)
 		self.rng=rng
 		self.size = size
 		self.max_hidden_units = max_hidden_units
 		self.list_chromo = self.aux_pop(size, limittup) #a numpy array
 		self.fits_pops = []
-				
-		self.trainx = rest_set[0]
-		self.trainy = rest_set[1]
-		self.testx = test_set[0]
-		self.testy = test_set[1]
+		restn=538										#a flaw here ,one has to know no. of datapoints in both set before opening it(inside program)
+		testn=230		
+		print("here you",rest_set[1].shape)
+		self.rest_setx=tf.Variable(initial_value=np.zeros((restn,self.dimtup[0])),name='rest_setx',dtype=tf.float64)
+		self.rest_sety=tf.Variable(initial_value=np.zeros((restn,)),name='rest_sety',dtype=tf.int32)
+		self.test_setx=tf.Variable(initial_value=np.zeros((testn,self.dimtup[0])),name='rest_sety',dtype=tf.float64)
+		self.test_sety=tf.Variable(initial_value=np.zeros((testn,)),name='test_sety',dtype=tf.int32)
+		if not os.path.isfile('/home/placements2018/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt.meta'):
+			
+
+			
+
+			rxn=self.rest_setx.assign(restx)
+			ryn=self.rest_sety.assign(resty)
+			txn=self.test_setx.assign(testx)
+			tyn=self.test_sety.assign(testy)
+			var_lis=[self.rest_setx,self.rest_sety,self.test_setx,self.test_sety]
+			nodelis=[rxn,ryn,txn,tyn]
+			savo=tf.train.Saver(var_list=var_lis)
+			with tf.Session() as sess:
+				sess.run([i for i in nodelis])
+				print("saving checkpoint")
+				save_path = savo.save(sess, "/home/placements2018/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")
+
 		
-		self.strainx, self.strainy = tup[0]
-		self.stestx, self.stesty = tup[1]
-		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo, trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
+		
+		
+		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo,rest_setx=self.rest_setx,rest_sety=self.rest_sety,test_setx=self.test_setx,test_sety=self.test_sety,rng=self.rng)
 		self.net_dict={} #dictionary of networks for back-propagation, one for each n_hid
 	
 	def create_dict(self):
@@ -79,7 +104,7 @@ class Population(object):
 		del(p)
 
 	def set_fitness(self):
-		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo, trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
+		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo,rest_setx=self.rest_setx,rest_sety=self.rest_sety,test_setx=self.test_setx,test_sety=self.test_sety,rng=self.rng)
 		fitness_func = self.net_err.feedforward
 		self.fits_pops = fitness_func()#another np array
 		self.create_dict()

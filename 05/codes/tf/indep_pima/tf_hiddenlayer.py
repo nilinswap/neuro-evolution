@@ -7,13 +7,12 @@ import os
 import sys
 import timeit
 
-import numpy
+import numpy as np
 
-import theano
-import theano.tensor as T
+import tensorflow as tf
 class HiddenLayer(object):
     def __init__(self, rng, input, n_in, n_out, W=None, b=None,
-                 activation=T.tanh):
+                 activation=tf.tanh):
         """
         Typical hidden layer of a MLP: units are fully-connected and have
         sigmoidal activation function. Weight matrix W is of shape (n_in,n_out)
@@ -56,27 +55,27 @@ class HiddenLayer(object):
         #        We have no info for other function, so we use the same as
         #        tanh.
         if W is None:
-            W_values = numpy.asarray(
+            W_values = np.asarray(
                 rng.uniform(
-                    low=-numpy.sqrt(6. / (n_in + n_out)),
-                    high=numpy.sqrt(6. / (n_in + n_out)),
+                    low=-np.sqrt(6. / (n_in + n_out)),
+                    high=np.sqrt(6. / (n_in + n_out)),
                     size=(n_in, n_out)
                 ),
-                dtype=theano.config.floatX
+                dtype='float64'
             )
-            if activation == theano.tensor.nnet.sigmoid:
+            if activation == tf.nn.sigmoid:
                 W_values *= 4
 
-            W = theano.shared(value=W_values, name='W', borrow=True)
+            W = tf.Variable(initial_value=W_values, name='W', dtype='float64')
 
         if b is None:
-            b_values = numpy.zeros((n_out,), dtype=theano.config.floatX)
-            b = theano.shared(value=b_values, name='b', borrow=True)
+            b_values = np.zeros((n_out,))
+            b = tf.Variable(initial_value=b_values, name='b', dtype='float64')
 
         self.W = W
         self.b = b
 
-        lin_output = T.dot(input, self.W) + self.b
+        lin_output = tf.add(tf.matmul(input, self.W), self.b)
         self.output = (
             lin_output if activation is None
             else activation(lin_output)

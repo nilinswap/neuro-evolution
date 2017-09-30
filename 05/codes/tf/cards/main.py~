@@ -19,18 +19,18 @@ from tf_mlp import MLP
 
 def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
              dataset='cards.data', n_par=10, n_hidden=100,freq_par=0.1):
-	rng = np.random.RandomState(1234)
+	
 	savo=None          #so that 'if' block sees the global savo
 	restn=520
 	testn=133
 	nin=15
-	nout=1
+	nout=2
 	rest_setx=tf.Variable(initial_value=np.zeros((restn,nin)),name='rest_setx',dtype=tf.float64)
 	rest_sety=tf.Variable(initial_value=np.zeros((restn,)),name='rest_sety',dtype=tf.int32)
 	test_setx=tf.Variable(initial_value=np.zeros((testn,nin)),name='rest_sety',dtype=tf.float64)
 	test_sety=tf.Variable(initial_value=np.zeros((testn,)),name='test_sety',dtype=tf.int32)
-	if not os.path.isfile('/home/placements2018/forgit/neuro-evolution/05/state/tf/cards/model.ckpt.meta'):
-		lis=tf_load_data.load_data(rng,dataset)
+	if not os.path.isfile('/home/robita/forgit/neuro-evolution/05/state/tf/cards/model.ckpt.meta'):
+		lis=tf_load_data.load_data(dataset)
 		
 		rest_set=lis[1]#tuple of two shared variable of array
 		test_set=lis[0]#tuple of shared variable of array
@@ -47,10 +47,10 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 		with tf.Session() as sess:
 			sess.run([i for i in nodelis])
 			print("saving checkpoint")
-			save_path = savo.save(sess, "/home/placements2018/forgit/neuro-evolution/05/state/tf/cards/model.ckpt")
+			save_path = savo.save(sess, "/home/robita/forgit/neuro-evolution/05/state/tf/cards/model.ckpt")
 
 	
-	savo1=tf.train.Saver(var_list=[rest_setx,rest_sety,test_setx,test_sety])
+	savo=tf.train.Saver(var_list=[rest_setx,rest_sety,test_setx,test_sety])
 	par_size=int(rest_setx.shape[0])//n_par
 	#print(rest_set[0].get_value().shape[0])
 	#
@@ -64,9 +64,9 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	# allocate symbolic variables for the data
 		#index = T.lscalar()  # index to a [mini]batch
 	x = tf.placeholder(dtype=tf.float64,name='x',shape=[None,nin]) 
-	y = tf.placeholder(dtype=tf.int32,name='y',shape=[None,])  
+	y = tf.placeholder(dtype=tf.int32,name='y')  
 
-	
+	rng = np.random.RandomState(1234)
 
 	##yen_hidden=T.lscalar()
 	n_hid=5
@@ -78,27 +78,22 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 		    n_out=nout		#this was important, I tried taking 1 gave fatal results, decided to fix this later.
 		)
 
-	cost = tf.add(tf.add(
+	cost = tf.add(
 	    classifier.negative_log_likelihood(y)
 	    ,L1_reg * classifier.L1
-	    ),L2_reg * classifier.L2_sqr
+	    ,L2_reg * classifier.L2_sqr
 	)
 
-	print(cost)
-
-	optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
-	#optmzr = tf.train.AdamOptimizer().minimize(cost,var_list=[valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be])
 	
-	zhero=0
+
+	optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost,var_list=[valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be])
+
 	with tf.Session() as sess:
-		
-		savo1.restore(sess, "/home/placements2018/forgit/neuro-evolution/05/state/tf/cards/model.ckpt")
-		sess.run([classifier.logRegressionLayer.W.initializer,classifier.logRegressionLayer.b.initializer,classifier.hiddenLayer.W.initializer,classifier.hiddenLayer.b.initializer])
-		#print("------------------------------------------------------------------")
-		#print(sess.run([valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be],feed_dict={prmsdind:0}))
-		
-		print(sess.run([cost],feed_dict={x:train_x_to_be.eval(feed_dict={prmsdind:zhero}),y:train_y_to_be.eval(feed_dict={prmsdind:zhero})}))
-		
+		savo.restore(sess, "/home/robita/forgit/neuro-evolution/05/state/tf/cards/model.ckpt")
+		print("------------------------------------------------------------------")
+		print(sess.run([valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be],feed_dict={prmsdind:0}))
+	
+
 		#cool thing starts from here ->
 	    ######################
 	    # BUILD ACTUAL MODEL #
@@ -106,17 +101,12 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 
 		print('...building the model')
 
-	
+		
 		for epoch in range(n_epochs):
 			for ind in range(n_par):
-				_,bost=sess.run([optmzr,cost],feed_dict={x:train_x_to_be.eval(feed_dict={prmsdind:ind}),y:train_y_to_be.eval(feed_dict={prmsdind:ind})})
-			print(bost)
+				sess.run([optmzr,cost],feed_dict={prmsdind:ind,x:train_x_to_be,y:train_y_to_be})
 			if epoch%10==0:
-
-				print(sess.run([classifier.errors(y)],feed_dict={x:valid_x_to_be.eval(feed_dict={prmsdind:ind}),y:valid_y_to_be.eval(feed_dict={prmsdind:ind})}))
-		
-		print("testing",sess.run(classifier.errors(y),feed_dict={x:test_setx.eval(),y:test_sety.eval()}))
-	
+				print(sess.run([classifier.errors(y)],feed_dict={prmsdind:ind,x:valid_x_to_be,y:valid_y_to_be}))
 		#setting condition to increase frequency of validation with epochs done as first thing inside 'i in n_epochs' loop
 	"""
 		epo=T.lscalar()
@@ -296,7 +286,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 	print("minavg was ",minminavg , "and for ", minclassifier.n_hidden, "nodes")
 	print("test error is ",test_model(0))"""
 def main():
- 	test_mlp(n_hidden=200,n_epochs=200)
+ 	test_mlp(n_hidden=200)
 if __name__ == '__main__':
     main()
 
