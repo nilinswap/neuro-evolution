@@ -63,7 +63,8 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 		return (child1, child2)
 		
 	def selection(self,popul):
-		father=popul.list_chromo[popul.sortedlistup[roul_wheel(self.rng,popul.sumar)][0]]
+		x=popul.sortedlistup[roul_wheel(self.rng,popul.sumar)][0]
+		father=popul.list_chromo[x]
 		#mother_i=popul.k_dict[father[0]][popul.k_dict[roul_wheel(popul.sum_dict[father[0]])]]
 		mother_i=popul.k_dict[father[0]][roul_wheel(self.rng,popul.sum_dict[father[0]])]
 		mother = popul.list_chromo[mother_i]
@@ -77,10 +78,10 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 				mutated[x] += vary
 		return mutated
 	
-	def terminate(self,popul,nowgoback=100):
+	def terminate(self,popul,nowgoback=10):
 		self.counter += 1
 		if self.counter%nowgoback==4:
-			popul.net_err.modify_thru_backprop(popul ,epochs=5,learning_rate=0.1)
+			popul.net_err.modify_thru_backprop(popul ,epochs=5,learning_rate=0.01)
 		f = popul.get_best() # a tuple with first being x and second being fitness
 
 		if f[1] < self.best[1]:

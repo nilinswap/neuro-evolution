@@ -33,7 +33,7 @@ class Population(object):
 		self.rest_sety=tf.Variable(initial_value=np.zeros((restn,)),name='rest_sety',dtype=tf.int32)
 		self.test_setx=tf.Variable(initial_value=np.zeros((testn,self.dimtup[0])),name='rest_sety',dtype=tf.float64)
 		self.test_sety=tf.Variable(initial_value=np.zeros((testn,)),name='test_sety',dtype=tf.int32)
-		if not os.path.isfile('/home/placements2018/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt.meta'):
+		if not os.path.isfile('/home/robita/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt.meta'):
 			
 
 			
@@ -48,7 +48,7 @@ class Population(object):
 			with tf.Session() as sess:
 				sess.run([i for i in nodelis])
 				print("saving checkpoint")
-				save_path = savo.save(sess, "/home/placements2018/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")
+				save_path = savo.save(sess, "/home/robita/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")
 
 		
 		
@@ -100,11 +100,14 @@ class Population(object):
 	def set_list_chromo(self,newlist_chromo):
 		p = self.list_chromo
 		self.list_chromo = newlist_chromo# ndarray
+		
 		self.set_fitness()
 		del(p)
 
 	def set_fitness(self):
-		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo,rest_setx=self.rest_setx,rest_sety=self.rest_sety,test_setx=self.test_setx,test_sety=self.test_sety,rng=self.rng)
+		#del(self.net_err)
+		#self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo,rest_setx=self.rest_setx,rest_sety=self.rest_sety,test_setx=self.test_setx,test_sety=self.test_sety,rng=self.rng)
+		self.net_err.set_arr_of_net(self.list_chromo)
 		fitness_func = self.net_err.feedforward
 		self.fits_pops = fitness_func()#another np array
 		self.create_dict()

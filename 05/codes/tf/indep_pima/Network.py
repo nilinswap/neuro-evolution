@@ -20,11 +20,13 @@ class Neterr:
 		self.stest_setx=test_setx
 		self.stest_sety=test_sety
 		self.rng=rng
+		
 		self.x=tf.placeholder(name='x',dtype=tf.float64,shape=[None,self.inputdim])
 		self.y=tf.placeholder(name='y',dtype=tf.int32,shape=[None,])
+		
 		savo1=tf.train.Saver(var_list=[self.srest_setx,self.srest_sety,self.stest_setx,self.stest_sety])
 		with tf.Session() as sess:
-			savo1.restore(sess, "/home/placements2018/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")		#only restored for this session
+			savo1.restore(sess, "/home/robita/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")		#only restored for this session
 			self.trainx=self.srest_setx.eval()
 			self.trainy=self.srest_sety.eval()
 			self.testx=self.stest_setx.eval()
@@ -40,7 +42,8 @@ class Neterr:
 		
 		self.arr_of_net=arr_of_net
 		#
-
+	def set_arr_of_net(self,newarr_of_net):
+		self.arr_of_net=newarr_of_net
 	def feedforward(self):
 		#weight_arr = np.array(weight_arr)
 		#arr_of_net  type: nd.array, it is a whole list of network (i.e. each vector is a new network with hid_nodes)
@@ -110,7 +113,7 @@ class Neterr:
 			savo1=tf.train.Saver(var_list=[self.srest_setx,self.srest_sety,self.stest_setx,self.stest_sety])
 			with tf.Session() as sess:
 		
-				savo1.restore(sess, "/home/placements2018/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")
+				savo1.restore(sess, "/home/robita/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")
 				sess.run([fullnet.logRegressionLayer.W.initializer,fullnet.logRegressionLayer.b.initializer,fullnet.hiddenLayer.W.initializer,fullnet.hiddenLayer.b.initializer])
 				#print("------------------------------------------------------------------")
 				#print(sess.run([valid_x_to_be,valid_y_to_be,train_x_to_be,train_y_to_be],feed_dict={self.prmsdind:0}))
@@ -134,7 +137,7 @@ class Neterr:
 						listisi=[]
 						for ind in range(self.n_par):
 							_,bost=sess.run([optmzr,cost],feed_dict={self.x:self.train_x_to_be.eval(feed_dict={self.prmsdind:ind}),self.y:self.train_y_to_be.eval(feed_dict={self.prmsdind:ind})})
-				
+							
 							if epoch%(epochs//4)==0:
 
 								q=fullnet.errors(self.y).eval(feed_dict={self.x:self.valid_x_to_be.eval(feed_dict={self.prmsdind:ind}),self.y:self.valid_y_to_be.eval(feed_dict={self.prmsdind:ind})})
@@ -144,7 +147,7 @@ class Neterr:
 							prevtoprev=prev
 							prev=current
 							current=np.mean(listisi)
-							print('validation',current,prevtoprev,prev)
+							print('validation',current)
 						
 						if prev-current <0.002 and prevtoprev-prev<0.002:
 							break;
