@@ -78,10 +78,10 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 				mutated[x] += vary
 		return mutated
 	
-	def terminate(self,popul,nowgoback=10):
+	def terminate(self,popul,nowgoback=100):
 		self.counter += 1
-		if self.counter%nowgoback==4:
-			popul.net_err.modify_thru_backprop(popul ,epochs=5,learning_rate=0.01)
+		if self.counter%nowgoback==2:
+			popul.net_err.modify_thru_backprop(popul ,epochs=50,learning_rate=0.01)
 		f = popul.get_best() # a tuple with first being x and second being fitness
 
 		if f[1] < self.best[1]:

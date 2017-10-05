@@ -129,10 +129,15 @@ class Neterr:
 				print("nhid", hid_nodes)
 				for pind in popul.k_dict[hid_nodes]:
 					print("switch")
-					fullnet.set_weights_from_chromosome(popul.list_chromo[pind])
-					prevtoprev=10#just any no. which does not satisfy below condition
+					
+					fullnet.set_weights_from_chromosome(sess,popul.list_chromo[pind])
+					
+					
+					
+					#just any no. which does not satisfy below condition
 					prev=7
 					current=5
+					start1=time.time()
 					for epoch in range(epochs):
 						listisi=[]
 						for ind in range(self.n_par):
@@ -144,17 +149,18 @@ class Neterr:
 								listisi.append(q)
 						if epoch%(epochs//4)==0:
 							
-							prevtoprev=prev
+							
 							prev=current
 							current=np.mean(listisi)
 							print('validation',current)
 						
-						if prev-current <0.002 and prevtoprev-prev<0.002:
+						if prev-current <0.002:
 							break;
-								
-
+					end1=time.time()
+					print("time ",end1-start1)			
+					
 					lis.append(fullnet.turn_weights_into_chromosome())	
-				
+					
 
 			
 			

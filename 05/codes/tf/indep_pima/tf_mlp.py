@@ -8,7 +8,7 @@ import gzip
 import os
 import sys
 import timeit
-
+import time
 import numpy 
 from tf_logreglayer import LogisticRegression
 
@@ -89,14 +89,17 @@ class MLP(object):
 
         tup=(w1,b1,w2,b2)
         return tup
-    def set_weights(self,w1,b1,w2,b2):
+    def set_weights(self,sess,w1,b1,w2,b2):
         p=self.logRegressionLayer.W.assign(w2)
         q=self.logRegressionLayer.b.assign(b2)
         r=self.hiddenLayer.W.assign(w1)
         s=self.hiddenLayer.b.assign(b1)
-        with tf.Session() as sess:
-            sess.run([p,q,r,s])
-    def set_weights_from_chromosome(self,weightstr):
+        
+        sess.run([p,q,r,s])
+        
+            
+
+    def set_weights_from_chromosome(self,sess,weightstr):
         new_weightstr=weightstr[1:]
         n_hid=int(weightstr[0])
 
@@ -104,7 +107,7 @@ class MLP(object):
         b1=new_weightstr[(self.n_in*self.n_hid):(self.n_in*self.n_hid)+self.n_hid].reshape((self.n_hid,))
         w2=new_weightstr[(self.n_in*self.n_hid)+self.n_hid:(self.n_in*self.n_hid)+self.n_hid+(self.n_hid*self.n_out)].reshape((self.n_hid,self.n_out))
         b2=new_weightstr[(self.n_in*self.n_hid)+self.n_hid+(self.n_hid*self.n_out):].reshape((self.n_out,))
-        self.set_weights(w1,b1,w2,b2)
+        self.set_weights(sess,w1,b1,w2,b2)
     def turn_weights_into_chromosome(self):
         w1,b1,w2,b2=self.get_weights()
         w1=list(w1.reshape(((self.n_in*self.n_hid),)))
