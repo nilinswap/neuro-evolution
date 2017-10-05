@@ -80,7 +80,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 	
 	def terminate(self,popul,nowgoback=100):
 		self.counter += 1
-		if self.counter%nowgoback==2:
+		if self.counter%nowgoback==20:
 			popul.net_err.modify_thru_backprop(popul ,epochs=50,learning_rate=0.01)
 		f = popul.get_best() # a tuple with first being x and second being fitness
 
@@ -96,7 +96,7 @@ class OptimizeNetwork (GeneticFunctions.GeneticFunctions):
 			best = f[1]
 			ave = popul.get_average()
 			print(
-				"[G %3d] score=(%.4f, %.4f) for %d hidden nodes" %
+				"[G %3d] score=(%.4f, %.4f) [these are costs] for %d hidden nodes" %
 				(self.counter, best, ave, f[0][0]))
 
 		if self.counter >= self.limit:

@@ -116,7 +116,7 @@ class Population(object):
 		if not len(self.fits_pops):
 			self.set_fitness()
 		min_ind = np.argmin(self.fits_pops)
-		return (self.list_chromo[min_ind], self.fits_pops[min_ind])
+		return (self.list_chromo[min_ind], self.fits_pops[min_ind],min_ind)#error alert!!
 
 	def get_average(self):
 		if not len(self.fits_pops):

@@ -95,7 +95,7 @@ class Neterr:
 		
 		lis=[]
 		lis_of_keys=list(popul.k_dict.keys())
-
+		min_ind=popul.get_best()[2]
 		for hid_nodes in lis_of_keys:
 			if hid_nodes not in popul.net_dict:
 				newmlp=tf_mlp.MLP(self.x,self.inputdim,self.outputdim,hid_nodes,self.rng)
@@ -129,10 +129,19 @@ class Neterr:
 				print("nhid", hid_nodes)
 				for pind in popul.k_dict[hid_nodes]:
 					print("switch")
+					"""lsisi=[]
+					for ind in range(self.n_par):
+							err=sess.run(fullnet.errors(self.y),feed_dict={self.x:self.train_x_to_be.eval(feed_dict={self.prmsdind:ind}),self.y:self.train_y_to_be.eval(feed_dict={self.prmsdind:ind})})
+							lsisi.append(err)
+					print("train err",np.mean(lsisi))"""
 					
+
 					fullnet.set_weights_from_chromosome(sess,popul.list_chromo[pind])
 					
+					err=sess.run(fullnet.errors(self.y),feed_dict={self.x:self.trainx,self.y:self.trainy})
+					print("train error ",err)
 					
+					print("feedforward err",popul.fits_pops[pind])
 					
 					#just any no. which does not satisfy below condition
 					prev=7
