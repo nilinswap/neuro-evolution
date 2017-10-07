@@ -23,11 +23,7 @@ class Population(object):
 			Dictionary of all connection matrices. Attributes are hidden_nodes, w_input, w_hidden
 		"""
 		if hidden_nodes == -1:
-			hidden_nodes = np.random.randint(self.max_hidden)
-		max_x = (self.input_dim+1) * self.max_hidden
-		max_y = (self.output_dim) * (self.max_hidden+1)
-		x = (self.input_dim+1) * hidden_nodes
-		y = (self.output_dim) * (hidden_nodes+1)
+			hidden_nodes = np.random.randint(1,self.max_hidden)
 		
 		#Creating empty matrix
 		w_input = np.zeros((self.input_dim,self.max_hidden), dtype=np.float64)
@@ -56,7 +52,7 @@ class Population(object):
 
 def main():	
 	import copy
-	dimtup=(8,1)
+	dimtup=(3,1)
 	population = Population(3,dimtup,5)
 	population.initial_pop()
 	print(population.pop)
