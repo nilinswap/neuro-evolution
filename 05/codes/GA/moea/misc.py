@@ -93,6 +93,7 @@ def NewRankRoulWheel(popul):
 def RankRoulWheel(popul):
 	ar=np.arange(0,popul.size)
 	if not len(popul.fitarr):
+		
 		popul.set_fitarr()
 	par=list(-popul.fitarr)
 	
