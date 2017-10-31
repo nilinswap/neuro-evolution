@@ -24,7 +24,7 @@ class MLP(object):
     top layer is a softmax layer (defined here by a ``LogisticRegression``
     class).
     """
-
+`
     def __init__(self, rng, input, n_in, n_hidden, n_out):
         """Initialize the parameters for the multilayer perceptron
         """

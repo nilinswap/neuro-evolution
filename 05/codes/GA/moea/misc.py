@@ -93,7 +93,6 @@ def NewRankRoulWheel(popul):
 def RankRoulWheel(popul):
 	ar=np.arange(0,popul.size)
 	if not len(popul.fitarr):
-		
 		popul.set_fitarr()
 	par=list(-popul.fitarr)
 	
@@ -146,6 +145,8 @@ def smallchangealldir(newborn,constraints,fac=1000):
 	p=newborn+np.random.normal(-1,1,newborn.shape)/(fac)
 	while not is_satisfied(p,constraints):
 		p=newborn+np.random.normal(-1,1,newborn.shape)/(fac)
+	if p[0]<0:
+		print("anananananrth")
 	return p
 
 
@@ -225,6 +226,8 @@ class Termination:
 	def __init__(self,typeh=0):
 		self.type=typeh
 	def terminate(self,generationnum=None,generationlim=100,popul=None,iteri=None,lim=500):
+
+		print('averages are ',popul.find_avg_obj_tup())
 		if  self.type==0 :
 			if generationnum>generationlim:
 				return  1

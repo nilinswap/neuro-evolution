@@ -5,7 +5,7 @@ import population
 import numpy as np
 import problem1_obj as po
 def main():
-	popsize=1100
+	popsize=110
 	prob=problem.Problem(obj_func=problem.katsuura,dim=5,prangetup=(-100,100))
 	popu=population.Population(prob,size=popsize)
 	popu.randominit()

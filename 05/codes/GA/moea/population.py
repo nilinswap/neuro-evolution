@@ -16,7 +16,9 @@ class Population:
 	def set_objarr(self):
 		
 			self.objarr=numpy.array(list(map(self.prob.find_obj,self.poparr)))       #2d list.
-			print("objarr",self.objarr)
+			#dprint("objarr",self.objarr)
+	def find_avg_obj_tup(self):
+		return tuple(self.objarr.mean(axis=0))
 	"""
 	def find_expecarr(self):
 		
@@ -43,7 +45,7 @@ class Population:
 		if not len(self.objarr):
 			self.set_objarr()
 		self.fitarr=nsga.return_fitarr(self)
-		print(self.fitarr)
+		#print(self.fitarr)
 
 def main():
 	prob=problem.Problem(prob_func=po.problem1_func,randomvec_func=po.problem1_randomvec_func,constraints=po.constraints,dim=5,prangetup=(-100,100))
