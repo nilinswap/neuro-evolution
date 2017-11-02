@@ -13,12 +13,11 @@ class Conn:
         self.destination=couple[1]#same as above
         self.weight=weight
         self.innov_num=innov_num
-    def get_status(self):
-        return self.status
-    def get_innov_num(self):
-        return self.innov_num
+
     def get_couple(self):
         return (self.source,self.destination)
+
+
 
 
 class BiasConn(Conn):

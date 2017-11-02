@@ -23,7 +23,7 @@ def priortize_connections(conn_lis):
     return dict['IH1']+['breakH1']+dict['H1H2']+dict['IH2']+['breakH2']+dict['H2O']+dict['H1O']+dict['IO']
 }
 class Neterr:
-    def __init__(self, inputdim, outputdim,inputarr, rng, hidden_unit_lim):
+    def __init__(self, inputdim, outputdim,inputarr,  hidden_unit_lim ,rng):
         self.inputdim = inputdim
         self.outputdim = outputdim
         self.inputarr=inputarr  #self explanatory
