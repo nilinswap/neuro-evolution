@@ -2,7 +2,8 @@ import numpy as np
 import tf_mlp
 import tensorflow as tf
 import time
-
+import gene 
+import chromosome
 
 def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
@@ -21,12 +22,54 @@ class Neterr:
     def set_arr_of_net(self, newarr_of_net):
         self.arr_of_net = newarr_of_net
     """
+    def feedforwardcm(self):
+        ConnMatrix = {}
+        WeightMatrix = {}
+        NatureCtrDict = {}
+        NatureCtrDict['I'] = 0
+        NatureCtrDict['H1'] = 0
+        NatureCtrDict['H2'] = 0
+        NatureCtrDict['O'] = 0
+        
+        dictionary = {}
+        dictionary['I'] = {}
+        dictionary['H1'] = {}
+        dictionary['H2'] = {}
+        dictionary['O'] = {}
+        age = -1
+        chromo = Chromosome(age)
+
+        for i in chromo.node_arr:
+            dictionary[i.nature][i.node_num] = NatureCtrDict[i.nature]
+            NatureCtrDict[i.nature] += 1
+        
+        ConnMatrix['IO'] = np.zeros((inputdim, outputdim))
+        ConnMatrix['IH1'] = np.zeros((inputdim, H1))
+        ConnMatrix['IH2'] = np.zeros((inputdim, H2))
+        ConnMatrix['H1H2'] = np.zeros((H1, H2))
+        ConnMatrix['H1O'] = np.zeros((H1, outputdim))
+        ConnMatrix['H2O'] = np.zeros((H2, outputdim))
+
+        WeightMatrix['IO'] = np.zeros((inputdim, outputdim))
+        WeightMatrix['IH1'] = np.zeros((inputdim, H1))
+        WeightMatrix['IH2'] = np.zeros((inputdim, H2))
+        WeightMatrix['H1H2'] = np.zeros((H1, H2))
+        WeightMatrix['H1O'] = np.zeros((H1, outputdim))
+        WeightMatrix['H2O'] = np.zeros((H2, outputdim))
+
+        for con in chromo.conn_arr:
+            ConnMatrix[con.source.nature + con.destination.nature][dictionary[con.source.nature][con.source.node_num]][dictionary[con.destination.nature][con.destination.node_num]] = 1
+            WeightMatrix[con.source.nature + con.destination.nature][dictionary[con.source.nature][con.source.node_num]][dictionary[con.destination.nature][con.destination.node_num]] = con.weight 
+
+
+
+        
     def feedforward(self):
 
         conn_list = priortize_connections(chromosome[conn_arr])
         storage = [0 for i in range(self.hidden_unit_lim + self.outputdim)]
         for i in range(self.inputarr.shape[0]):
-            storage=[0]+list(self.inputarr[i]).append(storage) #here [0] is dummy storage as we use '1' indexing for node_ctr
+            storage=[0]+list(self.inputarr[i]).append(storage) #here [0] is dummy storage as we use '1' indexing for node_num
 
         return np.array(lis)
         #pass
