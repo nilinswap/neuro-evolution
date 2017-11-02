@@ -1,32 +1,4 @@
-import numpy as np
-import tf_mlp
-import tensorflow as tf
-import time
 
-
-def sigmoid(arr):
-    return 1 / (1 + np.exp(-arr))
-
-
-class Neterr:
-    def __init__(self, inputdim, outputdim,inputarr, rng, hidden_unit_lim):
-        self.inputdim = inputdim
-        self.outputdim = outputdim
-        self.inputarr=inputarr  #self explanatory
-        self.hidden_unit_lim = hidden_unit_lim
-        self.rng = rng
-
-        #self.arr_of_net = arr_of_net
-    """
-    def set_arr_of_net(self, newarr_of_net):
-        self.arr_of_net = newarr_of_net
-    """
-    def feedforward(self):
-
-        conn_list = priortize_connections(chromosome[conn_arr])
-        storage = [0 for i in range(self.hidden_unit_lim + self.outputdim)]
-        for i in range(self.inputarr.shape[0]):
-            storage=[0]+list(self.inputarr[i]).append(storage) #here [0] is dummy storage as we use '1' indexing for node_ctr
 import numpy as np
 import tf_mlp
 import tensorflow as tf
