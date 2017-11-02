@@ -14,7 +14,7 @@ class Conn:
 		self.status = status
 
 	def get_status(self):
-        return self.status
+		return self.status
 
 	def get_innov_num(self):
 		return self.innov_num

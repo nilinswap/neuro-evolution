@@ -1,14 +1,27 @@
+
 import numpy as np
-import tf_mlp
-import tensorflow as tf
+#import tf_mlp
+#import tensorflow as tf
 import time
 import gene 
-import chromosome
+from chromosome import *
 
 def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
-
-
+def relu(arr):
+    return np.where(arr>0,arr,0)
+def priortize_connections(conn_lis):
+    dict={'IH1':[],
+          'H1H2':[],
+          'IH2':[],
+          'H2O':[],
+          'H1O':[],
+          'IO':[]
+          }
+    for concsn in conn_lis:
+        tup=concsn.get_couple()
+        dict[tup[0].nature+tup[1].nature].append(concsn)
+    return dict['IH1']+['breakH1']+dict['H1H2']+dict['IH2']+['breakH2']+dict['H2O']+dict['H1O']+dict['IO']
 class Neterr:
     def __init__(self, inputdim, outputdim,inputarr, rng, hidden_unit_lim):
         self.inputdim = inputdim
@@ -22,16 +35,17 @@ class Neterr:
     def set_arr_of_net(self, newarr_of_net):
         self.arr_of_net = newarr_of_net
     """
-    def feedforwardcm(self):
-        ConnMatrix = {}
-        WeightMatrix = {}
-        NatureCtrDict = {}
+
+    def feedforwardcm(self, inputdim, outputdim, inputarr, rng):
+        ConnMatrix = {}             #Connection Matrix
+        WeightMatrix = {}           #Weight Matrix
+        NatureCtrDict = {}          #Contains Counter of Nature { 'I', 'H1', 'H2', 'O' }
         NatureCtrDict['I'] = 0
         NatureCtrDict['H1'] = 0
         NatureCtrDict['H2'] = 0
         NatureCtrDict['O'] = 0
         
-        dictionary = {}
+        dictionary = {}             #Contains node numbers mapping starting from 0, nature-wise
         dictionary['I'] = {}
         dictionary['H1'] = {}
         dictionary['H2'] = {}
@@ -44,34 +58,64 @@ class Neterr:
             NatureCtrDict[i.nature] += 1
         
         ConnMatrix['IO'] = np.zeros((inputdim, outputdim))
-        ConnMatrix['IH1'] = np.zeros((inputdim, H1))
-        ConnMatrix['IH2'] = np.zeros((inputdim, H2))
-        ConnMatrix['H1H2'] = np.zeros((H1, H2))
-        ConnMatrix['H1O'] = np.zeros((H1, outputdim))
-        ConnMatrix['H2O'] = np.zeros((H2, outputdim))
+        ConnMatrix['IH1'] = np.zeros((inputdim, NatureCtrDict['H1']))
+        ConnMatrix['IH2'] = np.zeros((inputdim, NatureCtrDict['H2']))
+        ConnMatrix['H1H2'] = np.zeros((NatureCtrDict['H1'], NatureCtrDict['H2']))
+        ConnMatrix['H1O'] = np.zeros((NatureCtrDict['H1'], outputdim))
+        ConnMatrix['H2O'] = np.zeros((NatureCtrDict['H2'], outputdim))
 
         WeightMatrix['IO'] = np.zeros((inputdim, outputdim))
-        WeightMatrix['IH1'] = np.zeros((inputdim, H1))
-        WeightMatrix['IH2'] = np.zeros((inputdim, H2))
-        WeightMatrix['H1H2'] = np.zeros((H1, H2))
-        WeightMatrix['H1O'] = np.zeros((H1, outputdim))
-        WeightMatrix['H2O'] = np.zeros((H2, outputdim))
+        WeightMatrix['IH1'] = np.zeros((inputdim, NatureCtrDict['H1']))
+        WeightMatrix['IH2'] = np.zeros((inputdim, NatureCtrDict['H2']))
+        WeightMatrix['H1H2'] = np.zeros((NatureCtrDict['H1'], NatureCtrDict['H2']))
+        WeightMatrix['H1O'] = np.zeros((NatureCtrDict['H1'], outputdim))
+        WeightMatrix['H2O'] = np.zeros((NatureCtrDict['H2'], outputdim))
 
         for con in chromo.conn_arr:
             ConnMatrix[con.source.nature + con.destination.nature][dictionary[con.source.nature][con.source.node_num]][dictionary[con.destination.nature][con.destination.node_num]] = 1
             WeightMatrix[con.source.nature + con.destination.nature][dictionary[con.source.nature][con.source.node_num]][dictionary[con.destination.nature][con.destination.node_num]] = con.weight 
 
-
-
+        inputarr = self.rng.random((inputarr.shape[0], inputarr.shape[1]))
+        print(inputarr)
+        print("---------------")
+        ConnMatrix['IO'] = self.rng.random((inputdim, outputdim))
+        print(ConnMatrix['IO'])
+        print("---------------")
+        OUTPUT = np.dot(inputarr, ConnMatrix['IO'])
+        print(OUTPUT)
         
-    def feedforward(self):
 
-        conn_list = priortize_connections(chromosome[conn_arr])
-        storage = [0 for i in range(self.hidden_unit_lim + self.outputdim)]
+
+    def feedforward_ne(self,chromosome,middle_activation=relu,final_activation=sigmoid):
+
+        conn_list = priortize_connections(chromosome.conn_arr)  #list of connections with string type breaks to seperate
+        return_arr=np.array([])
         for i in range(self.inputarr.shape[0]):
-            storage=[0]+list(self.inputarr[i]).append(storage) #here [0] is dummy storage as we use '1' indexing for node_num
 
-        return np.array(lis)
+            storage = [0 for i in range(self.hidden_unit_lim + self.outputdim)]
+            storage=np.array([0]+list(self.inputarr[i])+storage) #here [0] is dummy storage as we use '1' indexing for node_ctr
+            node_num_lis=[]
+            for connection in conn_list:
+
+                if type(connection)==str:
+                    for node_num in node_num_lis:
+                        storage[node_num]=middle_activation(storage[node_num])
+                    node_num_lis=[]
+                    continue
+
+                tup = connection.get_couple()
+                node_num_lis.append(tup[1].num)
+                weight = connection.__getattribute__('weight')
+                storage[tup[1].num] += storage[tup[0].num]*weight
+
+            bias_weights=[bn.weight for bn in chromosome.bias_conn_arr]
+            for p in range(len(bias_weights)):
+                storage[self.inputdim + 1+p]    += -1*bias_weights[p]
+            output_part=storage[self.inputdim+1:self.outputdim+self.inputdim+1]
+            np.concatenate((return_arr,output_part))
+        return final_activation(return_arr.reshape((self.inputarr.shape[0],self.outputdim)))
+
+
         #pass
 
     def test(self, weight_arr):
@@ -84,6 +128,13 @@ class Neterr:
 def squa_test(x):
     return (x ** 2).sum(axis=1)
 
+def main1():
+    indim = 4
+    outdim = 1
+    arr_of_net = np.zeros((4,4))
+    np.random.seed(4)
+    neter = Neterr(indim, outdim, arr_of_net, np.random, 10)
+    neter.feedforwardcm(indim, outdim, arr_of_net, np.random)
 
 def main():
     # print("hi")
@@ -131,4 +182,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main1()
