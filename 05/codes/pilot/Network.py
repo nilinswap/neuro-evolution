@@ -23,7 +23,7 @@ def priortize_connections(conn_lis):
         dict[tup[0].nature+tup[1].nature].append(concsn)
     return dict['IH1']+['breakH1']+dict['H1H2']+dict['IH2']+['breakH2']+dict['H2O']+dict['H1O']+dict['IO']
 class Neterr:
-    def __init__(self, inputdim, outputdim,inputarr, rng, hidden_unit_lim):
+    def __init__(self, inputdim, outputdim,inputarr,  hidden_unit_lim ,rng):
         self.inputdim = inputdim
         self.outputdim = outputdim
         self.inputarr=inputarr  #self explanatory
@@ -128,6 +128,7 @@ class Neterr:
 def squa_test(x):
     return (x ** 2).sum(axis=1)
 
+
 def main1():
     indim = 4
     outdim = 1
@@ -135,6 +136,14 @@ def main1():
     np.random.seed(4)
     neter = Neterr(indim, outdim, arr_of_net, np.random, 10)
     neter.feedforwardcm(indim, outdim, arr_of_net, np.random)
+
+def dummy_popultation(number):#return list of chromosomes
+    chromolis=[]
+    for i in range(number):
+        newchromo=chromosome.Chromosome(0)
+        newchromo.rand_init()
+        chromolis.append(newchromo)
+    return chromolis
 
 def main():
     # print("hi")
