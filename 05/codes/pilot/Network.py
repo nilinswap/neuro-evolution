@@ -76,8 +76,13 @@ class Neterr:
 
 def squa_test(x):
     return (x ** 2).sum(axis=1)
-
-
+def dummy_popultation(number):#return list of chromosomes
+    chromolis=[]
+    for i in range(number):
+        newchromo=chromosome.Chromosome(0)
+        newchromo.rand_init()
+        chromolis.append(newchromo)
+    return chromolis
 def main():
     # print("hi")
     import copy
