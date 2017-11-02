@@ -134,7 +134,7 @@ def main1():
     outdim = 1
     arr_of_net = np.zeros((4,4))
     np.random.seed(4)
-    neter = Neterr(indim, outdim, arr_of_net, np.random, 10)
+    neter = Neterr(indim, outdim, arr_of_net, 10, np.random)
     neter.feedforwardcm(indim, outdim, arr_of_net, np.random)
 
 def dummy_popultation(number):#return list of chromosomes
