@@ -4,6 +4,7 @@ import numpy as np
 #import tensorflow as tf
 import time
 import gene
+import matenc
 import chromosome
 
 from chromosome import *
@@ -37,6 +38,64 @@ class Neterr:
     def set_arr_of_net(self, newarr_of_net):
         self.arr_of_net = newarr_of_net
     """
+    def make_MatEncoding(self,chromo):
+
+        ConnMatrix = {}  # Connection Matrix
+        WeightMatrix = {}  # Weight Matrix
+        NatureCtrDict = {}  # Contains Counter of Nature { 'I', 'H1', 'H2', 'O' }
+        NatureCtrDict['I'] = 0
+        NatureCtrDict['H1'] = 0
+        NatureCtrDict['H2'] = 0
+        NatureCtrDict['O'] = 0
+
+        dictionary = {}  # Contains node numbers mapping starting from 0, nature-wise
+        dictionary['I'] = {}
+        dictionary['H1'] = {}
+        dictionary['H2'] = {}
+        dictionary['O'] = {}
+
+
+
+        for i in chromo.node_arr:
+            dictionary[i.nature][i.node_num] = NatureCtrDict[i.nature]
+            NatureCtrDict[i.nature] += 1
+
+        ConnMatrix['IO'] = np.zeros((self.inputdim, self.outputdim))
+        ConnMatrix['IH1'] = np.zeros((self.inputdim, NatureCtrDict['H1']))
+        ConnMatrix['IH2'] = np.zeros((self.inputdim, NatureCtrDict['H2']))
+        ConnMatrix['H1H2'] = np.zeros((NatureCtrDict['H1'], NatureCtrDict['H2']))
+        ConnMatrix['H1O'] = np.zeros((NatureCtrDict['H1'], self.outputdim))
+        ConnMatrix['H2O'] = np.zeros((NatureCtrDict['H2'], self.outputdim))
+
+        WeightMatrix['IO'] = np.zeros((self.inputdim, self.outputdim))
+        WeightMatrix['IH1'] = np.zeros((self.inputdim, NatureCtrDict['H1']))
+        WeightMatrix['IH2'] = np.zeros((self.inputdim, NatureCtrDict['H2']))
+        WeightMatrix['H1H2'] = np.zeros((NatureCtrDict['H1'], NatureCtrDict['H2']))
+        WeightMatrix['H1O'] = np.zeros((NatureCtrDict['H1'], self.outputdim))
+        WeightMatrix['H2O'] = np.zeros((NatureCtrDict['H2'], self.outputdim))
+
+        for con in chromo.conn_arr:
+            if con.status == True:
+                ConnMatrix[con.source.nature + con.destination.nature][
+                    dictionary[con.source.nature][con.source.node_num]][
+                    dictionary[con.destination.nature][con.destination.node_num]] = 1
+            WeightMatrix[con.source.nature + con.destination.nature][
+                dictionary[con.source.nature][con.source.node_num]][
+                dictionary[con.destination.nature][con.destination.node_num]] = con.weight
+
+        inv_dic = { key : { v : k for k,v in dictionary[key].items() } for key in dictionary.keys()}
+
+        new_encoding = matenc.MatEnc( WeightMatrix, ConnMatrix, chromo.bias_conn_arr, inv_dic, chromo.node_arr)
+
+        return new_encoding
+
+    def feedforward_cm(self, chromo, middle_activation = relu, final_activation = sigmoid):
+        new_mat_enc = make_MatEncoding(self,chromo)
+        input_till_H1 = middle_activation( np.dot( self.inputarr, new_mat_enc.CMatrix['IH1']*new_mat_enc.WMatrix['IH1'] ) )
+        input_till_H2 = middle_activation( np.dot( input_till_H1, new_mat_enc.CMatrix['H1H2']*new_mat_enc.WMatrix['H1H2'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IH2']*new_mat_enc.WMatrix['IH2'] ))
+        output = final_activation( np.dot( input_till_H2, new_mat_enc.CMatrix['H2O']*new_mat_enc.WMatrix['H2O'] ) + np.dot( input_till_H1, new_mat_enc.CMatrix['H1O']*new_mat_enc.WMatrix['H1O'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IO']*new_mat_enc.WMatrix['IO'] ) )
+        return output
+
 
     def feedforwardcm(self, inputdim, outputdim, inputarr, rng):
         ConnMatrix = {}             #Connection Matrix
@@ -112,6 +171,7 @@ class Neterr:
                 weight = connection.__getattribute__('weight')
                 storage[tup[1].node_num] += storage[tup[0].node_num]*weight
             #print(storage)
+
             bias_weights=[bn.weight for bn in chromosome.bias_conn_arr]
             for p in range(len(bias_weights)):
                 storage[self.inputdim + 1+p]    += -1*bias_weights[p]
@@ -121,6 +181,7 @@ class Neterr:
 
 
         #pass
+
 
     def test(self, weight_arr):
         pass
@@ -139,6 +200,7 @@ def dummy_popultation(number):#return list of chromosomes
         newchromo.rand_init()
         chromolis.append(newchromo)
     return chromolis
+
 
 
 def main1():

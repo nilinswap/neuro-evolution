@@ -15,7 +15,8 @@ class Conn:
 
 	def get_couple(self):
 		return (self.source, self.destination)
-
+    def set_weight(self,weight):
+		self.weight=weight
 
 class BiasConn(Conn):
 	def __init__(self, out_node, weight):
