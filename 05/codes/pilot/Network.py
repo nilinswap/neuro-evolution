@@ -53,11 +53,12 @@ class Neterr:
         dictionary['H1'] = {}
         dictionary['H2'] = {}
         dictionary['O'] = {}
+        couple_to_innov_map={}
 
 
 
         for i in chromo.node_arr:
-            dictionary[i.nature][i.node_num] = NatureCtrDict[i.nature]
+            dictionary[i.nature][i] = NatureCtrDict[i.nature]
             NatureCtrDict[i.nature] += 1
 
         ConnMatrix['IO'] = np.zeros((self.inputdim, self.outputdim))
@@ -77,20 +78,21 @@ class Neterr:
         for con in chromo.conn_arr:
             if con.status == True:
                 ConnMatrix[con.source.nature + con.destination.nature][
-                    dictionary[con.source.nature][con.source.node_num]][
-                    dictionary[con.destination.nature][con.destination.node_num]] = 1
+                    dictionary[con.source.nature][con.source]][
+                    dictionary[con.destination.nature][con.destination]] = 1
+            couple_to_innov_map[con.get_couple()]=con.innov_num
             WeightMatrix[con.source.nature + con.destination.nature][
-                dictionary[con.source.nature][con.source.node_num]][
-                dictionary[con.destination.nature][con.destination.node_num]] = con.weight
+                dictionary[con.source.nature][con.source]][
+                dictionary[con.destination.nature][con.destination]] = con.weight
 
         inv_dic = { key : { v : k for k,v in dictionary[key].items() } for key in dictionary.keys()}
 
-        new_encoding = matenc.MatEnc( WeightMatrix, ConnMatrix, chromo.bias_conn_arr, inv_dic, chromo.node_arr)
+        new_encoding = matenc.MatEnc( WeightMatrix, ConnMatrix, chromo.bias_conn_arr, inv_dic, couple_to_innov_map, chromo.node_arr)
 
         return new_encoding
 
     def feedforward_cm(self, chromo, middle_activation = relu, final_activation = sigmoid):
-        new_mat_enc = make_MatEncoding(self,chromo)
+        new_mat_enc = make_MatEncoding(self, chromo)
         input_till_H1 = middle_activation( np.dot( self.inputarr, new_mat_enc.CMatrix['IH1']*new_mat_enc.WMatrix['IH1'] ) )
         input_till_H2 = middle_activation( np.dot( input_till_H1, new_mat_enc.CMatrix['H1H2']*new_mat_enc.WMatrix['H1H2'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IH2']*new_mat_enc.WMatrix['IH2'] ))
         output = final_activation( np.dot( input_till_H2, new_mat_enc.CMatrix['H2O']*new_mat_enc.WMatrix['H2O'] ) + np.dot( input_till_H1, new_mat_enc.CMatrix['H1O']*new_mat_enc.WMatrix['H1O'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IO']*new_mat_enc.WMatrix['IO'] ) )
