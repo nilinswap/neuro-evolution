@@ -9,7 +9,7 @@ class Chromosome:
     def __init__(self,dob,node_arr=[],conn_arr=[],bias_arr=[]):
         self.node_arr = node_arr	#list of node objects
         self.conn_arr = conn_arr	#list of conn objects
-        self.bias_arr = bias_arr	#list of BiasNode objects
+        self.bias_conn_arr = bias_arr	#list of BiasNode objects
         self.dob = dob 				#the generation in which it was created.
 
     def rand_init(self,inputdim,outputdim,rng):
@@ -23,6 +23,6 @@ class Chromosome:
         for inputt in lisI:
             for outputt in lisO:
                 innov_ctr += 1
-                self.conn_arr.append( gene.Conn(innov_ctr, inputt, outputt, rng.random(), status=True))
+                self.conn_arr.append( gene.Conn(innov_ctr, (inputt, outputt), rng.random(), status=True))
         self.bias_arr = [gene.BiasConn(outputt,rng.random()) for outputt in lisO]
         self.dob = 0

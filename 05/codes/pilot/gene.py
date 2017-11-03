@@ -22,7 +22,7 @@ class BiasConn(Conn):
 		numb = -1
 		nature = -1
 		status = True
-		Conn.__init__(-1, (Node(numb,nature), out_node), weight, status)
+		Conn.__init__(self,-1, (Node(numb,nature), out_node), weight,status=status)
 
 	def get_couple(self):
 		return (self.source, self.destination)

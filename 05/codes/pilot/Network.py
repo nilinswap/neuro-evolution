@@ -3,7 +3,9 @@ import numpy as np
 #import tf_mlp
 #import tensorflow as tf
 import time
-import gene 
+import gene
+import chromosome
+
 from chromosome import *
 
 def sigmoid(arr):
@@ -94,25 +96,27 @@ class Neterr:
 
             storage = [0 for i in range(self.hidden_unit_lim + self.outputdim)]
             storage=np.array([0]+list(self.inputarr[i])+storage) #here [0] is dummy storage as we use '1' indexing for node_ctr
+
             node_num_lis=[]
             for connection in conn_list:
 
                 if type(connection)==str:
+
                     for node_num in node_num_lis:
                         storage[node_num]=middle_activation(storage[node_num])
                     node_num_lis=[]
                     continue
 
                 tup = connection.get_couple()
-                node_num_lis.append(tup[1].num)
+                node_num_lis.append(tup[1].node_num)
                 weight = connection.__getattribute__('weight')
-                storage[tup[1].num] += storage[tup[0].num]*weight
-
+                storage[tup[1].node_num] += storage[tup[0].node_num]*weight
+            #print(storage)
             bias_weights=[bn.weight for bn in chromosome.bias_conn_arr]
             for p in range(len(bias_weights)):
                 storage[self.inputdim + 1+p]    += -1*bias_weights[p]
-            output_part=storage[self.inputdim+1:self.outputdim+self.inputdim+1]
-            np.concatenate((return_arr,output_part))
+            output_part = storage[self.inputdim+1:self.outputdim+self.inputdim+1]
+            return_arr = np.concatenate((return_arr,output_part))
         return final_activation(return_arr.reshape((self.inputarr.shape[0],self.outputdim)))
 
 
@@ -128,6 +132,14 @@ class Neterr:
 def squa_test(x):
     return (x ** 2).sum(axis=1)
 
+def dummy_popultation(number):#return list of chromosomes
+    chromolis=[]
+    for i in range(number):
+        newchromo=chromosome.Chromosome(0)
+        newchromo.rand_init()
+        chromolis.append(newchromo)
+    return chromolis
+
 
 def main1():
     indim = 4
@@ -137,58 +149,19 @@ def main1():
     neter = Neterr(indim, outdim, arr_of_net, 10, np.random)
     neter.feedforwardcm(indim, outdim, arr_of_net, np.random)
 
-def dummy_popultation(number):#return list of chromosomes
-    chromolis=[]
-    for i in range(number):
-        newchromo=chromosome.Chromosome(0)
-        newchromo.rand_init()
-        chromolis.append(newchromo)
-    return chromolis
+
 
 def main():
-    # print("hi")
-    import copy
-    """trainarr = np.concatenate((np.arange(0,9).reshape(3,3),np.array([[1,0],[0,1],[1,0]])),axis=1)
-    testarr = copy.deepcopy(trainarr)
-    trainx=trainarr[:,:3]
-    trainy=trainarr[:,3:]
-    testx=testarr[:,:3]
-    testy=testarr[:,3:]
-    hid_nodes = 4
-    indim = 3
-    outdim = 2
-    size = 5
-    """
-    hid_nodes = 4
-    indim = 10
-    outdim = 1
-    size = 100
-    resularr = np.zeros((size, outdim))
-    for i in range(size):
-        # resularr[i][np.random.randint(0,outdim)]=1
-        if np.random.randint(0, 2) == 1:
-            resularr[i][0] = 1
-    # resularr
-    trainarr = np.concatenate((np.arange(0, 1000).reshape(100, 10), resularr), axis=1)
-    testarr = copy.deepcopy(trainarr)
-    trainx = trainarr[:, :indim]
-    trainy = trainarr[:, indim:]
-    testx = testarr[:, :indim]
-    testy = testarr[:, indim:]
-    # arr_of_net = np.random.uniform(-1,1,(size,(indim+1)*hid_nodes+(hid_nodes+1)*outdim))
-    hid_nodesarr = np.random.randint(1, hid_nodes + 1, size)
-    lis = []
-    for i in hid_nodesarr:
-        lis.append(np.concatenate((np.array([i]), np.random.uniform(-1, 1, (indim + 1) * i + (i + 1) * outdim))))
-    arr_of_net = np.array(lis)
-    neter = Neterr(indim, outdim, arr_of_net, trainx, trainy, testx, testy)
-    Backnet(3, neter)
-    print(neter.trainx, neter.trainy)
-    print(arr_of_net)
-    print(neter.feedforward())
-    for i in range(size):
-        print(neter.test(arr_of_net[i]))
+    indim=4
+    outdim=3
+    np.random.seed(4)
+    num_data=2
+    inputarr=np.random.random((num_data,indim))
+    neter = Neterr(indim, outdim, inputarr, 10, np.random)
+    chromo=chromosome.Chromosome(0)
+    chromo.rand_init(indim,outdim,np.random)
+    print(neter.feedforward_ne(chromo))
 
 
 if __name__ == '__main__':
-    main1()
+    main()
