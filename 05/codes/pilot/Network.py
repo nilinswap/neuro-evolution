@@ -264,6 +264,83 @@ def test1():
     print(neter.feedforward_ne(newchromo))
     print(calc_output_directly(inputarr))
     print(neter.feedforward_cm(newchromo))
+def test2():
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    st='2212211'
+    for_node +=  [(i+6,'H'+st[i]) for i in range(len(st))]
+    node_ctr = 13
+    innov_num = 25
+    dob = 0
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.3, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+                (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
+                (9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
+                (13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True),
+                (17, (1, 11), 0.25, True), (18, (11, 9), 0.15, True), (19, (2, 12), 0.6, True), (20, (12, 7), 0.4, True),
+                (21, (3, 12), 0.8, True), (22, (2, 9), 0.9, True), (23, (12, 4), 0.75, True), (24, (11, 5), 0.25, True),
+                ]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo = Chromosome(dob, node_lis, conn_lis, bias_conn_lis)
+    newchromo.set_node_ctr(node_ctr)
+
+    # newchromo.pp()
+    def calc_output_directly(inputarr):
+        lis = []
+        for arr in inputarr:
+            x1 = arr[0]
+            x2 = arr[1]
+            x3 = arr[2]
+            output1 = sigmoid(
+                                0.3 * x1     +
+                                0.1 * relu(
+                                            0.7 * relu(0.5 * x1) +
+                                            0.2 * x1
+                                        )    +
+                                0.15 * relu(
+                                            0.1 * x2 +
+                                            0.4 * relu(
+                                                0.6 * x2 +
+                                                0.8 * x3
+                                            )
+                                        )     +
+                                0.75 * relu(
+                                            0.6 * x2 +
+                                            0.8 * x3
+                                        )     -
+                                 0.2
+                        )
+            #output2 = sigmoid(arr[0] * 0.25 + arr[1] * 0.5 + relu(arr[2] * 0.3) * 0.6 - 0.1)
+            output2 = sigmoid(
+                0.5 * x3 +
+                1 * relu(
+                    0.15 * relu(0.25 * x1) +
+                    0.9 * x2
+                ) +
+                0.25 * relu(
+                    0.25 * x1
+                ) +
+                0.77 * relu(
+
+                    0.33 * x3
+                ) -
+                0.1
+            )
+            lis.append([output1, output2])
+        return np.array(lis)
+
+    inputarr = np.array([[0, 2, 1], [0.8, 1, 2]])
+    indim = 3
+    outdim = 2
+    np.random.seed(4)
+    num_data = 2
+    # inputarr = np.random.random((num_data, indim))
+    neter = Neterr(indim, outdim, inputarr, 10, np.random)
+    print(neter.feedforward_ne(newchromo))
+    print(calc_output_directly(inputarr))
+    print(neter.feedforward_cm(newchromo))
 def main():
     indim=4
     outdim=3
@@ -279,4 +356,4 @@ def main():
 
 
 if __name__ == '__main__':
-    test1()
+    test2()
