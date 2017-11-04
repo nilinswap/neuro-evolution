@@ -5,6 +5,20 @@ def map_to_nodelis(maph):
     for key in maph.keys():
         node_lis += [ gene.Node(x,key) for x in maph[key].values()]
     return node_lis
+def split_key(st):
+    if st == 'IH1':
+        tup = ('I','H1')
+    elif st == 'H1H2':
+        tup = ('H1','H2')
+    elif st == 'IH2':
+        tup = ('I','H2')
+    elif st == 'H2O':
+        tup = ('H2','O')
+    elif st == 'H1O':
+        tup = ('H2','O')
+    elif st == 'IO':
+        tup = ('I','O')
+    return tup
 
 class MatEnc:
     def __init__(self,WMatrix,CMatrix,Bias_conn_arr,node_map, conn_map, node_lis):

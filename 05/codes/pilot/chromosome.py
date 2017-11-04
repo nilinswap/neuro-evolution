@@ -27,6 +27,21 @@ class Chromosome:
                 innov_ctr += 1
         self.bias_arr = [gene.BiasConn(outputt,rng.random()) for outputt in lisO]
         self.dob = 0
+    def set_node_ctr(self,ctr):
+        self.node_ctr = ctr
+    def pp(self):
+
+        print("\nNode List")
+        [item.pp() for item in self.node_arr]
+
+        print("\n\nConnection List")
+        [item.pp() for item in self.conn_arr]
+
+        print("\n\nBias Connection List")
+        [item.pp() for item in self.bias_conn_arr]
+
+        print("dob",self.dob,"node counter",self.node_ctr)
+        print("--------------------------------------------")
 
 
 

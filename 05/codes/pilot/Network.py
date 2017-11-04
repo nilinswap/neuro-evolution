@@ -92,7 +92,7 @@ class Neterr:
         return new_encoding
 
     def feedforward_cm(self, chromo, middle_activation = relu, final_activation = sigmoid):
-        new_mat_enc = make_MatEncoding(self, chromo)
+        new_mat_enc = self.make_MatEncoding( chromo)
         input_till_H1 = middle_activation( np.dot( self.inputarr, new_mat_enc.CMatrix['IH1']*new_mat_enc.WMatrix['IH1'] ) )
         input_till_H2 = middle_activation( np.dot( input_till_H1, new_mat_enc.CMatrix['H1H2']*new_mat_enc.WMatrix['H1H2'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IH2']*new_mat_enc.WMatrix['IH2'] ))
         output = final_activation( np.dot( input_till_H2, new_mat_enc.CMatrix['H2O']*new_mat_enc.WMatrix['H2O'] ) + np.dot( input_till_H1, new_mat_enc.CMatrix['H1O']*new_mat_enc.WMatrix['H1O'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IO']*new_mat_enc.WMatrix['IO'] ) )
@@ -152,26 +152,40 @@ class Neterr:
     def feedforward_ne(self,chromosome,middle_activation=relu,final_activation=sigmoid):
 
         conn_list = priortize_connections(chromosome.conn_arr)  #list of connections with string type breaks to seperate
-        return_arr=np.array([])
+        print("inside feedforward")
+        #[item.pp() for item in conn_list if type(item) != str]
+        """for item in conn_list :
+            if type(item) != str:
+                item.pp()
+            else:
+                print(item)
+        """
+        return_arr = np.array([])
         for i in range(self.inputarr.shape[0]):
 
-            storage = [0 for i in range(self.hidden_unit_lim + self.outputdim)]
-            storage=np.array([0]+list(self.inputarr[i])+storage) #here [0] is dummy storage as we use '1' indexing for node_ctr
+            storage = [0.0 for i in range(self.hidden_unit_lim + self.outputdim)]   #wtf!! there was an error here because I wrote 0 instead of 0.0!
+            storage = np.array([0.0]+list(self.inputarr[i])+storage) #here [0] is dummy storage as we use '1' indexing for node_ctr
 
             node_num_lis=[]
             for connection in conn_list:
 
                 if type(connection)==str:
-
+                    #print("before",storage)
                     for node_num in node_num_lis:
                         storage[node_num]=middle_activation(storage[node_num])
                     node_num_lis=[]
+                    #print("after",storage)
                     continue
 
                 tup = connection.get_couple()
                 node_num_lis.append(tup[1].node_num)
                 weight = connection.__getattribute__('weight')
-                storage[tup[1].node_num] += storage[tup[0].node_num]*weight
+                if connection.status == True:
+                    connection.pp()
+                    #print(storage[tup[1].node_num], storage[tup[0].node_num]*weight)
+                    #print(
+                    storage[tup[1].node_num] += storage[tup[0].node_num]*weight
+                    #print(storage)
             #print(storage)
 
             bias_weights=[bn.weight for bn in chromosome.bias_conn_arr]
@@ -213,7 +227,41 @@ def main1():
     neter = Neterr(indim, outdim, arr_of_net, 10, np.random)
     neter.feedforwardcm(indim, outdim, arr_of_net, np.random)
 
+def test1():
+    for_node = [(i,'I') for i in range(1,4)]
+    for_node += [(i,'O') for i in range(4,6)]
+    for_node += [(i,'H2') for i in range(6,8)]
+    node_ctr=8
+    innov_num=11
+    dob=0
+    node_lis = [gene.Node(x,y) for x,y in for_node]
+    for_conn = [ (1,(1,4),0.4,False), (2,(1,5),0.25,True), (3,(2,4),0.25,True), (4,(2,5),0.5,True), (5,(3,4),0.7,True),
+                 (6,(3,5),0.6,False), (7,(1,6),0.5,True), (8,(6,4),0.4,True), (9,(3,7),0.3,True), (10,(7,5),0.6,True)
+                 ]
+    conn_lis = [gene.Conn(x,(node_lis[tup[0]-1],node_lis[tup[1]-1]),w,status) for x,tup,w,status in for_conn]
+    for_bias=[ (4,0.2),(5,0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x-1],y) for x,y in for_bias]
 
+    newchromo = Chromosome(dob, node_lis, conn_lis, bias_conn_lis)
+    newchromo.set_node_ctr(node_ctr)
+    #newchromo.pp()
+    def calc_output_directly(inputarr):
+        lis=[]
+        for arr in inputarr:
+            output1 = sigmoid( relu(arr[0]*0.5)*0.4 + 0.25*arr[1] + 0.7*arr[2] - 0.2 )
+            output2 = sigmoid( arr[0]*0.25 + arr[1]*0.5 + relu(arr[2]*0.3)*0.6 - 0.1 )
+            lis.append([output1,output2])
+        return np.array(lis)
+
+    inputarr=np.array([[3,2,1],[4,1,2]])
+    indim = 3
+    outdim = 2
+    np.random.seed(4)
+    num_data = 2
+    #inputarr = np.random.random((num_data, indim))
+    neter = Neterr(indim, outdim, inputarr, 10, np.random)
+    print(neter.feedforward_ne(newchromo))
+    print(calc_output_directly(inputarr))
 
 def main():
     indim=4
@@ -226,6 +274,8 @@ def main():
     chromo.rand_init(indim,outdim,np.random)
     print(neter.feedforward_ne(chromo))
 
+    print(neter.feedforward_cm(chromo))
+
 
 if __name__ == '__main__':
-    main()
+    test1()
