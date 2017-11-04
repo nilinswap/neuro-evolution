@@ -95,7 +95,8 @@ class Neterr:
         new_mat_enc = self.make_MatEncoding( chromo)
         input_till_H1 = middle_activation( np.dot( self.inputarr, new_mat_enc.CMatrix['IH1']*new_mat_enc.WMatrix['IH1'] ) )
         input_till_H2 = middle_activation( np.dot( input_till_H1, new_mat_enc.CMatrix['H1H2']*new_mat_enc.WMatrix['H1H2'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IH2']*new_mat_enc.WMatrix['IH2'] ))
-        output = final_activation( np.dot( input_till_H2, new_mat_enc.CMatrix['H2O']*new_mat_enc.WMatrix['H2O'] ) + np.dot( input_till_H1, new_mat_enc.CMatrix['H1O']*new_mat_enc.WMatrix['H1O'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IO']*new_mat_enc.WMatrix['IO'] ) )
+        bias_weight_arr = np.array([item.weight for item in new_mat_enc.Bias_conn_arr])
+        output = final_activation( np.dot( input_till_H2, new_mat_enc.CMatrix['H2O']*new_mat_enc.WMatrix['H2O'] ) + np.dot( input_till_H1, new_mat_enc.CMatrix['H1O']*new_mat_enc.WMatrix['H1O'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IO']*new_mat_enc.WMatrix['IO'] ) - bias_weight_arr )
         return output
 
 
@@ -262,7 +263,7 @@ def test1():
     neter = Neterr(indim, outdim, inputarr, 10, np.random)
     print(neter.feedforward_ne(newchromo))
     print(calc_output_directly(inputarr))
-
+    print(neter.feedforward_cm(newchromo))
 def main():
     indim=4
     outdim=3
