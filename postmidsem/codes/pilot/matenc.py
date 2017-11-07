@@ -15,7 +15,7 @@ def split_key(st):
     elif st == 'H2O':
         tup = ('H2','O')
     elif st == 'H1O':
-        tup = ('H2','O')
+        tup = ('H1','O')
     elif st == 'IO':
         tup = ('I','O')
     return tup
@@ -27,20 +27,21 @@ class MatEnc:
         self.Bias_conn_arr = Bias_conn_arr
         self.node_map = node_map              #maps local index( at matrix) to node
         self.couple_map = conn_map            #maps couple to innov num
-        self.node_lis = node_lis  #list of node objects
+        self.node_lis = node_lis                #list of node objects
 
 
-    def covert_to_chromosome(self,dob):
+    def convert_to_chromosome(self,dob):
         newchromo = chromosome.Chromosome(dob)
         # map_to_lis(self.node_num_map)
         newchromo.node_arr = self.node_lis
         newchromo.bias_conn_arr = self.Bias_conn_arr
-        newchromo.node_ctr = len(newchromo.node_arr)
+        newchromo.set_node_ctr()
         dicW=self.WMatrix
         dicC=self.CMatrix
+        #print([tup for tup in self.couple_map.items()][:3])
         for key in dicW.keys():
             key_tup = split_key(key)
-            m,n = dict[key].shape
+            m,n = dicW[key].shape
             for row in range(m):
                 for col in range(n):
                     if dicW[key][row][col]:
@@ -52,10 +53,17 @@ class MatEnc:
                         node1 = self.node_map[key_tup[0]][row]
                         node2 = self.node_map[key_tup[1]][col]
                         couple = (node1,node2)
-                        innov_num = self.couple_map[couple]
+                        if couple in self.couple_map:
+                            innov_num = self.couple_map[couple]
+                        else:
+                            print(row,col,key,"key_tup",key_tup)
+                            print("key error h yaar")
+
+                        #print ("hihihihi")
                         weight = dicW[key][row][col]
                         new_conn=gene.Conn(innov_num,couple,weight,status)
                         newchromo.conn_arr.append(new_conn)
+
         return newchromo
 
 
