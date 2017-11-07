@@ -11,7 +11,8 @@ class Chromosome:
         self.conn_arr = conn_arr	#list of conn objects
         self.bias_conn_arr = bias_arr	#list of BiasNode objects
         self.dob = dob 				#the generation in which it was created.
-        self.node_ctr=len(node_arr)
+        self.node_ctr=len(node_arr)+1
+
     def rand_init(self,inputdim,outputdim,rng):
 
         global innov_ctr
@@ -27,7 +28,9 @@ class Chromosome:
                 innov_ctr += 1
         self.bias_arr = [gene.BiasConn(outputt,rng.random()) for outputt in lisO]
         self.dob = 0
-    def set_node_ctr(self,ctr):
+    def set_node_ctr(self,ctr = None):
+        if not ctr:
+            ctr = len(self.node_arr)+1
         self.node_ctr = ctr
     def pp(self):
 
