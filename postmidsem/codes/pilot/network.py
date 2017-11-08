@@ -32,77 +32,26 @@ class Neterr:
         self.inputarr=inputarr  #self explanatory
         self.hidden_unit_lim = hidden_unit_lim
         self.rng = rng
+        rest_set, test_set = pimadataf.give_data()
+        self.restx = rest_set[0]
+        resty = rest_set[1]
+        self.testx = test_set[0]
+        testy = test_set[1]
+        self.resty = np.ravel(resty)
+        self.testy = np.ravel(testy)
+        self.rest_setx = tf.Variable(initial_value = self.restx, name='rest_setx',
+                                     dtype=tf.float64)
+        self.rest_sety = tf.Variable(initial_value = self.resty, name='rest_sety', dtype=tf.int32)
+        self.test_setx = tf.Variable(initial_value = self.testx, name='rest_sety',
+                                     dtype=tf.float64)
+        self.test_sety = tf.Variable(initial_value = self.testy, name='test_sety', dtype=tf.int32)
 
-        #self.arr_of_net = arr_of_net
-    """
-    def set_arr_of_net(self, newarr_of_net):
-        self.arr_of_net = newarr_of_net
-    """
-    def convert_chromo_to_MatEnc(self,chromo):
-
-        ConnMatrix = {}  # Connection Matrix
-        WeightMatrix = {}  # Weight Matrix
-        NatureCtrDict = {}  # Contains Counter of Nature { 'I', 'H1', 'H2', 'O' }
-        NatureCtrDict['I'] = 0
-        NatureCtrDict['H1'] = 0
-        NatureCtrDict['H2'] = 0
-        NatureCtrDict['O'] = 0
-
-        dictionary = {}  # Contains node numbers mapping starting from 0, nature-wise
-        dictionary['I'] = {}
-        dictionary['H1'] = {}
-        dictionary['H2'] = {}
-        dictionary['O'] = {}
-        couple_to_innov_map={}
-
-
-
-        for i in chromo.node_arr:
-            dictionary[i.nature][i] = NatureCtrDict[i.nature]
-            NatureCtrDict[i.nature] += 1
-
-        ConnMatrix['IO'] = np.zeros((self.inputdim, self.outputdim))
-        ConnMatrix['IH1'] = np.zeros((self.inputdim, NatureCtrDict['H1']))
-        ConnMatrix['IH2'] = np.zeros((self.inputdim, NatureCtrDict['H2']))
-        ConnMatrix['H1H2'] = np.zeros((NatureCtrDict['H1'], NatureCtrDict['H2']))
-        ConnMatrix['H1O'] = np.zeros((NatureCtrDict['H1'], self.outputdim))
-        ConnMatrix['H2O'] = np.zeros((NatureCtrDict['H2'], self.outputdim))
-
-        WeightMatrix['IO'] = np.zeros((self.inputdim, self.outputdim))
-        WeightMatrix['IH1'] = np.zeros((self.inputdim, NatureCtrDict['H1']))
-        WeightMatrix['IH2'] = np.zeros((self.inputdim, NatureCtrDict['H2']))
-        WeightMatrix['H1H2'] = np.zeros((NatureCtrDict['H1'], NatureCtrDict['H2']))
-        WeightMatrix['H1O'] = np.zeros((NatureCtrDict['H1'], self.outputdim))
-        WeightMatrix['H2O'] = np.zeros((NatureCtrDict['H2'], self.outputdim))
-
-        for con in chromo.conn_arr:
-            if con.status == True:
-                ConnMatrix[con.source.nature + con.destination.nature][
-                    dictionary[con.source.nature][con.source]][
-                    dictionary[con.destination.nature][con.destination]] = 1
-            couple_to_innov_map[con.get_couple()]=con.innov_num
-            WeightMatrix[con.source.nature + con.destination.nature][
-                dictionary[con.source.nature][con.source]][
-                dictionary[con.destination.nature][con.destination]] = con.weight
-
-        inv_dic = { key : { v : k for k,v in dictionary[key].items() } for key in dictionary.keys()}
-
-        new_encoding = matenc.MatEnc( WeightMatrix, ConnMatrix, chromo.bias_conn_arr, inv_dic, couple_to_innov_map, chromo.node_arr)
-
-        return new_encoding
 
     def feedforward_cm(self, chromo, middle_activation = relu, final_activation = sigmoid,play = 0):
-        if play:
-            maten = self.convert_chromo_to_MatEnc(chromo)
-            chromo = maten.convert_to_chromosome(chromo.dob)
-            print("here")
 
-        new_mat_enc = self.convert_chromo_to_MatEnc( chromo)
-        if 1:
-            print("right here right now")
-            chromo = new_mat_enc.convert_to_chromosome(chromo.dob)
-            new_mat_enc = self.convert_chromo_to_MatEnc(chromo)
-            print("right here")
+
+        new_mat_enc = chromo.convert_to_MatEnc( self.inputdim, self.outputdim)
+
         input_till_H1 = middle_activation( np.dot( self.inputarr, new_mat_enc.CMatrix['IH1']*new_mat_enc.WMatrix['IH1'] ) )
         input_till_H2 = middle_activation( np.dot( input_till_H1, new_mat_enc.CMatrix['H1H2']*new_mat_enc.WMatrix['H1H2'] ) + np.dot( self.inputarr, new_mat_enc.CMatrix['IH2']*new_mat_enc.WMatrix['IH2'] ))
         bias_weight_arr = np.array([item.weight for item in new_mat_enc.Bias_conn_arr])
@@ -115,10 +64,7 @@ class Neterr:
 
 
     def feedforward_ne(self,chromosome,middle_activation=relu,final_activation=sigmoid, play = 0):
-        if play:
-            maten = self.convert_chromo_to_MatEnc(chromosome)
-            chromosome = maten.convert_to_chromosome(chromosome.dob)
-            print("here")
+
 
         print("inside feedforward")
 
@@ -170,6 +116,7 @@ class Neterr:
         #pass
 
 
+
     def test(self, weight_arr):
         pass
 
@@ -190,13 +137,7 @@ def dummy_popultation(number):#return list of chromosomes
 
 
 
-def main1():
-    indim = 4
-    outdim = 1
-    arr_of_net = np.zeros((4,4))
-    np.random.seed(4)
-    neter = Neterr(indim, outdim, arr_of_net, 10, np.random)
-    neter.feedforwardcm(indim, outdim, arr_of_net, np.random)
+
 
 def test1():
     for_node = [(i,'I') for i in range(1,4)]
@@ -319,10 +260,11 @@ def test2():
         print("yeah they are equal")
     print(neter.feedforward_ne(newchromo, play=1))
     print(neter.feedforward_cm(newchromo, play=1))
-    print ( "done")
+    print(neter.feedforward_cm(newchromo, play=1))
+    print ( "done right")
 
     def interchanging_test( chromo ):
-        new_mat_enc = neter.convert_chromo_to_MatEnc(chromo)
+        new_mat_enc = chromo.convert_to_MatEnc(indim,outdim)
         newchromo = new_mat_enc.convert_to_chromosome(0)
         if newchromo.bias_conn_arr != chromo.bias_conn_arr:
             print("falied 1")
