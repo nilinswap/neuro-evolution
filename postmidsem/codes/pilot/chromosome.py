@@ -3,7 +3,9 @@
 import gene
 import matenc
 import numpy as np
-
+import tensorflow as tf
+import deep_net
+import time
 innov_ctr = None
 
 class Chromosome:
@@ -90,9 +92,7 @@ class Chromosome:
                     dictionary[con.source.nature][con.source]][
                     dictionary[con.destination.nature][con.destination]] = 1
             couple_to_innov_map[con.get_couple()]=con.innov_num
-            WeightMatrix[con.source.nature + con.destination.nature][
-                dictionary[con.source.nature][con.source]][
-                dictionary[con.destination.nature][con.destination]] = con.weight
+            WeightMatrix[con.source.nature + con.destination.nature][dictionary[con.source.nature][con.source]][dictionary[con.destination.nature][con.destination]] = con.weight
 
         inv_dic = { key : { v : k for k,v in dictionary[key].items() } for key in dictionary.keys()}
 
@@ -101,10 +101,12 @@ class Chromosome:
         return new_encoding
 
 
-    def modify_thru_backprop(self, x, y, inputdim, outputdim, chromo, trainx, trainy, epochs=10, learning_rate=0.01, L1_reg=0.00001, L2_reg=0.0001, ):
+    def modify_thru_backprop(self, inputdim, outputdim, trainx, trainy, epochs=10, learning_rate=0.1, n_par = 10 ):
 
+        x = tf.placeholder(shape=[None, inputdim], dtype=tf.float32)
+        y = tf.placeholder(shape=[None, ], dtype=tf.int32)
         n_par = n_par
-        par_size = int(trainx.shape[0] / n_par)
+        par_size = tf.shape(trainx)[0] // n_par
         prmsdind = tf.placeholder(name='prmsdind', dtype=tf.int32)
         valid_x_to_be = trainx[prmsdind * par_size:(prmsdind + 1) * par_size, :]
         valid_y_to_be = trainy[prmsdind * par_size:(prmsdind + 1) * par_size]
@@ -113,7 +115,9 @@ class Chromosome:
             axis=0)
         train_y_to_be = tf.concat(
             (trainy[:(prmsdind) * par_size], trainy[(prmsdind + 1) * par_size:]), axis=0)
-        newneu_net = deep_net.DeepNet(x, inputdim, outputdim, chromo)
+
+        mat_enc = self.convert_to_MatEnc(inputdim,outputdim)
+        newneu_net = deep_net.DeepNet(x, inputdim, outputdim, mat_enc)
 
 
         cost = newneu_net.negative_log_likelihood(y)
@@ -127,26 +131,27 @@ class Chromosome:
 
 
 
-                tf.global_variables_initializer().eval()
+                sess.run(tf.global_variables_initializer())
 
-                err = sess.run(newneu_net.errors(y), feed_dict={x: trainx, y: trainy})
-                print("train error ", err)
+                #err = sess.run(newneu_net.errors(y), feed_dict={x: trainx, y: trainy})
+                #print("train error ", err)
 
 
 
                 # just any no. which does not satisfy below condition
+
                 prev = 7
                 current = 5
                 start1 = time.time()
                 for epoch in range(epochs):
                     listisi = []
-                    for ind in range(self.n_par):
+                    for ind in range(n_par):
                         _, bost = sess.run([optmzr, cost],
                                            feed_dict={x: train_x_to_be.eval(feed_dict={prmsdind: ind}),
                                                       y: train_y_to_be.eval(feed_dict={prmsdind: ind})})
 
                         if epoch % (epochs // 4) == 0:
-                            q = fullnet.errors(y).eval(
+                            q = newneu_net.errors(y).eval(
                                 feed_dict={x: valid_x_to_be.eval(feed_dict={prmsdind: ind}),
                                            y: valid_y_to_be.eval(feed_dict={prmsdind: ind})})
                             listisi.append(q)
@@ -154,15 +159,29 @@ class Chromosome:
                         prev = current
                         current = np.mean(listisi)
                         print('validation', current)
+                        print(tf.reduce_sum(newneu_net.wei_mat_var_map['IO']).eval())
 
                     if prev - current < 0.002:
                         break;
                 end1 = time.time()
                 print("time ", end1 - start1)
 
-                print("updating chromo")
+                for key in newneu_net.wei_mat_var_map.keys():
+                    newneu_net.mat_enc.WMatrix[key] = newneu_net.wei_mat_var_map[key].eval()
+                for i in range(len(newneu_net.bias_wei_arr)):
+                    ar = newneu_net.bias_var.eval()
+                    newneu_net.mat_enc.Bias_conn_arr[i].set_weight(ar[i])
+        newchromo = newneu_net.mat_enc.convert_to_chromosome(self.dob)
 
-                
+
+        self.conn_arr = newchromo.conn_arr
+        self.node_arr = newchromo.node_arr
+        self.bias_conn_arr = newchromo.bias_conn_arr	#list of BiasNode objects
+        self.dob = newchromo.dob 				#the generation in which it was created.
+        self.node_ctr=len(self.node_arr)+1
+
+
+        return newchromo
 
 
 

@@ -1,13 +1,15 @@
 
 import numpy as np
 #import tf_mlp
-#import tensorflow as tf
+import tensorflow as tf
 import time
 import gene
 import matenc
 import chromosome
-
+import pimadataf
+import deep_net
 from chromosome import *
+import copy
 
 def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
@@ -40,10 +42,10 @@ class Neterr:
         self.resty = np.ravel(resty)
         self.testy = np.ravel(testy)
         self.rest_setx = tf.Variable(initial_value = self.restx, name='rest_setx',
-                                     dtype=tf.float64)
+                                     dtype=tf.float32)
         self.rest_sety = tf.Variable(initial_value = self.resty, name='rest_sety', dtype=tf.int32)
         self.test_setx = tf.Variable(initial_value = self.testx, name='rest_sety',
-                                     dtype=tf.float64)
+                                     dtype=tf.float32)
         self.test_sety = tf.Variable(initial_value = self.testy, name='test_sety', dtype=tf.int32)
 
 
@@ -279,6 +281,120 @@ def test2():
             print("failed 4")
     interchanging_test(newchromo)
 
+def test_mtbp():
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    st = '2212211'
+    for_node += [(i + 6, 'H' + st[i]) for i in range(len(st))]
+    node_ctr = 13
+    innov_num = 25
+    dob = 0
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.3, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+                (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
+                (9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
+                (13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True),
+                (16, (10, 5), 0.77, True),
+                (17, (1, 11), 0.25, True), (18, (11, 9), 0.15, True), (19, (2, 12), 0.6, True),
+                (20, (12, 7), 0.4, True),
+                (21, (3, 12), 0.8, True), (22, (2, 9), 0.9, True), (23, (12, 4), 0.75, True),
+                (24, (11, 5), 0.25, True),
+                ]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in
+                for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo = chromosome.Chromosome(dob, node_lis, conn_lis, bias_conn_lis)
+    newchromo.set_node_ctr(node_ctr)
+
+    # newchromo.pp()
+    def calc_output_directly(inputarr):
+        lis = []
+        for arr in inputarr:
+            x1 = arr[0]
+            x2 = arr[1]
+            x3 = arr[2]
+            output1 = sigmoid(
+                0.3 * x1 +
+                0.1 * relu(
+                    0.7 * relu(0.5 * x1) +
+                    0.2 * x1
+                ) +
+                0.15 * relu(
+                    0.1 * x2 +
+                    0.4 * relu(
+                        0.6 * x2 +
+                        0.8 * x3
+                    )
+                ) +
+                0.75 * relu(
+                    0.6 * x2 +
+                    0.8 * x3
+                ) -
+                0.2
+            )
+            # output2 = sigmoid(arr[0] * 0.25 + arr[1] * 0.5 + relu(arr[2] * 0.3) * 0.6 - 0.1)
+            output2 = sigmoid(
+                0.5 * x3 +
+                1 * relu(
+                    0.15 * relu(0.25 * x1) +
+                    0.9 * x2
+                ) +
+                0.25 * relu(
+                    0.25 * x1
+                ) +
+                0.77 * relu(
+
+                    0.33 * x3
+                ) -
+                0.1
+            )
+            lis.append([output1, output2])
+        return np.array(lis)
+
+    inputarr = np.array([[0.0, 2, 1], [0.8, 1, 2]])
+    indim = 8
+    outdim = 2
+
+    # np.random
+    rng = np.random
+    num_data = 10
+    # inputarr = np.random.random((num_data, indim))
+    neter = Neterr(indim, outdim, inputarr, 10, np.random)
+
+    ka = np.random.randint(0, 2, (num_data,))
+    """
+    targetarr = np.zeros((num_data,outdim)).astype(dtype = 'float32')
+    for i in range(num_data):
+        targetarr[i,ka[i]] = 1
+
+    print("target is ", targetarr)
+    """
+    targetarr = ka.astype('int32')
+    print(targetarr.dtype)
+    inputarr = inputarr.astype('float32')
+
+    tempchromo = copy.deepcopy(newchromo)
+    arr = newchromo.node_arr
+    newmatenc = tempchromo.convert_to_MatEnc(indim, outdim)
+    newmatenc=copy.deepcopy(newmatenc)
+
+    newchromo.modify_thru_backprop(  indim, outdim, neter.rest_setx, neter.rest_sety)
+    if not newchromo.node_arr == arr:
+        print("failed 1")
+    if not newchromo.dob == tempchromo.dob and not newchromo.node_ctr == tempchromo.node_ctr:
+        print("failed 2")
+    if not len(newchromo.conn_arr) == len(tempchromo.conn_arr):
+        print("failed 3")
+
+    newnewmatenc = newchromo.convert_to_MatEnc(indim,outdim)
+
+
+
+    for key in newnewmatenc.WMatrix.keys():
+        if (newnewmatenc.WMatrix[key] == newmatenc.WMatrix[key]).all():
+
+            print("failed 5",key)
 
 def main():
     indim=4
@@ -295,5 +411,5 @@ def main():
 
 
 if __name__ == '__main__':
-    test2()
+    test_mtbp()
 

@@ -42,30 +42,16 @@ def opt_compwise_multiply(mat1,mat2):
 class DeepNet(object):
 
 
-    def __init__(self, inputh, n_in, n_out, chromo, rng, middle_activation = tf.nn.relu, final_activation = tf.nn.sigmoid):
+    def __init__(self, inputh, n_in, n_out, mat_enc, middle_activation = tf.nn.relu, final_activation = tf.nn.sigmoid):
 
 
         self.n_in = n_in
         self.n_out = n_out
-        self.chromo = chromo
-        self.mat_enc = self.chromo.convert_to_MatEnc(n_in, n_out)
+        #self.chromo = chromo
+        self.mat_enc = mat_enc
 
         self.input = inputh
-        """
-        self.con_matIH1 = tf.Variable(initial_value= self.mat_enc.CMatrix['IH1'], dtype = tf.float32)
-        self.con_matH1H2 = tf.Variable(initial_value= self.mat_enc.CMatrix['H1H2'], dtype = tf.float32)
-        self.con_matIH2 = tf.Variable(initial_value=self.mat_enc.CMatrix['IH2'], dtype=tf.float32)
-        self.con_matH2O = tf.Variable(initial_value=self.mat_enc.CMatrix['H2O'], dtype=tf.float32)
-        self.con_matH1O = tf.Variable(initial_value=self.mat_enc.CMatrix['H1O'], dtype=tf.float32)
-        self.con_matIO = tf.Variable(initial_value=self.mat_enc.CMatrix['IO'], dtype=tf.float32)
 
-        self.wei_matIH1 = tf.Variable(initial_value=self.mat_enc.WMatrix['IH1'], dtype=tf.float32)
-        self.wei_matH1H2 = tf.Variable(initial_value=self.mat_enc.WMatrix['H1H2'], dtype=tf.float32)
-        self.wei_matIH2 = tf.Variable(initial_value=self.mat_enc.WMatrix['IH2'], dtype=tf.float32)
-        self.wei_matH2O = tf.Variable(initial_value=self.mat_enc.WMatrix['H2O'], dtype=tf.float32)
-        self.wei_matH1O = tf.Variable(initial_value=self.mat_enc.WMatrix['H1O'], dtype=tf.float32)
-        self.wei_matIO = tf.Variable(initial_value=self.mat_enc.WMatrix['IO'], dtype=tf.float32)
-        """
         self.con_mat_var_map=  {}
         self.wei_mat_var_map = {}
         for key in self.mat_enc.CMatrix.keys():
@@ -79,8 +65,8 @@ class DeepNet(object):
         density_map = {}
         for key in to_effec_mat_node_map.keys():
             density_map[key] = find_density(to_effec_mat_node_map[key])
-        self.bias_wei_arr = np.array( [ item.weight for item in self.chromo.bias_conn_arr] )
-        self.bias_tensor = tf.Variable( initial_value = self.bias_wei_arr, dtype = tf.float32)
+        self.bias_wei_arr = np.array( [ item.weight for item in self.mat_enc.Bias_conn_arr] )
+        self.bias_var = tf.Variable( initial_value = self.bias_wei_arr, name  = "bias", dtype = tf.float32)
 
 
         input_till_H1 = middle_activation(tf.sparse_matmul( self.input, to_effec_mat_node_map['IH1'], b_is_sparse = True))
@@ -92,6 +78,7 @@ class DeepNet(object):
                             )
                         )
 
+
         output    = final_activation(
                         tf.add(
                             tf.add(
@@ -102,7 +89,7 @@ class DeepNet(object):
                                     tf.sparse_matmul(self.input, to_effec_mat_node_map['IO'] , b_is_sparse = True)
                             ),
 
-                            self.bias_tensor
+                            self.bias_var
                         )
                     )
 
@@ -120,7 +107,7 @@ class DeepNet(object):
             # print("hi",s)
             self.y_pred = tf.cast(s, dtype=tf.int32)
 
-        self.params = [ self.wei_mat_var_map[key] for key in self.wei_mat_var_map.keys()] + [self.bias_tensor]
+        self.params = [ self.wei_mat_var_map[key] for key in self.wei_mat_var_map.keys()] + [self.bias_var]
 
 
     def negative_log_likelihood(self, y):
@@ -269,7 +256,8 @@ def test2():
     print(targetarr)
     x = tf.placeholder( shape = [None, indim], dtype = tf.float32)
     y = tf.placeholder( shape = [None,], dtype = tf.int32)
-    newnet = DeepNet(x, indim, outdim, newchromo, rng = rng)
+    newmat_enc = newchromo.convert_to_MatEnc(indim,outdim)
+    newnet = DeepNet(x, indim, outdim, newmat_enc)
     cost = newnet.negative_log_likelihood(y)
     learning_rate = 0.05
     optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=newnet.params)
@@ -282,9 +270,12 @@ def test2():
         print(sess.run(newnet.con_mat_var_map['IH2']))
         print(sess.run([optmzr,newnet.y_pred,cost], feed_dict = { x : inputarr, y : targetarr}))
         print(sess.run(newnet.wei_mat_var_map['IH2']))
-        print(sess.run([optmzr, newnet.y_pred, cost], feed_dict={x: inputarr, y: targetarr}))
+        print(sess.run([optmzr, newnet.bias_var, cost], feed_dict={x: inputarr, y: targetarr}))
         print(sess.run(newnet.con_mat_var_map['IH2']))
-        print(sess.run([optmzr, newnet.y_pred, newnet.errors(y)], feed_dict={x: inputarr, y: targetarr}))
+        print(sess.run([optmzr, newnet.bias_var, newnet.errors(y)], feed_dict={x: inputarr, y: targetarr}))
+
+
+    #newchromo.modify_thru_backprop()
 
 if __name__ == '__main__':
     test2()

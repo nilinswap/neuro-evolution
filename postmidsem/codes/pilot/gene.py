@@ -21,6 +21,8 @@ class Conn:
     def get_couple(self):
         return (self.source, self.destination)
 
+    def set_weight(self, weight):
+        self.weight = weight
     def pp(self):
         print("\n\nConn")
         print("innov_num:", self.innov_num)
@@ -31,8 +33,7 @@ class Conn:
         print("-----------------")
 
 
-def set_weight(self, weight):
-    self.weight = weight
+
 
 
 class BiasConn(Conn):
@@ -42,5 +43,4 @@ class BiasConn(Conn):
         status = True
         Conn.__init__(self, -1, (Node(numb, nature), out_node), weight, status=status)
 
-    def get_couple(self):
-        return (self.source, self.destination)
+
