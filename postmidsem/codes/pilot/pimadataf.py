@@ -33,7 +33,7 @@ def myrange(start,end,step):
     while i+step < end:
         i+=step
         yield i
-
+print(traindata)
 def give_data():
     #1. make iris.data in usable form
     #2. make input set and output set out of it

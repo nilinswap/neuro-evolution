@@ -10,7 +10,7 @@ import pimadataf
 import deep_net
 from chromosome import *
 import copy
-
+import Population
 def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
 def relu(arr):
@@ -51,7 +51,7 @@ class Neterr:
 
     def feedforward_cm(self, chromo, middle_activation = relu, final_activation = sigmoid,play = 0):
 
-
+        self.inputarr = self.restx
         new_mat_enc = chromo.convert_to_MatEnc( self.inputdim, self.outputdim)
 
         input_till_H1 = middle_activation( np.dot( self.inputarr, new_mat_enc.CMatrix['IH1']*new_mat_enc.WMatrix['IH1'] ) )
@@ -79,6 +79,7 @@ class Neterr:
             else:
                 print(item)
         """
+        self.inputarr = self.restx
         return_arr = np.array([])
         for i in range(self.inputarr.shape[0]):
 
@@ -112,7 +113,7 @@ class Neterr:
                 storage[self.inputdim + 1+p]    += -1*bias_weights[p]
             output_part = storage[self.inputdim+1:self.outputdim+self.inputdim+1]
             return_arr = np.concatenate((return_arr,output_part))
-        return final_activation(return_arr.reshape((self.inputarr.shape[0],self.outputdim)))
+        return final_activation(return_arr.reshape((self.inputarr.shape[0],self.outputdim)))       #a 2d matrix of dimension #datapoints X #outputdim
 
 
         #pass
@@ -354,7 +355,7 @@ def test_mtbp():
 
     inputarr = np.array([[0.0, 2, 1], [0.8, 1, 2]])
     indim = 8
-    outdim = 2
+    outdim = 1
 
     # np.random
     rng = np.random
@@ -363,12 +364,15 @@ def test_mtbp():
     neter = Neterr(indim, outdim, inputarr, 10, np.random)
 
     ka = np.random.randint(0, 2, (num_data,))
+    #print(neter.feedforward_ne(chromo))
     """
     targetarr = np.zeros((num_data,outdim)).astype(dtype = 'float32')
     for i in range(num_data):
         targetarr[i,ka[i]] = 1
 
     print("target is ", targetarr)
+    """
+
     """
     targetarr = ka.astype('int32')
     print(targetarr.dtype)
@@ -395,12 +399,84 @@ def test_mtbp():
         if (newnewmatenc.WMatrix[key] == newmatenc.WMatrix[key]).all():
 
             print("failed 5",key)
+    """
+
+    popul = Population.Population(indim,outdim,10,40)
+    #popul.set_initial_population_as_list(indim,1,dob=0)
+    #[item.pp() for item in popul.list_chromo]
+    print(len(popul.list_chromo))
+    print(popul.list_chromo[0].pp())
+    print("-----------------------------------------------------------")
+    time.sleep(5)
+    print(popul.list_chromo[2].pp())
+    #popul.set_objective_arr(neter)
+    #print(popul.objective_arr)
+def newtest():
+    indim = 8
+    outdim = 1
+
+    # np.random
+    rng = np.random
+    num_data = 10
+    inputarr = np.random.random((num_data, indim))
+    neter = Neterr(indim, outdim, inputarr, 10, np.random)
+
+    ka = np.random.randint(0, 2, (num_data,))
+    # print(neter.feedforward_ne(chromo))
+    """
+    targetarr = np.zeros((num_data,outdim)).astype(dtype = 'float32')
+    for i in range(num_data):
+        targetarr[i,ka[i]] = 1
+
+    print("target is ", targetarr)
+    """
+
+    """
+    targetarr = ka.astype('int32')
+    print(targetarr.dtype)
+    inputarr = inputarr.astype('float32')
+
+    tempchromo = copy.deepcopy(newchromo)
+    arr = newchromo.node_arr
+    newmatenc = tempchromo.convert_to_MatEnc(indim, outdim)
+    newmatenc=copy.deepcopy(newmatenc)
+
+    newchromo.modify_thru_backprop(  indim, outdim, neter.rest_setx, neter.rest_sety)
+    if not newchromo.node_arr == arr:
+        print("failed 1")
+    if not newchromo.dob == tempchromo.dob and not newchromo.node_ctr == tempchromo.node_ctr:
+        print("failed 2")
+    if not len(newchromo.conn_arr) == len(tempchromo.conn_arr):
+        print("failed 3")
+
+    newnewmatenc = newchromo.convert_to_MatEnc(indim,outdim)
+
+
+
+    for key in newnewmatenc.WMatrix.keys():
+        if (newnewmatenc.WMatrix[key] == newmatenc.WMatrix[key]).all():
+
+            print("failed 5",key)
+    """
+
+    popul = Population.Population(indim, outdim, 10, 40)
+    # popul.set_initial_population_as_list(indim,1,dob=0)
+    # [item.pp() for item in popul.list_chromo]
+    print(len(popul.list_chromo))
+    #print(popul.list_chromo[0].pp())
+    print("-----------------------------------------------------------")
+    time.sleep(5)
+    #print(popul.list_chromo[2].pp())
+    popul.set_objective_arr(neter)
+    #print(popul.objective_arr)
+
 
 def main():
-    indim=4
-    outdim=3
+    indim=8
+    outdim=1
     np.random.seed(4)
     num_data=2
+
     inputarr=np.random.random((num_data,indim))
     neter = Neterr(indim, outdim, inputarr, 10, np.random)
     chromo=chromosome.Chromosome(0)
@@ -411,5 +487,5 @@ def main():
 
 
 if __name__ == '__main__':
-    test_mtbp()
+    newtest()
 
