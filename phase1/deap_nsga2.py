@@ -101,7 +101,7 @@ def main(seed=None):
         logbook.record(gen=gen, evals=len(invalid_ind), **record)
         print(logbook.stream)
 
-    #print("Final population hypervolume is %f" % hypervolume(pop, [11.0, 11.0]))
+    #print("Final population hypervolume is %f" % HyperVolume(pop, [11.0, 11.0]))
 
     return pop, logbook
         
