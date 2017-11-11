@@ -28,7 +28,7 @@ def priortize_connections(conn_lis):
         dict[tup[0].nature+tup[1].nature].append(concsn)
     return dict['IH1']+['breakH1']+dict['H1H2']+dict['IH2']+['breakH2']+dict['H2O']+dict['H1O']+dict['IO']
 class Neterr:
-    def __init__(self, inputdim, outputdim,  hidden_unit_lim ,rng):
+    def __init__(self, inputdim, outputdim,   hidden_unit_lim ,rng):
         self.inputdim = inputdim
         self.outputdim = outputdim
         #self.inputarr=inputarr  #self explanatory
@@ -48,7 +48,7 @@ class Neterr:
         self.test_setx = tf.Variable(initial_value = self.testx, name='rest_sety',
                                      dtype=tf.float32)
         self.test_sety = tf.Variable(initial_value = self.testy, name='test_sety', dtype=tf.int32)
-
+        #self.inputarr = inputarr
         self.inputarr = self.restx
 
     def feedforward_cm(self, chromo, middle_activation = relu, final_activation = sigmoid,play = 0):
@@ -125,8 +125,7 @@ class Neterr:
     def test(self, weight_arr):
         pass
 
-    def modify_thru_backprop(self, popul, epochs=10, learning_rate=0.01, L1_reg=0.00001, L2_reg=0.0001):
-        pass
+
 
 
 def squa_test(x):
@@ -211,6 +210,124 @@ def test2():
     newchromo.__setattr__('dob',dob)
     newchromo.set_node_ctr(node_ctr)
 
+    def calc_output_directly(inputarr):
+        lis = []
+        for arr in inputarr:
+            x1 = arr[0]
+            x2 = arr[1]
+            x3 = arr[2]
+            output1 = sigmoid(
+                                0.3 * x1     +
+                                0.1 * relu(
+                                            0.7 * relu(0.5 * x1) +
+                                            0.2 * x1
+                                        )    +
+                                0.15 * relu(
+                                            0.1 * x2 +
+                                            0.4 * relu(
+                                                0.6 * x2 +
+                                                0.8 * x3
+                                            )
+                                        )     +
+                                0.75 * relu(
+                                            0.6 * x2 +
+                                            0.8 * x3
+                                        )     -
+                                 0.2
+                        )
+            #output2 = sigmoid(arr[0] * 0.25 + arr[1] * 0.5 + relu(arr[2] * 0.3) * 0.6 - 0.1)
+            output2 = sigmoid(
+                0.5 * x3 +
+                1 * relu(
+                    0.15 * relu(0.25 * x1) +
+                    0.9 * x2
+                ) +
+                0.25 * relu(
+                    0.25 * x1
+                ) +
+                0.77 * relu(
+
+                    0.33 * x3
+                ) -
+                0.1
+            )
+            lis.append([output1, output2])
+        return np.array(lis)
+
+    inputarr = np.array([[0, 2, 1], [0.8, 1, 2]])
+
+    np.random.seed(4)
+    num_data = 2
+    # inputarr = np.random.random((num_data, indim))
+    neter = Neterr(indim, outdim,  10, np.random)
+    print(neter.feedforward_ne(newchromo))
+    print(calc_output_directly(inputarr))
+    tempchromo = newchromo
+    print(neter.feedforward_cm(newchromo))
+    if (newchromo == tempchromo) :
+        print("yeah they are equal")
+    print(neter.feedforward_ne(newchromo, play=1))
+    print(neter.feedforward_cm(newchromo, play=1))
+    print(neter.feedforward_cm(newchromo, play=1))
+    print ( "done right")
+
+    def interchanging_test( chromo ):
+        new_mat_enc = chromo.convert_to_MatEnc(indim,outdim)
+        newchromo = new_mat_enc.convert_to_chromosome(indim,outdim,dob)
+        if newchromo.bias_conn_arr != chromo.bias_conn_arr:
+            print("falied 1")
+        if newchromo.node_arr != chromo.node_arr:
+            print("failed 2")
+        if newchromo.dob != chromo.dob or newchromo.node_ctr != chromo.node_ctr:
+            print("failed 3", "node_ctr are", newchromo.node_ctr, chromo.node_ctr, len(newchromo.node_arr), len(chromo.node_arr))
+        listup1 = [(con.status,con.weight,con.get_couple(),con.innov_num) for con in newchromo.conn_arr]
+        listup2 = [(con.status, con.weight, con.get_couple(), con.innov_num) for con in chromo.conn_arr]
+        #print( set(listup1),set(listup2))
+        if set(listup1) != set(listup2):
+            print("failed 4")
+    interchanging_test(newchromo)
+def test_for_muta():
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    st='2212211'
+    for_node +=  [(i+6,'H'+st[i]) for i in range(len(st))]
+    node_ctr = 13
+    innov_num = 25
+    dob = 0
+    indim=8
+    outdim = 2
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.3, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+                (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
+                (9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
+                (13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True),
+                (17, (1, 11), 0.25, True), (18, (11, 9), 0.15, True), (19, (2, 12), 0.6, True), (20, (12, 7), 0.4, True),
+                (21, (3, 12), 0.8, True), (22, (2, 9), 0.9, True), (23, (12, 4), 0.75, True), (24, (11, 5), 0.25, True),
+                ]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo = Chromosome(indim,outdim)
+    newchromo.__setattr__('conn_arr', conn_lis)
+    newchromo.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo.__setattr__('node_arr', node_lis)
+    newchromo.__setattr__('dob',dob)
+    newchromo.set_node_ctr(node_ctr)
+    #chromosome.Chromosome.pp(newchromo)
+    import copy
+    random_val = 0.9
+    zarr =copy.deepcopy( newchromo.conn_arr)
+    """if random_val <= 0.8:
+        newchromo.weight_mutation(np.random)
+    else:
+        newchromo.edge_mutation(indim, outdim, np.random)
+        pass
+    """
+    newchromo.do_mutation(1,1,1,indim, outdim, np.random)
+    #print(zarr[zind].pp(), newchromo.conn_arr[zind].pp())
+    print(len(zarr), len(newchromo.conn_arr))
+    print("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    #chromosome.Chromosome.pp(newchromo)
     # newchromo.pp()
     def calc_output_directly(inputarr):
         lis = []
@@ -257,12 +374,11 @@ def test2():
         return np.array(lis)
 
     inputarr = np.array([[0, 2, 1], [0.8, 1, 2]])
-    indim = 3
-    outdim = 2
+
     np.random.seed(4)
     num_data = 2
     # inputarr = np.random.random((num_data, indim))
-    neter = Neterr(indim, outdim, inputarr, 10, np.random)
+    neter = Neterr(indim, outdim, 10, np.random)
     print(neter.feedforward_ne(newchromo))
     print(calc_output_directly(inputarr))
     tempchromo = newchromo
@@ -322,6 +438,7 @@ def test_mtbp():
     newchromo.__setattr__('dob',dob)
     newchromo.set_node_ctr(node_ctr)
 
+
     # newchromo.pp()
     def calc_output_directly(inputarr):
         lis = []
@@ -375,7 +492,7 @@ def test_mtbp():
     rng = np.random
     num_data = 10
     # inputarr = np.random.random((num_data, indim))
-    neter = Neterr(indim, outdim, inputarr, 10, np.random)
+    neter = Neterr(indim, outdim,  10, np.random)
 
     ka = np.random.randint(0, 2, (num_data,))
     #print(neter.feedforward_ne(chromo))
@@ -520,6 +637,7 @@ def test3():
         # print(neter.feedforward_ne(newchromo, play =1))
 
 
+
 def main():
     indim=8
     outdim=1
@@ -536,5 +654,6 @@ def main():
 
 
 if __name__ == '__main__':
-    newtest()
+    test_for_muta()
+
 
