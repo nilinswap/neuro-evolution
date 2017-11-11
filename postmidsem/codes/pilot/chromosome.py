@@ -40,6 +40,12 @@ class Chromosome:
         self.bias_conn_arr = [gene.BiasConn(outputt, np.random.random()/1000) for outputt in lisO]
         self.dob = 0
 
+    def reset_chromo_to_zero(self):
+        self.node_ctr = 0
+        self.node_arr = []
+        self.conn_arr = []
+        self.bias_conn_arr = []
+
     def set_node_ctr(self, ctr=None):
         if not ctr:
             ctr = len(self.node_arr) + 1
@@ -127,7 +133,7 @@ class Chromosome:
         newneu_net = deep_net.DeepNet(x, inputdim, outputdim, mat_enc)
 
         cost = newneu_net.negative_log_likelihood(y)
-
+        print(newneu_net.mat_enc.CMatrix['IO'])
         optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=newneu_net.params)
         # savo1 = tf.train.Saver(var_list=[self.srest_setx, self.srest_sety, self.stest_setx, self.stest_sety])
         with tf.Session() as sess:
@@ -172,7 +178,8 @@ class Chromosome:
             for i in range(len(newneu_net.bias_wei_arr)):
                 ar = newneu_net.bias_var.eval()
                 newneu_net.mat_enc.Bias_conn_arr[i].set_weight(ar[i])
-        newchromo = newneu_net.mat_enc.convert_to_chromosome(self.dob)
+        print(newneu_net.mat_enc.CMatrix['IO'],'final')
+        newchromo = newneu_net.mat_enc.convert_to_chromosome(inputdim,outputdim,self.dob)
 
         self.conn_arr = newchromo.conn_arr
         self.node_arr = newchromo.node_arr

@@ -189,6 +189,8 @@ def test2():
     node_ctr = 13
     innov_num = 25
     dob = 0
+    indim=8
+    outdim = 2
     node_lis = [gene.Node(x, y) for x, y in for_node]
     for_conn = [(1, (1, 4), 0.3, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
                 (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
@@ -200,7 +202,11 @@ def test2():
     conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
     for_bias = [(4, 0.2), (5, 0.1)]
     bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
-    newchromo = Chromosome(dob, node_lis, conn_lis, bias_conn_lis)
+    newchromo = Chromosome(indim,outdim)
+    newchromo.__setattr__('conn_arr', conn_lis)
+    newchromo.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo.__setattr__('node_arr', node_lis)
+    newchromo.__setattr__('dob',dob)
     newchromo.set_node_ctr(node_ctr)
 
     # newchromo.pp()
@@ -249,7 +255,7 @@ def test2():
         return np.array(lis)
 
     inputarr = np.array([[0, 2, 1], [0.8, 1, 2]])
-    indim = 3
+    indim = 8
     outdim = 2
     np.random.seed(4)
     num_data = 2
@@ -268,7 +274,7 @@ def test2():
 
     def interchanging_test( chromo ):
         new_mat_enc = chromo.convert_to_MatEnc(indim,outdim)
-        newchromo = new_mat_enc.convert_to_chromosome(0)
+        newchromo = new_mat_enc.convert_to_chromosome(indim,outdim,dob)
         if newchromo.bias_conn_arr != chromo.bias_conn_arr:
             print("falied 1")
         if newchromo.node_arr != chromo.node_arr:
@@ -305,7 +311,13 @@ def test_mtbp():
                 for_conn]
     for_bias = [(4, 0.2), (5, 0.1)]
     bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
-    newchromo = chromosome.Chromosome(dob, node_lis, conn_lis, bias_conn_lis)
+    indim = 8
+    outdim =2
+    newchromo = Chromosome(indim,outdim)
+    newchromo.__setattr__('conn_arr', conn_lis)
+    newchromo.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo.__setattr__('node_arr', node_lis)
+    newchromo.__setattr__('dob',dob)
     newchromo.set_node_ctr(node_ctr)
 
     # newchromo.pp()
@@ -355,7 +367,7 @@ def test_mtbp():
 
     inputarr = np.array([[0.0, 2, 1], [0.8, 1, 2]])
     indim = 8
-    outdim = 1
+    outdim = 2
 
     # np.random
     rng = np.random
@@ -373,7 +385,6 @@ def test_mtbp():
     print("target is ", targetarr)
     """
 
-    """
     targetarr = ka.astype('int32')
     print(targetarr.dtype)
     inputarr = inputarr.astype('float32')
@@ -389,7 +400,7 @@ def test_mtbp():
     if not newchromo.dob == tempchromo.dob and not newchromo.node_ctr == tempchromo.node_ctr:
         print("failed 2")
     if not len(newchromo.conn_arr) == len(tempchromo.conn_arr):
-        print("failed 3")
+        print("failed 3",len(newchromo.conn_arr), len(tempchromo.conn_arr))
 
     newnewmatenc = newchromo.convert_to_MatEnc(indim,outdim)
 
@@ -399,18 +410,7 @@ def test_mtbp():
         if (newnewmatenc.WMatrix[key] == newmatenc.WMatrix[key]).all():
 
             print("failed 5",key)
-    """
 
-    popul = Population.Population(indim,outdim,10,40)
-    #popul.set_initial_population_as_list(indim,1,dob=0)
-    #[item.pp() for item in popul.list_chromo]
-    print(len(popul.list_chromo))
-    print(popul.list_chromo[0].pp())
-    print("-----------------------------------------------------------")
-    time.sleep(5)
-    print(popul.list_chromo[2].pp())
-    #popul.set_objective_arr(neter)
-    #print(popul.objective_arr)
 def newtest():
     indim = 8
     outdim = 1
@@ -487,5 +487,5 @@ def main():
 
 
 if __name__ == '__main__':
-    newtest()
+    test_mtbp()
 
