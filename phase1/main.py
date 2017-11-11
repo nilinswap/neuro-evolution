@@ -1,3 +1,4 @@
+
 import array
 import random
 import json
@@ -13,43 +14,19 @@ from deap.benchmarks.tools import diversity, convergence
 from deap import creator
 from deap import tools
 
-creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
-creator.create("Individual", array.array, typecode='d', fitness=creator.FitnessMin)
+from Population import Population
+from network import Neterr
+'''
+creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, -1.0))
 
 toolbox = base.Toolbox()
-
-# Problem definition
-# Functions zdt1, zdt2, zdt3, zdt6 have bounds [0, 1]
-BOUND_LOW, BOUND_UP = 0.0, 1.0
-
-# Functions zdt4 has bounds x1 = [0, 1], xn = [-5, 5], with n = 2, ..., 10
-# BOUND_LOW, BOUND_UP = [0.0] + [-5.0]*9, [1.0] + [5.0]*9
-
-# Functions zdt1, zdt2, zdt3 have 30 dimensions, zdt4 and zdt6 have 10
-NDIM = 30
-
+class Individual():
+	pass
 
 def zdt1(individual):
-	"""ZDT1 multiobjective function.
-	
-	:math:`g(\\mathbf{x}) = 1 + \\frac{9}{n-1}\\sum_{i=2}^n x_i`
-	
-	:math:`f_{\\text{ZDT1}1}(\\mathbf{x}) = x_1`
-	
-	:math:`f_{\\text{ZDT1}2}(\\mathbf{x}) = g(\\mathbf{x})\\left[1 - \\sqrt{\\frac{x_1}{g(\\mathbf{x})}}\\right]`
-	"""
-	g  = 1.0 + 9.0*sum(individual[1:])/(len(individual)-1)
-	f1 = individual[0]
-	f2 = g * (1 - sqrt(f1/g))
-	return f1, f2
+	return f1, f2, f3, f4
 
-def uniform(low, up, size=None):
-	try:
-		return [random.uniform(a, b) for a, b in zip(low, up)]
-	except TypeError:
-		return [random.uniform(a, b) for a, b in zip([low] * size, [up] * size)]
 
-toolbox.register("attr_float", uniform, BOUND_LOW, BOUND_UP, NDIM)
 toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.attr_float)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
@@ -57,8 +34,22 @@ toolbox.register("evaluate", zdt1)
 toolbox.register("mate", tools.cxSimulatedBinaryBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0)
 toolbox.register("mutate", tools.mutPolynomialBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0, indpb=1.0/NDIM)
 toolbox.register("select", tools.selNSGA2)
-
+'''
 def main(seed=None):
+	#random.seed(seed)
+	print("hi")
+	indim = 8
+	outdim = 1
+	n_hidden = 10
+	size = 4
+	#pop = Population.Population(indim,outdim,n_hidden,size), 
+	#net = network.Neterr(indim, outdim, popo.list_chromo, n_hidden, np.random)
+	#pop.set_objective_arr(net)
+	print("hi")
+	#print(size(pop.list_chromo[0].node_arr))
+
+"""
+def main2(seed=None):
 	random.seed(seed)
 
 	NGEN = 250
@@ -73,8 +64,15 @@ def main(seed=None):
 	
 	logbook = tools.Logbook()
 	logbook.header = "gen", "evals", "std", "min", "avg", "max"
-	
-	pop = toolbox.population(n=MU)
+	indim = 8
+	outdim = 1
+	n_hidden = 10
+	size = 4
+	pop = Population.Population(indim,outdim,n_hidden,size), 
+	net = network.Neterr(indim, outdim, popo.list_chromo, n_hidden, np.random)
+	pop.set_objective_arr(net)
+	print(pop)
+	#pop = toolbox.population(n=MU)
 
 	# Evaluate the individuals with an invalid fitness
 	invalid_ind = [ind for ind in pop if not ind.fitness.valid]
@@ -142,3 +140,7 @@ if __name__ == "__main__":
 	plt.scatter(front[:,0], front[:,1], c="b")
 	plt.axis("tight")
 	plt.show()
+	"""
+
+if __name__ == "__main__":
+	main()
