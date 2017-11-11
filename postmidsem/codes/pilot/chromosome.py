@@ -189,6 +189,40 @@ class Chromosome:
 
         return newchromo
 
+    def weight_mutation(self, rng,factor = 0.001):
+
+        chosen_con = rng.choice(self.conn_arr)
+        chosen_con.weight += (rng.random() - 0.5)*2*factor
+
+
+    def edge_mutation(self,inputdim,outputdim,rng):
+
+        matenc = self.convert_to_MatEnc(inputdim,outputdim)
+        key_list = list( matenc.WMatrix.keys())
+        key_list.remove('IO')
+
+        chosen_key = rng.choice(key_list)
+
+        mat  = matenc.CMatrix[chosen_key]
+
+        i = rng.randint(0,mat.shape[0])
+        j = rng.randint(0,mat.shape[1])
+
+        while mat[i][j] != 0:
+            i = rng.randint(0, mat.shape[0])
+            j = rng.randint(0, mat.shape[1])
+        mat[i][j] = 1
+        if not matenc.WMatrix[ chosen_key][i][j] :
+            global innov_ctr
+            con_obj = gene.Conn(innov_ctr, (matenc.node_map[i], matenc.node_map[j]), (rng.random()-0.5)*2, True)
+            innov_ctr += 1
+            self.conn_arr.append(con_obj)
+            return
+        else:
+            pass
+            #WE HAVE KEPT THIS INCOMPLETE, TRYING TO CHANGE THE STRUCTURE IN THE CHASE FOR OPTIMALITY.
+
+
 # def rand_init(inputdim, outputdim):
 #     global innov_ctr
 #     newchromo = Chromosome(0)
