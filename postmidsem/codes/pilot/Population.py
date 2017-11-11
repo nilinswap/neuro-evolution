@@ -25,7 +25,11 @@ def give_neg_log_likelihood( arr , oneDarr):
     return summer/parr.shape[0]
 
 def give_mse(arr, oneDarr):
-    newar = np.argmax(arr, axis = 1)
+    if arr.shape[1]==1:
+        newar = np.where(arr>0.5,1,0)
+        newar = np.ravel(newar)
+    else:
+        newar = np.argmax(arr, axis = 1)
     #print(newar-oneDarr)
     return  np.sum((newar-oneDarr)**2)
 
@@ -33,7 +37,11 @@ def give_false_positive_ratio(arr, oneDarr):
     if arr.shape[1] > 2:
         print("false_positive is not appropriate objective, change objective function in Population.py")
         exit(1)
-    ar1 = np.argmax( arr, axis = 1)
+    if arr.shape[1]==1:
+        ar1 = np.where(arr>0.5,1,0)
+        ar1 = np.ravel(ar1)
+    else:
+        ar1 = np.argmax(arr, axis = 1)
     summer =  np.sum([ar1[i]*(1-oneDarr[i]) for i in range(oneDarr.shape[0])])
     dummer = np.sum([(1-ar1[i])*(1-oneDarr[i]) for i in range(ar1.shape[0])])
     return summer/(summer+dummer)
@@ -42,8 +50,11 @@ def give_false_negative_ratio(arr, oneDarr):
     if arr.shape[1] > 2:
         print("false_positive is not appropriate objective, change objective function in Population.py")
         exit(1)
-    ar1 = np.argmax( arr, axis = 1)
-    
+    if arr.shape[1]==1:
+        ar1 = np.where(arr>0.5,1,0)
+        ar1 = np.ravel(ar1)
+    else:
+        ar1 = np.argmax(arr, axis = 1)
     summer = np.sum([(1-ar1[i])*(oneDarr[i]) for i in range(oneDarr.shape[0])])
     dummer = np.sum([(ar1[i])*(oneDarr[i]) for i in range(ar1.shape[0])])
     return summer/(summer+dummer)
@@ -105,7 +116,9 @@ class Population(object):
             exit(1)
         lis = []
         for chromo in self.list_chromo:
+            #print("cmatrix",chromo.convert_to_MatEnc(network_obj.inputdim, network_obj.outputdim).CMatrix['IO'])
             outputarr = network_obj.feedforward_ne(chromo)
+            #print(outputarr)
             #print(outputarr)
 
             #hot_vec = give_hot_vector( outputarr )
@@ -150,14 +163,9 @@ def main():
     pop = Population(4, dimtup, size=9)
 
     print(pop.list_chromo)
-    pop.set_fitness()
-    print(pop.fits_pops)
-    print(pop.k_dict)
-    print(pop.sortedlistup)
-    print(pop.sumar)
-    print(pop.sum_dict)
+
     neter = Network.Neterr(dimtup[0], dimtup[1], pop.list_chromo, pop.trainx, pop.trainy, pop.testx, pop.testy)
-    Network.Backnet(4, neter)
+
 
 
 if __name__ == '__main__':

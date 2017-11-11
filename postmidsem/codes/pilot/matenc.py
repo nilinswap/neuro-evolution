@@ -33,7 +33,6 @@ class MatEnc:
     def convert_to_chromosome(self,indim,outdim,dob):
         newchromo = chromosome.Chromosome(indim,outdim)
         newchromo.reset_chromo_to_zero()  # very important function, without it duplicate connections will be created
-
         newchromo.dob = dob
         # map_to_lis(self.node_num_map)
         newchromo.node_arr = self.node_lis

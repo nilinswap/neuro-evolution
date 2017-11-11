@@ -10,7 +10,7 @@ import pimadataf
 import deep_net
 from chromosome import *
 import copy
-import Population
+import population
 def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
 def relu(arr):
@@ -28,10 +28,10 @@ def priortize_connections(conn_lis):
         dict[tup[0].nature+tup[1].nature].append(concsn)
     return dict['IH1']+['breakH1']+dict['H1H2']+dict['IH2']+['breakH2']+dict['H2O']+dict['H1O']+dict['IO']
 class Neterr:
-    def __init__(self, inputdim, outputdim,inputarr,  hidden_unit_lim ,rng):
+    def __init__(self, inputdim, outputdim,  hidden_unit_lim ,rng):
         self.inputdim = inputdim
         self.outputdim = outputdim
-        self.inputarr=inputarr  #self explanatory
+        #self.inputarr=inputarr  #self explanatory
         self.hidden_unit_lim = hidden_unit_lim
         self.rng = rng
         rest_set, test_set = pimadataf.give_data()
@@ -39,6 +39,7 @@ class Neterr:
         resty = rest_set[1]
         self.testx = test_set[0]
         testy = test_set[1]
+
         self.resty = np.ravel(resty)
         self.testy = np.ravel(testy)
         self.rest_setx = tf.Variable(initial_value = self.restx, name='rest_setx',
@@ -48,10 +49,11 @@ class Neterr:
                                      dtype=tf.float32)
         self.test_sety = tf.Variable(initial_value = self.testy, name='test_sety', dtype=tf.int32)
 
+        self.inputarr = self.restx
 
     def feedforward_cm(self, chromo, middle_activation = relu, final_activation = sigmoid,play = 0):
 
-        self.inputarr = self.restx
+
         new_mat_enc = chromo.convert_to_MatEnc( self.inputdim, self.outputdim)
 
         input_till_H1 = middle_activation( np.dot( self.inputarr, new_mat_enc.CMatrix['IH1']*new_mat_enc.WMatrix['IH1'] ) )
@@ -79,7 +81,7 @@ class Neterr:
             else:
                 print(item)
         """
-        self.inputarr = self.restx
+
         return_arr = np.array([])
         for i in range(self.inputarr.shape[0]):
 
@@ -255,7 +257,7 @@ def test2():
         return np.array(lis)
 
     inputarr = np.array([[0, 2, 1], [0.8, 1, 2]])
-    indim = 8
+    indim = 3
     outdim = 2
     np.random.seed(4)
     num_data = 2
@@ -418,8 +420,8 @@ def newtest():
     # np.random
     rng = np.random
     num_data = 10
-    inputarr = np.random.random((num_data, indim))
-    neter = Neterr(indim, outdim, inputarr, 10, np.random)
+    #inputarr = np.random.random((num_data, indim))
+    neter = Neterr(indim, outdim, 10, np.random)
 
     ka = np.random.randint(0, 2, (num_data,))
     # print(neter.feedforward_ne(chromo))
@@ -459,7 +461,7 @@ def newtest():
             print("failed 5",key)
     """
 
-    popul = Population.Population(indim, outdim, 10, 40)
+    popul = population.Population(indim, outdim, 10, 40)
     # popul.set_initial_population_as_list(indim,1,dob=0)
     # [item.pp() for item in popul.list_chromo]
     print(len(popul.list_chromo))
@@ -468,7 +470,54 @@ def newtest():
     time.sleep(5)
     #print(popul.list_chromo[2].pp())
     popul.set_objective_arr(neter)
-    #print(popul.objective_arr)
+    print(popul.objective_arr)
+
+def test3():
+
+        for_node = [(i, 'I') for i in range(1, 9)]
+        for_node += [(i, 'O') for i in range(9, 10)]
+        #for_node += [(i, 'H2') for i in range(6, 8)]
+        node_ctr = 10
+        innov_num = 9
+        dob = 0
+        node_lis = [gene.Node(x, y) for x, y in for_node]
+        for_conn = [(inn,(node_lis[inn-1],node_lis[8]),np.random.random(),True) for inn in range(1,innov_num)]
+        conn_lis = [gene.Conn(*p) for p in for_conn]
+
+        for_bias = [(4, 0.2)]
+        bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+
+        indim = 8
+        outdim = 1
+        newchromo = Chromosome(indim,outdim)
+        newchromo.reset_chromo_to_zero()
+        newchromo.__setattr__('conn_arr', conn_lis)
+        newchromo.__setattr__('bias_conn_arr', bias_conn_lis)
+        newchromo.__setattr__('node_arr', node_lis)
+        newchromo.__setattr__('dob', dob)
+        newchromo.set_node_ctr(node_ctr)
+
+        # newchromo.pp()
+        def calc_output_directly(inputarr):
+            lis = []
+            for arr in inputarr:
+                output1 = sigmoid(relu(arr[0] * 0.5) * 0.4 + 0.25 * arr[1] + 0.7 * arr[2] - 0.2)
+                output2 = sigmoid(arr[0] * 0.25 + arr[1] * 0.5 + relu(arr[2] * 0.3) * 0.6 - 0.1)
+                lis.append([output1, output2])
+            return np.array(lis)
+
+
+        indim = 8
+        outdim = 1
+
+        #num_data = 2
+        # inputarr = np.random.random((num_data, indim))
+        neter = Neterr(indim, outdim, 10, np.random)
+        print(neter.feedforward_ne(newchromo))
+        #print(calc_output_directly(inputarr))
+        print("break")
+        print(neter.feedforward_cm(newchromo))
+        # print(neter.feedforward_ne(newchromo, play =1))
 
 
 def main():
@@ -487,5 +536,5 @@ def main():
 
 
 if __name__ == '__main__':
-    test_mtbp()
+    newtest()
 
