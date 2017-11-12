@@ -241,11 +241,11 @@ class Chromosome:
         stlis = ['H1', 'H2', 'H2']
         #prob_list = [0.1, 0.3, 0.6]
         prndm = rng.random()
-        if prndm >0.4:
+        if prndm > 0.6:
             ind = 2
-        elif prndm >0.1:
+        elif prndm > 0.2:
             ind = 1
-        elif prndm >0:
+        elif prndm > 0:
             ind = 0
         chosen_key = key_list[ind]
         #key_list.remove('IO')
