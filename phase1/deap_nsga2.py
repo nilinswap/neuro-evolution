@@ -25,8 +25,8 @@ BOUND_LOW, BOUND_UP = 0.0, 1.0
 # Functions zdt4 has bounds x1 = [0, 1], xn = [-5, 5], with n = 2, ..., 10
 # BOUND_LOW, BOUND_UP = [0.0] + [-5.0]*9, [1.0] + [5.0]*9
 
-# Functions zdt1, zdt2, zdt3 have 30 dimensions, zdt4 and zdt6 have 10
-NDIM = 30
+# Functions zdt1, zdt2, zdt3 have 30 dimensions, zdt4 and zdt6 have 10	
+NDIM = 3
 
 
 def zdt1(individual):
@@ -52,7 +52,7 @@ def uniform(low, up, size=None):
 toolbox.register("attr_float", uniform, BOUND_LOW, BOUND_UP, NDIM)
 toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.attr_float)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-
+print(array.array.__bases__)
 toolbox.register("evaluate", zdt1)
 toolbox.register("mate", tools.cxSimulatedBinaryBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0)
 toolbox.register("mutate", tools.mutPolynomialBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0, indpb=1.0/NDIM)
@@ -61,8 +61,8 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
 	random.seed(seed)
 
-	NGEN = 250
-	MU = 100
+	NGEN = 1
+	MU = 5
 	CXPB = 0.9
 
 	stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -88,7 +88,7 @@ def main(seed=None):
 	
 	record = stats.compile(pop)
 	logbook.record(gen=0, evals=len(invalid_ind), **record)
-	print(logbook.stream)
+	#print(logbook.stream)
 
 	# Begin the generational process
 	for gen in range(1, NGEN):
@@ -114,19 +114,21 @@ def main(seed=None):
 		pop = toolbox.select(pop + offspring, MU)
 		record = stats.compile(pop)
 		logbook.record(gen=gen, evals=len(invalid_ind), **record)
-		print(logbook.stream)
+		#print(logbook.stream)
 
 	#print("Final population hypervolume is %f" % HyperVolume(pop, [11.0, 11.0]))
 
 	return pop, logbook
 		
 if __name__ == "__main__":
+
 	with open("zdt1_front.json") as optimal_front_data:
 		 optimal_front = json.load(optimal_front_data)
 	#Use 500 of the 1000 points in the json file
 	optimal_front = sorted(optimal_front[i] for i in range(0, len(optimal_front), 2))
 	
 	pop, stats = main()
+	print(pop[0])
 	pop.sort(key=lambda x: x.fitness.values)
 	
 	'''print(stats)
@@ -141,4 +143,4 @@ if __name__ == "__main__":
 	plt.scatter(optimal_front[:,0], optimal_front[:,1], c="r")
 	plt.scatter(front[:,0], front[:,1], c="b")
 	plt.axis("tight")
-	plt.show()
+	#plt.show()
