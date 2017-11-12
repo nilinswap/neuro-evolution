@@ -14,46 +14,74 @@ from deap.benchmarks.tools import diversity, convergence
 from deap import creator
 from deap import tools
 
-from Population import Population
+from Population import *
 from network import Neterr
-'''
+from chromosome import Chromosome, BaseChromosome
+
+n_hidden = 10
+indim = 8
+outdim = 1
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, -1.0))
+creator.create("Individual", BaseChromosome, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
-class Individual():
-	pass
 
-def zdt1(individual):
-	return f1, f2, f3, f4
+def minimize(individual):
+	network_obj = Neterr(indim, outdim, n_hidden, np.random)
+	print(vars(individual))
+	outputarr = network_obj.feedforward_ne(chromo)
+	#print(outputarr)
+	#print(outputarr)
+	#hot_vec = give_hot_vector( outputarr )
 
 
-toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.attr_float)
+	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
+	mean_square_error_val = give_mse(outputarr, network_obj.resty)
+	false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
+
+	false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
+
+	return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+
+def initIndividual(ind_class, inputdim, outputdim):
+	ind = Chromosome(inputdim, outputdim)
+	return ind
+
+toolbox.register("individual", initIndividual, creator.Individual, indim, outdim)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-
-toolbox.register("evaluate", zdt1)
-toolbox.register("mate", tools.cxSimulatedBinaryBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0)
-toolbox.register("mutate", tools.mutPolynomialBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0, indpb=1.0/NDIM)
+toolbox.register("evaluate", minimize)
+#toolbox.register("mate", tools.cxSimulatedBinaryBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0)
+#toolbox.register("mutate", tools.mutPolynomialBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0, indpb=1.0/NDIM)
 toolbox.register("select", tools.selNSGA2)
 '''
 def main(seed=None):
 	#random.seed(seed)
-	print("hi")
+	NGEN = 100
+
+	CXPB = 0.9
 	indim = 8
 	outdim = 1
 	n_hidden = 10
-	size = 4
-	#pop = Population.Population(indim,outdim,n_hidden,size), 
-	#net = network.Neterr(indim, outdim, popo.list_chromo, n_hidden, np.random)
-	#pop.set_objective_arr(net)
+	size = 100
+	#pop = Population(indim,outdim,n_hidden,size) 
+	net = Neterr(indim, outdim, n_hidden, np.random)
+	
 	print("hi")
-	#print(size(pop.list_chromo[0].node_arr))
+	#print(pop.list_chromo[0].pp())
+	print(pop.objective_arr)
+	some_array = pop.fitness
+	pop = toolbox.select(some_array, len(some_array))
+	#invalid_ind = [ind for ind in pop if not ind.fitness.valid]
+	fitnesses = toolbox.map(pop.fitness)
+	#for ind, fit in zip(invalid_ind, fitnesses):
+	#	ind.fitness.values = fit
+'''
 
-"""
-def main2(seed=None):
+def main(seed=None):
 	random.seed(seed)
 
-	NGEN = 250
-	MU = 100
+	NGEN = 10
+	MU = 4
 	CXPB = 0.9
 
 	stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -64,16 +92,9 @@ def main2(seed=None):
 	
 	logbook = tools.Logbook()
 	logbook.header = "gen", "evals", "std", "min", "avg", "max"
-	indim = 8
-	outdim = 1
-	n_hidden = 10
-	size = 4
-	pop = Population.Population(indim,outdim,n_hidden,size), 
-	net = network.Neterr(indim, outdim, popo.list_chromo, n_hidden, np.random)
-	pop.set_objective_arr(net)
-	print(pop)
-	#pop = toolbox.population(n=MU)
-
+	
+	pop = toolbox.population(n=MU)
+	print(vars(pop[0]))
 	# Evaluate the individuals with an invalid fitness
 	invalid_ind = [ind for ind in pop if not ind.fitness.valid]
 	fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -140,7 +161,6 @@ if __name__ == "__main__":
 	plt.scatter(front[:,0], front[:,1], c="b")
 	plt.axis("tight")
 	plt.show()
-	"""
 
 if __name__ == "__main__":
 	main()
