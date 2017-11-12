@@ -239,7 +239,7 @@ class Chromosome:
         newmatenc = self.convert_to_MatEnc(inputdim,outputdim)
         key_list = ['IH2', 'H1O', 'IO']
         stlis = ['H1', 'H2', 'H2']
-        #prob_list = [0.1, 0.3, 0.6]
+        #prob_list = [0.3, 0.3, 0.4]
         prndm = rng.random()
         if prndm > 0.6:
             ind = 2
