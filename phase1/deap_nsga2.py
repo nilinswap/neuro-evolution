@@ -26,7 +26,7 @@ BOUND_LOW, BOUND_UP = 0.0, 1.0
 # BOUND_LOW, BOUND_UP = [0.0] + [-5.0]*9, [1.0] + [5.0]*9
 
 # Functions zdt1, zdt2, zdt3 have 30 dimensions, zdt4 and zdt6 have 10	
-NDIM = 3
+NDIM = 30
 
 
 def zdt1(individual):
@@ -61,13 +61,13 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
 	random.seed(seed)
 
-	NGEN = 1
-	MU = 5
+	NGEN = 250
+	MU = 100
 	CXPB = 0.9
 
 	stats = tools.Statistics(lambda ind: ind.fitness.values)
-	# stats.register("avg", numpy.mean, axis=0)
-	# stats.register("std", numpy.std, axis=0)
+	stats.register("avg", numpy.mean, axis=0)
+	stats.register("std", numpy.std, axis=0)
 	stats.register("min", numpy.min, axis=0)
 	stats.register("max", numpy.max, axis=0)
 	
@@ -88,7 +88,7 @@ def main(seed=None):
 	
 	record = stats.compile(pop)
 	logbook.record(gen=0, evals=len(invalid_ind), **record)
-	#print(logbook.stream)
+	print(logbook.stream)
 
 	# Begin the generational process
 	for gen in range(1, NGEN):
@@ -114,7 +114,7 @@ def main(seed=None):
 		pop = toolbox.select(pop + offspring, MU)
 		record = stats.compile(pop)
 		logbook.record(gen=gen, evals=len(invalid_ind), **record)
-		#print(logbook.stream)
+		print(logbook.stream)
 
 	#print("Final population hypervolume is %f" % HyperVolume(pop, [11.0, 11.0]))
 
@@ -128,7 +128,6 @@ if __name__ == "__main__":
 	optimal_front = sorted(optimal_front[i] for i in range(0, len(optimal_front), 2))
 	
 	pop, stats = main()
-	print(pop[0])
 	pop.sort(key=lambda x: x.fitness.values)
 	
 	'''print(stats)
@@ -143,4 +142,4 @@ if __name__ == "__main__":
 	plt.scatter(optimal_front[:,0], optimal_front[:,1], c="r")
 	plt.scatter(front[:,0], front[:,1], c="b")
 	plt.axis("tight")
-	#plt.show()
+	plt.show()
