@@ -243,7 +243,7 @@ class Chromosome:
         prndm = rng.random()
         if prndm > 0.6:
             ind = 2
-        elif prndm > 0.2:
+        elif prndm > 0.3:
             ind = 1
         elif prndm > 0:
             ind = 0
