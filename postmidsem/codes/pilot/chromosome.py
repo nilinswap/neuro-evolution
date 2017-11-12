@@ -243,9 +243,9 @@ class Chromosome:
         prndm = rng.random()
         if prndm >0.4:
             ind = 2
-        elif prndm >0.1:
+        if prndm >0.1:
             ind = 1
-        elif prndm >0:
+        if prndm >0:
             ind = 0
         chosen_key = key_list[ind]
         #key_list.remove('IO')
