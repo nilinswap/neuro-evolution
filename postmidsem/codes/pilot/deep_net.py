@@ -13,7 +13,7 @@ import chromosome
 import gene
 import matenc
 
-import tensorflow as tf
+#import tensorflow as tf
 
 
 def func(last, current):
