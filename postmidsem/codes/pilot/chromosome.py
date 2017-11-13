@@ -6,8 +6,9 @@ import numpy as np
 import tensorflow as tf
 import deep_net
 import time
-
-innov_ctr = None
+inputnumber = 8
+outputnumber = 1 #here could be an error, after all that's why I don't use global variables
+innov_ctr = inputnumber * outputnumber + 1
 
 
 
@@ -23,19 +24,20 @@ class Chromosome:
     """
         #here initialization is always with simplest chromosome (AND mainly for innov ctr) , here could be an error
     def __init__(self,inputdim,outputdim):
-        global innov_ctr
 
+        global innov_ctr
         self.node_ctr = inputdim + outputdim + 1
-        innov_ctr = 1  # Warning!! these two lines change(reset) global variables, here might be some error
+        #NO MORE  # Warning!! these two lines change(reset) global variables, here might be some error
         lisI = [gene.Node(num_setter, 'I') for num_setter in range(1, self.node_ctr - outputdim)]
         lisO = [gene.Node(num_setter, 'O') for num_setter in range(inputdim + 1, self.node_ctr)]
         self.node_arr = lisI + lisO
         self.conn_arr=[]
+        p = 1
         for inputt in lisI:
             for outputt in lisO:
-                self.conn_arr.append(gene.Conn(innov_ctr, (inputt, outputt), np.random.random(), status=True))
-
-                innov_ctr += 1
+                self.conn_arr.append(gene.Conn(p, (inputt, outputt), np.random.random(), status=True))
+                p += 1
+        assert (p == innov_ctr)
         self.bias_conn_arr = []
         self.bias_conn_arr = [gene.BiasConn(outputt, np.random.random()/1000) for outputt in lisO]
         self.dob = 0
@@ -83,7 +85,7 @@ class Chromosome:
         for i in self.node_arr:
             dictionary[i.nature][i] = NatureCtrDict[i.nature]
             NatureCtrDict[i.nature] += 1
-
+        """
         ConnMatrix['IO'] = np.zeros((inputdim, outputdim))
         ConnMatrix['IH1'] = np.zeros((inputdim, NatureCtrDict['H1']))
         ConnMatrix['IH2'] = np.zeros((inputdim, NatureCtrDict['H2']))
@@ -97,9 +99,13 @@ class Chromosome:
         WeightMatrix['H1H2'] = np.zeros((NatureCtrDict['H1'], NatureCtrDict['H2']))
         WeightMatrix['H1O'] = np.zeros((NatureCtrDict['H1'], outputdim))
         WeightMatrix['H2O'] = np.zeros((NatureCtrDict['H2'], outputdim))
-
+        """
         for con in self.conn_arr:
             if con.status == True:
+                if con.source.nature + con.destination.nature not in ConnMatrix.keys():
+                    ConnMatrix[con.source.nature + con.destination.nature] = np.zeros((NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
+                    WeightMatrix[con.source.nature + con.destination.nature] = np.zeros((NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
+
                 ConnMatrix[con.source.nature + con.destination.nature][
                     dictionary[con.source.nature][con.source]][
                     dictionary[con.destination.nature][con.destination]] = 1
@@ -133,7 +139,7 @@ class Chromosome:
         newneu_net = deep_net.DeepNet(x, inputdim, outputdim, mat_enc)
 
         cost = newneu_net.negative_log_likelihood(y)
-        print(newneu_net.mat_enc.CMatrix['IO'])
+        #print(newneu_net.mat_enc.CMatrix['IO'])
         optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=newneu_net.params)
         # savo1 = tf.train.Saver(var_list=[self.srest_setx, self.srest_sety, self.stest_setx, self.stest_sety])
         with tf.Session() as sess:
@@ -190,50 +196,58 @@ class Chromosome:
         return newchromo
 
     def weight_mutation(self, rng,factor = 0.1):
-
-        chosen_ind = rng.choice(range(len(self.conn_arr)))
-        self.conn_arr[chosen_ind].weight += (rng.random() - 0.5)*2*factor
+        import copy
+        lis = copy.deepcopy(self.conn_arr) + self.bias_conn_arr
+        chosen_ind = rng.choice(range(len(lis)))
+        lis[chosen_ind].weight += (rng.random() - 0.5)*2*factor
         return chosen_ind
 
-    def edge_mutation(self,inputdim,outputdim,rng,list_of_structural_mutation_so_far):
+    def edge_mutation(self,inputdim,outputdim,rng):# not tested, might just have some error!
 
         newmatenc = self.convert_to_MatEnc(inputdim, outputdim)
         key_list = list(newmatenc.WMatrix.keys())
         #key_list.remove('IO')
-        print(key_list)
+        #print(key_list)
 
         chosen_key = rng.choice(key_list)
 
         mat = newmatenc.CMatrix[chosen_key]
         #print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
         i = rng.randint(0,mat.shape[0])
-        j = rng.randint(0,mat.shape[1])
+        if mat.shape[1]>1:
+            j = rng.randint(0,mat.shape[1])
+        else:
+            j = 0
         split_key1,split_key2 = matenc.split_key(chosen_key)
-        print(split_key1, split_key2)
-        couple = (newmatenc.node_map[split_key1][i], newmatenc.node_map[split_key2][j])
+        #print(split_key1, split_key2)
+        #couple = (newmatenc.node_map[split_key1][i], newmatenc.node_map[split_key2][j])
         ctr = 0
+        print(mat[i][j])
         while mat[i][j] != 0:
             i = rng.randint(0, mat.shape[0])
-            j = rng.randint(0, mat.shape[1])
+            if mat.shape[1] > 1:
+                j = rng.randint(0, mat.shape[1])
+            else:
+                j = 0
             if ctr>10:
                 return
-                break
             ctr += 1
         couple = (newmatenc.node_map[split_key1][i], newmatenc.node_map[split_key2][j])
         mat[i][j] = 1
         if not newmatenc.WMatrix[ chosen_key][i][j]:
-            global innov_ctr
-            con_obj = gene.Conn(innov_ctr, couple, (rng.random()-0.5)*2, True)
-            innov_ctr += 1
+
+            innov_num = normalize_conn_arr_for_this_gen(self,couple )
+            con_obj = gene.Conn(innov_num, couple, (rng.random()-0.5)*2, True)
+
             self.conn_arr.append(con_obj)
-            normalize_conn_arr_for_this_gen(list_of_structural_mutation_so_far,con_obj )
+
             #con_obj.pp()
         else:
 
             con_obj = newmatenc.couple_to_conn_map[couple]
             con_obj.status = True
 
-    def node_mutation(self,inputdim, outputdim, rng, list_of_structural_mutation_so_far):
+    def node_mutation(self,inputdim, outputdim, rng):
         #global innov_ctr
         type = 0
         newmatenc = self.convert_to_MatEnc(inputdim,outputdim)
@@ -256,53 +270,80 @@ class Chromosome:
         mat = newmatenc.CMatrix[chosen_key]
         #print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
         i = rng.randint(0, mat.shape[0])
-        j = rng.randint(0, mat.shape[1])
+        if mat.shape[1]>1:
+            j = rng.randint(0,mat.shape[1])
+        else:
+            j = 0
         split_key1, split_key2 = matenc.split_key(chosen_key)
-        print(split_key1, split_key2)
+        #(split_key1, split_key2)
         ctr = 0
 
         if not newmatenc.WMatrix[ chosen_key][i][j] and not type:
             while mat[i][j] == 0:
                 i = rng.randint(0, mat.shape[0])
-                j = rng.randint(0, mat.shape[1])
+                if mat.shape[1] > 1:
+                    j = rng.randint(0, mat.shape[1])
+                else:
+                    j = 0
                 if ctr > 10:
                     return
 
                 ctr += 1
         couple = (newmatenc.node_map[split_key1][i], newmatenc.node_map[split_key2][j])
-        global innov_ctr
+
         con_obj = newmatenc.couple_to_conn_map[couple]
         con_obj.status = False
 
         newnode = gene.Node(self.node_ctr, stlis[ind])
         self.node_ctr += 1
-        new_conn1 = gene.Conn(innov_ctr, (con_obj.source, newnode), 1.0 , True)
-        innov_ctr += 1
-        new_conn2 = gene.Conn(innov_ctr, (newnode, con_obj.destination), con_obj.weight , True)
-        innov_ctr += 1
-        new_conn1.pp()
-        new_conn2.pp()
-        con_obj.pp()
+
+        innov_num = normalize_conn_arr_for_this_gen(self,(con_obj.source, newnode))
+        new_conn1 = gene.Conn(innov_num, (con_obj.source, newnode), 1.0 , True)
+        innov_num = normalize_conn_arr_for_this_gen(self,( newnode, con_obj.destination))
+        new_conn2 = gene.Conn(innov_num, (newnode, con_obj.destination), con_obj.weight , True)
+
         self.node_arr.append( newnode )
         self.conn_arr.append( new_conn1 )
         self.conn_arr.append( new_conn2 )
 
-        normalize_conn_arr_for_this_gen(list_of_structural_mutation_so_far,con_obj )
 
-    def do_mutation(self,rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, rng, list_of_sm_sofar):
+
+
+    def do_mutation(self,rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, rng):
         prnd = rng.random()
         if prnd < rate_conn_weight:
             self.weight_mutation(rng)
         prnd = rng.random()
         if prnd < rate_conn_itself:
-            self.edge_mutation(inputdim, outputdim, rng, list_of_sm_sofar)
+            self.edge_mutation(inputdim, outputdim, rng)
         prnd = rng.random()
         if prnd < rate_node:
-            self.node_mutation(inputdim, outputdim, rng, list_of_sm_sofar)
+            self.node_mutation(inputdim, outputdim, rng)
 
+    def convert_to_empirical_string(self):
 
+        st=''
+        self.conn_arr[0].pp()
+        self.conn_arr[1].pp()
+        for con in self.conn_arr :
 
+            tup = con.get_couple()
+            st += tup[0].nature+tup[1].nature+str(con.innov_num)
+        return st
 
+def normalize_conn_arr_for_this_gen(chromo, tup):
+    st = chromo.convert_to_empirical_string()
+
+    global innov_ctr
+    if (st,(tup[0].node_num, tup[1].node_num)) in gene.dict_of_sm_so_far.keys() :
+        innov_num = gene.dict_of_sm_so_far[(st,(tup[0].node_num, tup[1].node_num))]
+    else:
+
+        innov_num = innov_ctr
+        gene.dict_of_sm_so_far[(st,(tup[0].node_num, tup[1].node_num))] = innov_ctr
+        innov_ctr += 1
+    print([item for item in gene.dict_of_sm_so_far.items()])
+    return innov_num
 
 
 

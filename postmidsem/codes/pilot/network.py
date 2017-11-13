@@ -70,7 +70,7 @@ class Neterr:
     def feedforward_ne(self,chromosome,middle_activation=relu,final_activation=sigmoid, play = 0):
 
 
-        print("inside feedforward")
+        #print("inside feedforward")
 
         conn_list = priortize_connections(
             chromosome.conn_arr)  # list of connections with string type breaks to seperate
@@ -317,6 +317,7 @@ def test_for_muta():
     import copy
     random_val = 0.9
     zarr =copy.deepcopy( newchromo.conn_arr)
+    print(newchromo.convert_to_emperical_string())
     """if random_val <= 0.8:
         newchromo.weight_mutation(np.random)
     else:
@@ -326,6 +327,7 @@ def test_for_muta():
     newchromo.do_mutation(1,1,1,indim, outdim, np.random)
     #print(zarr[zind].pp(), newchromo.conn_arr[zind].pp())
     print(len(zarr), len(newchromo.conn_arr))
+    print(newchromo.convert_to_emperical_string())
     print("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     #chromosome.Chromosome.pp(newchromo)
     # newchromo.pp()
@@ -582,6 +584,12 @@ def newtest():
     # popul.set_initial_population_as_list(indim,1,dob=0)
     # [item.pp() for item in popul.list_chromo]
     print(len(popul.list_chromo))
+    chromo = popul.list_chromo[0]
+    print(chromo.convert_to_empirical_string())
+    print(len(chromo.conn_arr))
+    chromo.do_mutation(1,1,1,indim,outdim,np.random)
+    print("after normalizing ", normalize_conn_arr_for_this_gen(chromosome.temp[2], (chromosome.temp[0].source, chromosome.temp[1].destination)))
+    print(len(chromo.conn_arr))
     #print(popul.list_chromo[0].pp())
     print("-----------------------------------------------------------")
     time.sleep(5)
@@ -654,6 +662,6 @@ def main():
 
 
 if __name__ == '__main__':
-    test_for_muta()
+    newtest()
 
 
