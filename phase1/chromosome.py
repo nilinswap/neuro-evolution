@@ -9,11 +9,7 @@ import time
 
 innov_ctr = None
 
-class BaseChromosome(object):
-    def __init__(self):
-        self.dob = 0
-
-class Chromosome(BaseChromosome):
+class Chromosome():
     """
     def __init__(self,dob,node_arr=[],conn_arr=[],bias_arr=[]):
         self.node_arr = node_arr	#list of node objects
@@ -38,7 +34,7 @@ class Chromosome(BaseChromosome):
                 innov_ctr += 1
         self.bias_conn_arr = []
         self.bias_conn_arr = [gene.BiasConn(outputt, np.random.random()/1000) for outputt in lisO]
-        self.dob = 5
+        self.dob = 0
 
     def reset_chromo_to_zero(self):
         self.node_ctr = 0

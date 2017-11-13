@@ -70,7 +70,7 @@ class Neterr:
     def feedforward_ne(self,chromosome,middle_activation=relu,final_activation=sigmoid, play = 0):
 
 
-        print("inside feedforward")
+        #print("inside feedforward")
 
         conn_list = priortize_connections(
             chromosome.conn_arr)  # list of connections with string type breaks to seperate
