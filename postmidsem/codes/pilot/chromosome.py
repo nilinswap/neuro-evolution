@@ -1,16 +1,18 @@
 # chromosome.py
 
 import gene
+from gene import *
 import matenc
 import numpy as np
 import tensorflow as tf
 import deep_net
 import time
+
 inputnumber = 8
-outputnumber = 1 #here could be an error, after all that's why I don't use global variables
+outputnumber = 1  # here could be an error, after all that's why I don't use global variables
 innov_ctr = inputnumber * outputnumber + 1
 
-
+import network
 
 
 class Chromosome:
@@ -22,24 +24,27 @@ class Chromosome:
         self.dob = dob 				#the generation in which it was created.
         self.node_ctr=len(node_arr)+1
     """
-        #here initialization is always with simplest chromosome (AND mainly for innov ctr) , here could be an error
-    def __init__(self,inputdim,outputdim):
+
+    # here initialization is always with simplest chromosome (AND mainly for innov ctr) , here could be an error
+    def __init__(self, inputdim, outputdim):
 
         global innov_ctr
         self.node_ctr = inputdim + outputdim + 1
-        #NO MORE  # Warning!! these two lines change(reset) global variables, here might be some error
+        # NO MORE  # Warning!! these two lines change(reset) global variables, here might be some error
         lisI = [gene.Node(num_setter, 'I') for num_setter in range(1, self.node_ctr - outputdim)]
         lisO = [gene.Node(num_setter, 'O') for num_setter in range(inputdim + 1, self.node_ctr)]
         self.node_arr = lisI + lisO
-        self.conn_arr=[]
+        self.conn_arr = []
         p = 1
         for inputt in lisI:
             for outputt in lisO:
                 self.conn_arr.append(gene.Conn(p, (inputt, outputt), np.random.random(), status=True))
                 p += 1
+
+        #print(p)
         assert (p == innov_ctr)
         self.bias_conn_arr = []
-        self.bias_conn_arr = [gene.BiasConn(outputt, np.random.random()/1000) for outputt in lisO]
+        self.bias_conn_arr = [gene.BiasConn(outputt, np.random.random() / 1000) for outputt in lisO]
         self.dob = 0
 
     def reset_chromo_to_zero(self):
@@ -103,8 +108,10 @@ class Chromosome:
         for con in self.conn_arr:
             if con.status == True:
                 if con.source.nature + con.destination.nature not in ConnMatrix.keys():
-                    ConnMatrix[con.source.nature + con.destination.nature] = np.zeros((NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
-                    WeightMatrix[con.source.nature + con.destination.nature] = np.zeros((NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
+                    ConnMatrix[con.source.nature + con.destination.nature] = np.zeros(
+                        (NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
+                    WeightMatrix[con.source.nature + con.destination.nature] = np.zeros(
+                        (NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
 
                 ConnMatrix[con.source.nature + con.destination.nature][
                     dictionary[con.source.nature][con.source]][
@@ -116,7 +123,7 @@ class Chromosome:
         inv_dic = {key: {v: k for k, v in dictionary[key].items()} for key in dictionary.keys()}
 
         new_encoding = matenc.MatEnc(WeightMatrix, ConnMatrix, self.bias_conn_arr, inv_dic, couple_to_conn_map,
-                                     self.node_arr,self.conn_arr)
+                                     self.node_arr, self.conn_arr)
 
         return new_encoding
 
@@ -139,7 +146,7 @@ class Chromosome:
         newneu_net = deep_net.DeepNet(x, inputdim, outputdim, mat_enc)
 
         cost = newneu_net.negative_log_likelihood(y)
-        #print(newneu_net.mat_enc.CMatrix['IO'])
+        # print(newneu_net.mat_enc.CMatrix['IO'])
         optmzr = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=newneu_net.params)
         # savo1 = tf.train.Saver(var_list=[self.srest_setx, self.srest_sety, self.stest_setx, self.stest_sety])
         with tf.Session() as sess:
@@ -184,8 +191,8 @@ class Chromosome:
             for i in range(len(newneu_net.bias_wei_arr)):
                 ar = newneu_net.bias_var.eval()
                 newneu_net.mat_enc.Bias_conn_arr[i].set_weight(ar[i])
-        print(newneu_net.mat_enc.CMatrix['IO'],'final')
-        newchromo = newneu_net.mat_enc.convert_to_chromosome(inputdim,outputdim,self.dob)
+        print(newneu_net.mat_enc.CMatrix['IO'], 'final')
+        newchromo = newneu_net.mat_enc.convert_to_chromosome(inputdim, outputdim, self.dob)
 
         self.conn_arr = newchromo.conn_arr
         self.node_arr = newchromo.node_arr
@@ -195,32 +202,32 @@ class Chromosome:
 
         return newchromo
 
-    def weight_mutation(self, rng,factor = 0.1):
+    def weight_mutation(self, rng, factor=0.1):
         import copy
         lis = copy.deepcopy(self.conn_arr) + self.bias_conn_arr
         chosen_ind = rng.choice(range(len(lis)))
-        lis[chosen_ind].weight += (rng.random() - 0.5)*2*factor
+        lis[chosen_ind].weight += (rng.random() - 0.5) * 2 * factor
         return chosen_ind
 
-    def edge_mutation(self,inputdim,outputdim,rng):# not tested, might just have some error!
+    def edge_mutation(self, inputdim, outputdim, rng):  # not tested, might just have some error!
 
         newmatenc = self.convert_to_MatEnc(inputdim, outputdim)
         key_list = list(newmatenc.WMatrix.keys())
-        #key_list.remove('IO')
-        #print(key_list)
+        # key_list.remove('IO')
+        # print(key_list)
 
         chosen_key = rng.choice(key_list)
 
         mat = newmatenc.CMatrix[chosen_key]
-        #print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
-        i = rng.randint(0,mat.shape[0])
-        if mat.shape[1]>1:
-            j = rng.randint(0,mat.shape[1])
+        # print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
+        i = rng.randint(0, mat.shape[0])
+        if mat.shape[1] > 1:
+            j = rng.randint(0, mat.shape[1])
         else:
             j = 0
-        split_key1,split_key2 = matenc.split_key(chosen_key)
-        #print(split_key1, split_key2)
-        #couple = (newmatenc.node_map[split_key1][i], newmatenc.node_map[split_key2][j])
+        split_key1, split_key2 = matenc.split_key(chosen_key)
+        # print(split_key1, split_key2)
+        # couple = (newmatenc.node_map[split_key1][i], newmatenc.node_map[split_key2][j])
         ctr = 0
         print(mat[i][j])
         while mat[i][j] != 0:
@@ -229,56 +236,56 @@ class Chromosome:
                 j = rng.randint(0, mat.shape[1])
             else:
                 j = 0
-            if ctr>10:
+            if ctr > 10:
                 return
             ctr += 1
         couple = (newmatenc.node_map[split_key1][i], newmatenc.node_map[split_key2][j])
         mat[i][j] = 1
-        if not newmatenc.WMatrix[ chosen_key][i][j]:
+        if not newmatenc.WMatrix[chosen_key][i][j]:
 
-            innov_num = normalize_conn_arr_for_this_gen(self,couple )
-            con_obj = gene.Conn(innov_num, couple, (rng.random()-0.5)*2, True)
+            innov_num = normalize_conn_arr_for_this_gen(self, couple)
+            con_obj = gene.Conn(innov_num, couple, (rng.random() - 0.5) * 2, True)
 
             self.conn_arr.append(con_obj)
 
-            #con_obj.pp()
+            # con_obj.pp()
         else:
 
             con_obj = newmatenc.couple_to_conn_map[couple]
             con_obj.status = True
 
-    def node_mutation(self,inputdim, outputdim, rng):
-        #global innov_ctr
+    def node_mutation(self, inputdim, outputdim, rng):
+        # global innov_ctr
         type = 0
-        newmatenc = self.convert_to_MatEnc(inputdim,outputdim)
+        newmatenc = self.convert_to_MatEnc(inputdim, outputdim)
         key_list = ['IH2', 'H1O', 'IO']
         stlis = ['H1', 'H2', 'H2']
-        #prob_list = [0.1, 0.3, 0.6]
+        # prob_list = [0.1, 0.3, 0.6]
         prndm = rng.random()
-        if prndm >0.4:
+        if prndm > 0.4:
             ind = 2
-        elif prndm >0.1:
+        elif prndm > 0.1:
             ind = 1
-        elif prndm >0:
+        elif prndm > 0:
             ind = 0
         chosen_key = key_list[ind]
-        #key_list.remove('IO')
-        #print(key_list)
+        # key_list.remove('IO')
+        # print(key_list)
 
-        #chosen_key = (key_list)
+        # chosen_key = (key_list)
 
         mat = newmatenc.CMatrix[chosen_key]
-        #print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
+        # print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
         i = rng.randint(0, mat.shape[0])
-        if mat.shape[1]>1:
-            j = rng.randint(0,mat.shape[1])
+        if mat.shape[1] > 1:
+            j = rng.randint(0, mat.shape[1])
         else:
             j = 0
         split_key1, split_key2 = matenc.split_key(chosen_key)
-        #(split_key1, split_key2)
+        # (split_key1, split_key2)
         ctr = 0
 
-        if not newmatenc.WMatrix[ chosen_key][i][j] and not type:
+        if not newmatenc.WMatrix[chosen_key][i][j] and not type:
             while mat[i][j] == 0:
                 i = rng.randint(0, mat.shape[0])
                 if mat.shape[1] > 1:
@@ -297,19 +304,16 @@ class Chromosome:
         newnode = gene.Node(self.node_ctr, stlis[ind])
         self.node_ctr += 1
 
-        innov_num = normalize_conn_arr_for_this_gen(self,(con_obj.source, newnode))
-        new_conn1 = gene.Conn(innov_num, (con_obj.source, newnode), 1.0 , True)
-        innov_num = normalize_conn_arr_for_this_gen(self,( newnode, con_obj.destination))
-        new_conn2 = gene.Conn(innov_num, (newnode, con_obj.destination), con_obj.weight , True)
+        innov_num = normalize_conn_arr_for_this_gen(self, (con_obj.source, newnode))
+        new_conn1 = gene.Conn(innov_num, (con_obj.source, newnode), 1.0, True)
+        innov_num = normalize_conn_arr_for_this_gen(self, (newnode, con_obj.destination))
+        new_conn2 = gene.Conn(innov_num, (newnode, con_obj.destination), con_obj.weight, True)
 
-        self.node_arr.append( newnode )
-        self.conn_arr.append( new_conn1 )
-        self.conn_arr.append( new_conn2 )
+        self.node_arr.append(newnode)
+        self.conn_arr.append(new_conn1)
+        self.conn_arr.append(new_conn2)
 
-
-
-
-    def do_mutation(self,rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, rng):
+    def do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, rng):
         prnd = rng.random()
         if prnd < rate_conn_weight:
             self.weight_mutation(rng)
@@ -322,30 +326,162 @@ class Chromosome:
 
     def convert_to_empirical_string(self):
 
-        st=''
+        st = ''
         self.conn_arr[0].pp()
         self.conn_arr[1].pp()
-        for con in self.conn_arr :
-
+        for con in self.conn_arr:
             tup = con.get_couple()
-            st += tup[0].nature+tup[1].nature+str(con.innov_num)
+            st += tup[0].nature + tup[1].nature + str(con.innov_num)
         return st
+
 
 def normalize_conn_arr_for_this_gen(chromo, tup):
     st = chromo.convert_to_empirical_string()
 
     global innov_ctr
-    if (st,(tup[0].node_num, tup[1].node_num)) in gene.dict_of_sm_so_far.keys() :
-        innov_num = gene.dict_of_sm_so_far[(st,(tup[0].node_num, tup[1].node_num))]
+    if (st, (tup[0].node_num, tup[1].node_num)) in gene.dict_of_sm_so_far.keys():
+        innov_num = gene.dict_of_sm_so_far[(st, (tup[0].node_num, tup[1].node_num))]
     else:
 
         innov_num = innov_ctr
-        gene.dict_of_sm_so_far[(st,(tup[0].node_num, tup[1].node_num))] = innov_ctr
+        gene.dict_of_sm_so_far[(st, (tup[0].node_num, tup[1].node_num))] = innov_ctr
         innov_ctr += 1
-    print([item for item in gene.dict_of_sm_so_far.items()])
+    # print([item for item in gene.dict_of_sm_so_far.items()])
     return innov_num
 
 
+def crossover(parent1, parent2, gen_no):
+    inputdim = 8
+    outputdim = 1
+    import math
+    import random
+    child = Chromosome(inputdim, outputdim)
+    child.dob = gen_no
+
+    child.reset_chromo_to_zero()
+
+    len1 = len(parent1.conn_arr)
+    len2 = len(parent2.conn_arr)
+    nodeDict = {}
+    c1 = 0
+    c2 = 0
+    for i in range(len(parent1.bias_conn_arr)):
+        chance = random.choice((True, False))
+        if chance:
+            child.bias_conn_arr.append(parent1.bias_conn_arr[i])
+        else:
+            child.bias_conn_arr.append(parent2.bias_conn_arr[i])
+
+    while c1 < len1 or c2 < len2:
+        f1 = f2 = 0
+        if c1 < len1:
+            i = parent1.conn_arr[c1]
+            f1 = 1
+        if c2 < len2:
+            j = parent2.conn_arr[c2]
+            f2 = 1
+
+        if (i.innov_num == j.innov_num and f1 == f2 and f1 == 1):
+            alpha = random.uniform(0, 1)
+            wt = alpha * i.weight + (1 - alpha) * j.weight
+            stat = False
+            if i.status == j.status:
+                stat = i.status
+            else:
+                stat = random.choice((True, False))
+
+            nodeObj1 = nodeObj2 = None  # Not proper declaration, might throw error
+            if i.source.node_num not in nodeDict.keys():
+                nodeObj1 = Node(i.source.node_num, i.source.nature)
+                nodeDict[i.source.node_num] = nodeObj1
+            else:
+                nodeObj1 = nodeDict[i.source.node_num]
+
+            if i.destination.node_num not in nodeDict.keys():
+                nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                nodeDict[i.destination.node_num] = nodeObj2
+            else:
+                nodeObj2 = nodeDict[i.destination.node_num]
+
+            conObj = Conn(i.innov_num, (nodeObj1, nodeObj2), wt, stat)  # conn object
+            child.conn_arr.append(conObj)
+            c1 += 1
+            c2 += 1
+        else:
+            if c1 == len1:
+                while (c2 < len2):
+                    i = parent2.conn_arr[c2]
+                    nodeObj1 = nodeObj2 = None
+                    if i.source.node_num not in nodeDict.keys():
+                        nodeObj1 = Node(i.source.node_num, i.source.nature)
+                        nodeDict[i.source.node_num] = nodeObj1
+                    else:
+                        nodeObj1 = nodeDict[i.source.node_num]
+
+                    if i.destination.node_num not in nodeDict.keys():
+                        nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                        nodeDict[i.destination.node_num] = nodeObj2
+                    else:
+                        nodeObj2 = nodeDict[i.destination.node_num]
+                    c2 += 1
+                    connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+                    child.conn_arr.append(connObj)
+
+            elif c2 == len2:
+                while (c1 < len1):
+                    i = parent1.conn_arr[c1]
+                    nodeObj1 = nodeObj2 = None
+                    if i.source.node_num not in nodeDict.keys():
+                        nodeObj1 = Node(i.source.node_num, i.source.nature)
+                        nodeDict[i.source.node_num] = nodeObj1
+                    else:
+                        nodeObj1 = nodeDict[i.source.node_num]
+
+                    if i.destination.node_num not in nodeDict.keys():
+                        nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                        nodeDict[i.destination.node_num] = nodeObj2
+                    else:
+                        nodeObj2 = nodeDict[i.destination.node_num]
+                    c1 += 1
+                    connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+                    child.conn_arr.append(connObj)
+            else:
+                if (parent1.conn_arr[c1].innov_num < parent2.conn_arr[c2].innov_num):
+                    i = parent1.conn_arr[c1]
+                    nodeObj1 = nodeObj2 = None
+                    if i.source.node_num not in nodeDict.keys():
+                        nodeObj1 = Node(i.source.node_num, i.source.nature)
+                        nodeDict[i.source.node_num] = nodeObj1
+                    else:
+                        nodeObj1 = nodeDict[i.source.node_num]
+
+                    if i.destination.node_num not in nodeDict.keys():
+                        nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                        nodeDict[i.destination.node_num] = nodeObj2
+                    else:
+                        nodeObj2 = nodeDict[i.destination.node_num]
+                    c1 += 1
+                    connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+                    child.conn_arr.append(connObj)
+                else:
+                    i = parent2.conn_arr[c2]
+                    nodeObj1 = nodeObj2 = None
+                    if i.source.node_num not in nodeDict.keys():
+                        nodeObj1 = Node(i.source.node_num, i.source.nature)
+                        nodeDict[i.source.node_num] = nodeObj1
+                    else:
+                        nodeObj1 = nodeDict[i.source.node_num]
+
+                    if i.destination.node_num not in nodeDict.keys():
+                        nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                        nodeDict[i.destination.node_num] = nodeObj2
+                    else:
+                        nodeObj2 = nodeDict[i.destination.node_num]
+                    c2 += 1
+                    connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+                    child.conn_arr.append(connObj)
+
+    return child
 
 # def rand_init(inputdim, outputdim):
 #     global innov_ctr

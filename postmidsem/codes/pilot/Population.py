@@ -1,5 +1,5 @@
 import numpy as np
-#import Network
+import network
 import pimadataf
 import chromosome
 import tensorflow as tf

@@ -25,7 +25,7 @@ BOUND_LOW, BOUND_UP = 0.0, 1.0
 # Functions zdt4 has bounds x1 = [0, 1], xn = [-5, 5], with n = 2, ..., 10
 # BOUND_LOW, BOUND_UP = [0.0] + [-5.0]*9, [1.0] + [5.0]*9
 
-# Functions zdt1, zdt2, zdt3 have 30 dimensions, zdt4 and zdt6 have 10
+# Functions zdt1, zdt2, zdt3 have 30 dimensions, zdt4 and zdt6 have 10	
 NDIM = 30
 
 
@@ -52,7 +52,7 @@ def uniform(low, up, size=None):
 toolbox.register("attr_float", uniform, BOUND_LOW, BOUND_UP, NDIM)
 toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.attr_float)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-
+print(array.array.__bases__)
 toolbox.register("evaluate", zdt1)
 toolbox.register("mate", tools.cxSimulatedBinaryBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0)
 toolbox.register("mutate", tools.mutPolynomialBounded, low=BOUND_LOW, up=BOUND_UP, eta=20.0, indpb=1.0/NDIM)
@@ -66,8 +66,8 @@ def main(seed=None):
 	CXPB = 0.9
 
 	stats = tools.Statistics(lambda ind: ind.fitness.values)
-	# stats.register("avg", numpy.mean, axis=0)
-	# stats.register("std", numpy.std, axis=0)
+	stats.register("avg", numpy.mean, axis=0)
+	stats.register("std", numpy.std, axis=0)
 	stats.register("min", numpy.min, axis=0)
 	stats.register("max", numpy.max, axis=0)
 	
@@ -121,6 +121,7 @@ def main(seed=None):
 	return pop, logbook
 		
 if __name__ == "__main__":
+
 	with open("zdt1_front.json") as optimal_front_data:
 		 optimal_front = json.load(optimal_front_data)
 	#Use 500 of the 1000 points in the json file

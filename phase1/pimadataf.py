@@ -33,7 +33,7 @@ def myrange(start,end,step):
     while i+step < end:
         i+=step
         yield i
-print(traindata)
+#print(traindata)
 def give_data():
     #1. make iris.data in usable form
     #2. make input set and output set out of it
@@ -49,8 +49,8 @@ def give_data():
     rest_sety=pimadata[:538,8:]
     test_setx=pimadata[538:,:8]
     test_sety=pimadata[538:,8:]
-    print(pimadata.shape)
-    print(rest_setx.shape,test_setx.shape)
+    #print(pimadata.shape)
+    #print(rest_setx.shape,test_setx.shape)
     return ((rest_setx,rest_sety),(test_setx,test_sety))
 
 def main():
