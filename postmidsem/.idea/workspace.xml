@@ -4,7 +4,7 @@
     <list default="true" id="91edc1ce-6953-49e7-817c-90dd73a01e3d" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/codes/pilot/chromosome.py" afterPath="$PROJECT_DIR$/codes/pilot/chromosome.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/codes/pilot/gene.py" afterPath="$PROJECT_DIR$/codes/pilot/gene.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/codes/pilot/for_test.py" afterPath="$PROJECT_DIR$/codes/pilot/for_test.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -72,11 +72,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="for_test.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="for_test.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/codes/pilot/for_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="724">
-              <caret line="574" column="19" lean-forward="false" selection-start-line="574" selection-start-column="19" selection-end-line="574" selection-end-column="19" />
+            <state relative-caret-position="12716">
+              <caret line="578" column="19" lean-forward="false" selection-start-line="578" selection-start-column="19" selection-end-line="578" selection-end-column="19" />
               <folding>
                 <element signature="e#1#19#0" expanded="true" />
               </folding>
@@ -84,11 +84,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="chromosome.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="chromosome.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/codes/pilot/chromosome.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="543">
-              <caret line="631" column="25" lean-forward="false" selection-start-line="631" selection-start-column="25" selection-end-line="631" selection-end-column="25" />
+            <state relative-caret-position="-5094">
+              <caret line="553" column="13" lean-forward="true" selection-start-line="553" selection-start-column="13" selection-end-line="553" selection-end-column="13" />
               <folding>
                 <element signature="e#17#28#0" expanded="true" />
               </folding>
@@ -530,16 +530,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/codes/pilot/for_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="724">
-          <caret line="574" column="19" lean-forward="false" selection-start-line="574" selection-start-column="19" selection-end-line="574" selection-end-column="19" />
-          <folding>
-            <element signature="e#1#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/codes/pilot/population.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
@@ -558,10 +548,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/codes/pilot/chromosome.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="543">
-          <caret line="631" column="25" lean-forward="false" selection-start-line="631" selection-start-column="25" selection-end-line="631" selection-end-column="25" />
+        <state relative-caret-position="-5094">
+          <caret line="553" column="13" lean-forward="true" selection-start-line="553" selection-start-column="13" selection-end-line="553" selection-end-column="13" />
           <folding>
             <element signature="e#17#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/codes/pilot/for_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="12716">
+          <caret line="578" column="19" lean-forward="false" selection-start-line="578" selection-start-column="19" selection-end-line="578" selection-end-column="19" />
+          <folding>
+            <element signature="e#1#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
