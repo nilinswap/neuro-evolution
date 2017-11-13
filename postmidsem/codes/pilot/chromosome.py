@@ -351,10 +351,13 @@ def normalize_conn_arr_for_this_gen(chromo, tup):
 
 
 def crossover(parent1, parent2, gen_no):
-    inputdim = 8
-    outputdim = 1
-    import math
+
+
     import random
+
+    if gen_no > gene.curr_gen_num:
+        gene.dict_of_sm_so_far = {}
+        gene.curr_gen_num = gen_no
     child = Chromosome(inputdim, outputdim)
     child.dob = gen_no
 
@@ -483,6 +486,151 @@ def crossover(parent1, parent2, gen_no):
 
     return child
 
+
+def crossover1(parent1, parent2, gen_no, inputdim = 8, outputdim = 1):
+    import random
+
+    if gen_no > gene.curr_gen_num:#
+        gene.dict_of_sm_so_far = {}
+        gene.curr_gen_num = gen_no
+    child = Chromosome(inputdim, outputdim)
+    child.reset_chromo_to_zero()#
+    child.dob = gen_no
+
+
+
+    len1 = len(parent1.conn_arr)
+    len2 = len(parent2.conn_arr)
+    nodeDict = {}
+    c1 = 0
+    c2 = 0
+    for i in range(len(parent1.bias_conn_arr)):
+        alpha = random.random()#
+        new_bias_conn = gene.BiasConn( parent1.bias_conn_arr[i].out_node, (alpha * parent1.bias_conn_arr[i].weight + (1 - alpha) * parent2.bias_conn_arr[i].weight))
+
+        child.bias_conn_arr.append(new_bias_conn)
+
+    while c1 < len1 or c2 < len2:
+        f1 = f2 = 0
+        if c1 < len1:
+            i = parent1.conn_arr[c1]
+            f1 = 1
+        if c2 < len2:
+            j = parent2.conn_arr[c2]
+            f2 = 1
+
+        if (i.innov_num == j.innov_num and f1 == f2 and f1 == 1):
+            alpha = random.uniform(0, 1)
+            wt = alpha * i.weight + (1 - alpha) * j.weight
+            stat = False
+            if i.status == j.status:
+                stat = i.status
+            else:
+                stat = random.choice((True, False))
+
+            nodeObj1 = nodeObj2 = None  # Not proper declaration, might throw error
+            if i.source.node_num not in nodeDict.keys():
+                nodeObj1 = Node(i.source.node_num, i.source.nature)
+                nodeDict[i.source.node_num] = nodeObj1
+                self.node_arr.append(nodeObj1)
+            else:
+                nodeObj1 = nodeDict[i.source.node_num]
+
+            if i.destination.node_num not in nodeDict.keys():
+                nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                nodeDict[i.destination.node_num] = nodeObj2
+                self.node_arr.append(nodeObj2)
+            else:
+                nodeObj2 = nodeDict[i.destination.node_num]
+
+            conObj = Conn(i.innov_num, (nodeObj1, nodeObj2), wt, stat)  # conn object
+            child.conn_arr.append(conObj)
+            c1 += 1
+            c2 += 1
+        else:
+            if c1 == len1:
+                while (c2 < len2):
+                    i = parent2.conn_arr[c2]
+                    nodeObj1 = nodeObj2 = None
+                    if i.source.node_num not in nodeDict.keys():
+                        nodeObj1 = Node(i.source.node_num, i.source.nature)
+                        nodeDict[i.source.node_num] = nodeObj1
+                        self.node_arr.append(nodeObj1)
+                    else:
+                        nodeObj1 = nodeDict[i.source.node_num]
+
+                    if i.destination.node_num not in nodeDict.keys():
+                        nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                        nodeDict[i.destination.node_num] = nodeObj2
+                        self.node_arr.append(nodeObj2)
+                    else:
+                        nodeObj2 = nodeDict[i.destination.node_num]
+                    c2 += 1
+                    connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+                    child.conn_arr.append(connObj)
+
+            elif c2 == len2:
+                while (c1 < len1):
+                    i = parent1.conn_arr[c1]
+                    nodeObj1 = nodeObj2 = None
+                    if i.source.node_num not in nodeDict.keys():
+                        nodeObj1 = Node(i.source.node_num, i.source.nature)
+                        nodeDict[i.source.node_num] = nodeObj1
+                        self.node_arr.append(nodeObj1)
+                    else:
+                        nodeObj1 = nodeDict[i.source.node_num]
+
+                    if i.destination.node_num not in nodeDict.keys():
+                        nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                        nodeDict[i.destination.node_num] = nodeObj2
+                        self.node_arr.append(nodeObj2)
+                    else:
+                        nodeObj2 = nodeDict[i.destination.node_num]
+                    c1 += 1
+                    connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+                    child.conn_arr.append(connObj)
+            else:
+                if (parent1.conn_arr[c1].innov_num < parent2.conn_arr[c2].innov_num):
+                    i = parent1.conn_arr[c1]
+                    nodeObj1 = nodeObj2 = None
+                    if i.source.node_num not in nodeDict.keys():
+                        nodeObj1 = Node(i.source.node_num, i.source.nature)
+                        nodeDict[i.source.node_num] = nodeObj1
+                        self.node_arr.append(nodeObj1)
+                    else:
+                        nodeObj1 = nodeDict[i.source.node_num]
+
+                    if i.destination.node_num not in nodeDict.keys():
+                        nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                        nodeDict[i.destination.node_num] = nodeObj2
+                        self.node_arr.append(nodeObj2)
+                    else:
+                        nodeObj2 = nodeDict[i.destination.node_num]
+                    c1 += 1
+                    connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+                    child.conn_arr.append(connObj)
+                else:
+                    i = parent2.conn_arr[c2]
+                    nodeObj1 = nodeObj2 = None
+                    if i.source.node_num not in nodeDict.keys():
+                        nodeObj1 = Node(i.source.node_num, i.source.nature)
+                        nodeDict[i.source.node_num] = nodeObj1
+                        self.node_arr.append(nodeObj1)#
+                    else:
+                        nodeObj1 = nodeDict[i.source.node_num]
+
+                    if i.destination.node_num not in nodeDict.keys():
+                        nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+                        nodeDict[i.destination.node_num] = nodeObj2
+                        self.node_arr.append(nodeObj2)
+                    else:
+                        nodeObj2 = nodeDict[i.destination.node_num]
+                    c2 += 1
+                    connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+                    child.conn_arr.append(connObj)
+
+    child.set_node_ctr()#
+    return child
 # def rand_init(inputdim, outputdim):
 #     global innov_ctr
 #     newchromo = Chromosome(0)
