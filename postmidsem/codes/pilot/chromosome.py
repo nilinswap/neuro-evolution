@@ -403,11 +403,8 @@ def aux_non_weighted(parent1, parent2):
 			return parent1
 		elif ((fitness_tup1[0] > fitness_tup2[0]) and ((fitness_tup1[2] > fitness_tup2[2]) or (fitness_tup1[3] > fitness_tup2[3]))):
 			return parent2
-		elif fitness_tup1[0] < fitness_tup2[0]:
-			return parent1
 		else:
-			return parent2
-
+			return np.random.choice(parent1, parent2)
 
 def aux_non_weightedTest(parentx, parenty):  
 	fitness_tup1 = parentx[1]			
@@ -427,124 +424,121 @@ def aux_non_weightedTest(parentx, parenty):
 			return parent1
 		elif ((fitness_tup1[0] > fitness_tup2[0]) and ((fitness_tup1[2] > fitness_tup2[2]) or (fitness_tup1[3] > fitness_tup2[3]))):
 			return parent2
-		elif fitness_tup1[0] < fitness_tup2[0]:
-			return parent1
 		else:
-			return parent2
+			return np.random.choice(parent1, parent2)
 
 
-# def crossover(parent1, parent2, gen_no, inputdim = 8, outputdim = 1):
+def crossover(parent1, parent2, gen_no, inputdim = 8, outputdim = 1):
 
-# 	if gen_no > gene.curr_gen_num:
-# 		gene.dict_of_sm_so_far = {}
-# 		gene.curr_gen_num = gen_no
+	if gen_no > gene.curr_gen_num:
+		gene.dict_of_sm_so_far = {}
+		gene.curr_gen_num = gen_no
 
-# 	child = Chromosome(inputdim, outputdim)
-# 	child.reset_chromo_to_zero()
-# 	child.dob = gen_no
+	child = Chromosome(inputdim, outputdim)
+	child.reset_chromo_to_zero()
+	child.dob = gen_no
 
-# 	len1 = len(parent1.conn_arr)
-# 	len2 = len(parent2.conn_arr)
-# 	nodeDict = {}
-# 	c1 = 0
-# 	c2 = 0
+	len1 = len(parent1.conn_arr)
+	len2 = len(parent2.conn_arr)
+	nodeDict = {}
+	c1 = 0
+	c2 = 0
 	
-# 	input_nodes = []
-# 	output_nodes = []
-# 	hidden_nodes = []
-# 	while c1 < len1 or c2 < len2:
-# 		f1 = f2 = 0
-# 		if c1 < len1:
-# 			i = parent1.conn_arr[c1]
-# 			f1 = 1
-# 		if c2 < len2:
-# 			j = parent2.conn_arr[c2]
-# 			f2 = 1
+	input_nodes = []
+	output_nodes = []
+	hidden_nodes = []
+	while c1 < len1 or c2 < len2:
+		f1 = f2 = 0
+		if c1 < len1:
+			i = parent1.conn_arr[c1]
+			f1 = 1
+		if c2 < len2:
+			j = parent2.conn_arr[c2]
+			f2 = 1
 
-# 		if (f1 == 1 and f1 == f2 and i.innov_num == j.innov_num):
-# 			alpha = random.uniform(0, 1)
-# 			wt = alpha * i.weight + (1 - alpha) * j.weight
-# 			stat = False
-# 			if i.status == j.status:
-# 				stat = i.status
-# 			else:
-# 				stat = random.choice((True, False))
+		if (f1 == 1 and f1 == f2 and i.innov_num == j.innov_num):
+			alpha = random.uniform(0, 1)
+			wt = alpha * i.weight + (1 - alpha) * j.weight
+			stat = False
+			if i.status == j.status:
+				stat = i.status
+			else:
+				stat = random.choice((True, False))
 
-# 			nodeObj1 = nodeObj2 = None 
-# 			if i.source.node_num not in nodeDict.keys():
-# 				nodeObj1 = Node(i.source.node_num, i.source.nature)
-# 				nodeDict[i.source.node_num] = nodeObj1
-# 				if i.source.nature == 'I':
-# 					input_nodes.append(nodeObj1)
-# 				else:
-# 					hidden_nodes.append(nodeObj1)
+			nodeObj1 = nodeObj2 = None 
+			if i.source.node_num not in nodeDict.keys():
+				nodeObj1 = Node(i.source.node_num, i.source.nature)
+				nodeDict[i.source.node_num] = nodeObj1
+				if i.source.nature == 'I':
+					input_nodes.append(nodeObj1)
+				else:
+					hidden_nodes.append(nodeObj1)
 
-# 			else:
-# 				nodeObj1 = nodeDict[i.source.node_num]
+			else:
+				nodeObj1 = nodeDict[i.source.node_num]
 
-# 			if i.destination.node_num not in nodeDict.keys():
-# 				nodeObj2 = Node(i.destination.node_num, i.destination.nature)
-# 				nodeDict[i.destination.node_num] = nodeObj2
-# 				if i.destination.nature == 'H1' or i.destination.nature == 'H2':
-# 					hidden_nodes.append(nodeObj2)
-# 				else:
-# 					output_nodes.append(nodeObj2)
-# 			else:
-# 				nodeObj2 = nodeDict[i.destination.node_num]
+			if i.destination.node_num not in nodeDict.keys():
+				nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+				nodeDict[i.destination.node_num] = nodeObj2
+				if i.destination.nature == 'H1' or i.destination.nature == 'H2':
+					hidden_nodes.append(nodeObj2)
+				else:
+					output_nodes.append(nodeObj2)
+			else:
+				nodeObj2 = nodeDict[i.destination.node_num]
 
-# 			conObj = Conn(i.innov_num, (nodeObj1, nodeObj2), wt, stat)  # conn object
-# 			child.conn_arr.append(conObj)
-# 			c1 += 1
-# 			c2 += 1
-# 		else:
-# 			dominating_parent = aux_non_weighted(parent1, parent2)
+			conObj = Conn(i.innov_num, (nodeObj1, nodeObj2), wt, stat)  # conn object
+			child.conn_arr.append(conObj)
+			c1 += 1
+			c2 += 1
+		else:
+			dominating_parent = aux_non_weighted(parent1, parent2)
+			length = len(dominating_parent.conn_arr)
+			while c1 < length:
+				i = dominating_parent.conn_arr[c1]
+				nodeObj1 = nodeObj2 = None
+				if i.source.node_num not in nodeDict.keys():
+					nodeObj1 = Node(i.source.node_num, i.source.nature)
+					nodeDict[i.source.node_num] = nodeObj1
+					if i.source.nature == 'I':
+						input_nodes.append(nodeObj1)
+					else:
+						hidden_nodes.append(nodeObj1)
+				else:
+					nodeObj1 = nodeDict[i.source.node_num]
 
-# 			length = len(dominating_parent.conn_arr)
-# 			while c1 < length:
-# 				i = dominating_parent.conn_arr[c1]
-# 				nodeObj1 = nodeObj2 = None
-# 				if i.source.node_num not in nodeDict.keys():
-# 					nodeObj1 = Node(i.source.node_num, i.source.nature)
-# 					nodeDict[i.source.node_num] = nodeObj1
-# 					if i.source.nature == 'I':
-# 						input_nodes.append(nodeObj1)
-# 					else:
-# 						hidden_nodes.append(nodeObj1)
-# 				else:
-# 					nodeObj1 = nodeDict[i.source.node_num]
+				if i.destination.node_num not in nodeDict.keys():
+					nodeObj2 = Node(i.destination.node_num, i.destination.nature)
+					nodeDict[i.destination.node_num] = nodeObj2
+					if i.destination.nature == 'H1' or i.destination.nature == 'H2':
+						hidden_nodes.append(nodeObj2)
+					else:
+						output_nodes.append(nodeObj2)
+				else:
+					nodeObj2 = nodeDict[i.destination.node_num]
+				c1 += 1
+				connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
+				child.conn_arr.append(connObj)
 
-# 				if i.destination.node_num not in nodeDict.keys():
-# 					nodeObj2 = Node(i.destination.node_num, i.destination.nature)
-# 					nodeDict[i.destination.node_num] = nodeObj2
-# 					if i.destination.nature == 'H1' or i.destination.nature == 'H2':
-# 						hidden_nodes.append(nodeObj2)
-# 					else:
-# 						output_nodes.append(nodeObj2)
-# 				else:
-# 					nodeObj2 = nodeDict[i.destination.node_num]
-# 				c1 += 1
-# 				connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
-# 				child.conn_arr.append(connObj)
+			break
 
-# 			break
+	input_nodes.sort(key = lambda x: x.node_num)
+	output_nodes.sort(key = lambda x: x.node_num)
 
-# 	input_nodes.sort(key = lambda x: x.node_num)
-# 	output_nodes.sort(key = lambda x: x.node_num)
+	child.node_arr = input_nodes + output_nodes + hidden_nodes
 
-# 	child.node_arr = input_nodes + output_nodes + hidden_nodes
+	point_of_crossover = random.randint(1, outputdim)
 
-# 	point_of_crossover = random.randint(1, outputdim)
+	for i in len(output_nodes):
+		if i < point_of_crossover:
+			wt = parent1.bias_conn_arr[i].weight
+		else:
+			wt = parent2.bias_conn_arr[i].weight
+		new_bias_conn = gene.BiasConn(output_nodes[i], wt)
+		child.bias_conn_arr.append(new_bias_conn)
 
-# 	for i in len(output_nodes):
-# 		if i < point_of_crossover:
-# 			wt = parent1.bias_conn_arr[i].weight
-# 		else:
-# 			wt = parent2.bias_conn_arr[i].weight
-# 		new_bias_conn = gene.BiasConn(output_nodes[i], wt)
-# 		child.bias_conn_arr.append(new_bias_conn)
-
-# 	child.set_node_ctr()
-# 	return child
+	child.set_node_ctr()
+	return child
 
 
 

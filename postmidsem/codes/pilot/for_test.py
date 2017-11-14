@@ -575,12 +575,12 @@ def test_for_cros():
 	chromosome.crossoverTest((newchromo, tup1), (newnewchromo, tup2), gen_no).pp()
 
 def test_for_cros2():
-	for_node = [(i, 'I') for i in range(1, 3)]
-	for_node += [(i, 'O') for i in range(4, 4)]
-	st='2'
-	for_node +=  [(i+4,'H'+st[i]) for i in range(len(st))]
-	node_ctr = 13
-	innov_num = 25
+	for_node = [(i, 'I') for i in range(1, 4)]
+	for_node += [(i, 'O') for i in range(4, 6)]
+	st='221221'
+	for_node +=  [(i+6,'H'+st[i]) for i in range(len(st))]
+	node_ctr = 12
+	innov_num = 21
 	dob = 0
 	indim=3
 	outdim = 2
@@ -589,9 +589,7 @@ def test_for_cros2():
 				(5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
 				(9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
 				(13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True),
-				(17, (1, 11), 0.25, True), (18, (11, 9), 0.15, True), (19, (2, 12), 0.6, True), (20, (12, 7), 0.4, True),
-				(21, (3, 12), 0.8, True), (22, (2, 9), 0.9, True), (23, (12, 4), 0.75, True), (24, (11, 5), 0.25, True),
-				]
+				(17, (1, 11), 0.25, True), (18, (11, 9), 0.15, True), (21, (2, 9), 0.65, True)]
 	conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
 	for_bias = [(4, 0.2), (5, 0.1)]
 	bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
@@ -607,19 +605,18 @@ def test_for_cros2():
 	num_data = 2
 	for_node = [(i, 'I') for i in range(1, 4)]
 	for_node += [(i, 'O') for i in range(4, 6)]
-	st='22122'
+	st='221221'
 	for_node +=  [(i+6,'H'+st[i]) for i in range(len(st))]
-	node_ctr = 11
-	innov_num = 17
+	node_ctr = 12
 	dob = 0
 	indim=3
 	outdim = 2
 	node_lis = [gene.Node(x, y) for x, y in for_node]
-	for_conn = [(1, (1, 4), 0.8, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+	for_conn = [(1, (1, 4), 0.3, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
 				(5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
 				(9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
-				(13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True)
-				]
+				(13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True),
+				(19, (2, 11), 0.6, True), (20, (11, 7), 0.4, True), (22, (3, 11), 0.75, True)	]
 	conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
 	for_bias = [(4, 0.2), (5, 0.1)]
 	bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
@@ -637,8 +634,8 @@ def test_for_cros2():
 	# newnewchromo.pp()
 	print("final")
 	gen_no = 1
-	tup2 = (0.4, 0.5, 0.7, 0.8)
-	tup1 = (0.6, 0.4, 0.6, 0.7)
+	tup1 = (0.4, 0.5, 0.7, 0.8)
+	tup2 = (0.6, 0.4, 0.6, 0.7)
 
 	# chromosome.crossover(newchromo, newnewchromo, gen_no).pp()
 	chromosome.crossoverTest((newchromo, tup1), (newnewchromo, tup2), gen_no).pp()
