@@ -1,7 +1,6 @@
 
 import array
 import random
-import json
 
 import numpy
 from math import sqrt
@@ -27,13 +26,11 @@ toolbox = base.Toolbox()
 
 def minimize(individual):
 	network_obj = Neterr(indim, outdim, n_hidden, np.random)
-
 	outputarr = network_obj.feedforward_ne(individual)
 
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
 	mean_square_error_val = give_mse(outputarr, network_obj.resty)
 	false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
-
 	false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
 
 	return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
@@ -42,7 +39,8 @@ def mycross(ind1, ind2):
 	return ind1, ind2
 
 def mymutate(ind1):
-	return ind1
+	new_ind = ind1#.do_mutation(1,1,1,1,1,1,1)
+	return new_ind
 
 def initIndividual(ind_class, inputdim, outputdim):
 	ind = ind_class(inputdim, outputdim)
@@ -58,7 +56,7 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
 	random.seed(seed)
 
-	NGEN = 250
+	NGEN = 10
 	MU = 100
 	CXPB = 0.9
 
@@ -120,9 +118,7 @@ if __name__ == "__main__":
 	pop, stats = main()
 	pop.sort(key=lambda x: x.fitness.values)
 	
-	'''print(stats)
-	print("Convergence: ", convergence(pop, optimal_front))
-	print("Diversity: ", diversity(pop, optimal_front[0], optimal_front[-1]))'''
+	#print(stats)
 	
 	import matplotlib.pyplot as plt
 	import numpy
