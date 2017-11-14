@@ -1,4 +1,3 @@
-
 import array
 import random
 
@@ -24,29 +23,36 @@ creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
 
+
 def minimize(individual):
-	network_obj = Neterr(indim, outdim, n_hidden, np.random)
-	outputarr = network_obj.feedforward_ne(individual)
+    network_obj = Neterr(indim, outdim, n_hidden, np.random)
+    outputarr = network_obj.feedforward_ne(individual)
 
-	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
-	mean_square_error_val = give_mse(outputarr, network_obj.resty)
-	false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
-	false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
+    neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
+    mean_square_error_val = give_mse(outputarr, network_obj.resty)
+    false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
+    false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
 
-	return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+    return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+
 
 def mycross(ind1, ind2, gen_no):
-	child1 = crossover(ind1, ind2, gen_no, inputdim = 8, outputdim = 1)
-	child2 = crossover(ind1, ind2, gen_no, inputdim = 8, outputdim = 1)
-	return child1, child2
+    child1 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
+    child2 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
+
+    return child1, child2
+
 
 def mymutate(ind1):
-	new_ind = ind1.do_mutation(0.6,0.4,0.2,indim,outdim,numpy.random)
-	return new_ind
+
+    new_ind = ind1.do_mutation(0.2, 0.1, 0.05, indim, outdim, numpy.random)
+    return new_ind
+
 
 def initIndividual(ind_class, inputdim, outputdim):
-	ind = ind_class(inputdim, outputdim)
-	return ind
+    ind = ind_class(inputdim, outputdim)
+    return ind
+
 
 toolbox.register("individual", initIndividual, creator.Individual, indim, outdim)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
@@ -55,75 +61,77 @@ toolbox.register("mate", mycross)
 toolbox.register("mutate", mymutate)
 toolbox.register("select", tools.selNSGA2)
 
+
 def main(seed=None):
-	random.seed(seed)
+    random.seed(seed)
 
-	NGEN = 50
-	MU = 100
-	CXPB = 0.9
+    NGEN = 50
+    MU = 100
+    CXPB = 0.9
 
-	stats = tools.Statistics(lambda ind: ind.fitness.values)
-	#stats.register("avg", numpy.mean, axis=0)
-	#stats.register("std", numpy.std, axis=0)
-	stats.register("min", numpy.min, axis=0)
-	stats.register("max", numpy.max, axis=0)
-	
-	logbook = tools.Logbook()
-	logbook.header = "gen", "evals", "std", "min", "avg", "max"
-	pop = toolbox.population(n=MU)
+    stats = tools.Statistics(lambda ind: ind.fitness.values)
+    # stats.register("avg", numpy.mean, axis=0)
+    # stats.register("std", numpy.std, axis=0)
+    stats.register("min", numpy.min, axis=0)
+    stats.register("max", numpy.max, axis=0)
 
-	# Evaluate the individuals with an invalid fitness
-	invalid_ind = [ind for ind in pop if not ind.fitness.valid]
-	fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-	for ind, fit in zip(invalid_ind, fitnesses):
-		ind.fitness.values = fit
+    logbook = tools.Logbook()
+    logbook.header = "gen", "evals", "std", "min", "avg", "max"
+    pop = toolbox.population(n=MU)
 
-	# This is just to assign the crowding distance to the individuals
-	# no actual selection is done
-	pop = toolbox.select(pop, len(pop))
+    # Evaluate the individuals with an invalid fitness
+    invalid_ind = [ind for ind in pop if not ind.fitness.valid]
+    fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+    for ind, fit in zip(invalid_ind, fitnesses):
+        ind.fitness.values = fit
 
-	record = stats.compile(pop)
-	logbook.record(gen=0, evals=len(invalid_ind), **record)
-	print(logbook.stream)
+    # This is just to assign the crowding distance to the individuals
+    # no actual selection is done
+    pop = toolbox.select(pop, len(pop))
 
-	# Begin the generational process
-	for gen in range(1, NGEN):
-		# Vary the population
-		offspring = tools.selTournamentDCD(pop, len(pop))
-		offspring = [toolbox.clone(ind) for ind in offspring]
-		
-		for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
-			if random.random() <= CXPB:
-				toolbox.mate(ind1, ind2, gen)
-			
-			toolbox.mutate(ind1)
-			toolbox.mutate(ind2)
-			del ind1.fitness.values, ind2.fitness.values
-		
-		# Evaluate the individuals with an invalid fitness
-		invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-		fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-		for ind, fit in zip(invalid_ind, fitnesses):
-			ind.fitness.values = fit
+    record = stats.compile(pop)
+    logbook.record(gen=0, evals=len(invalid_ind), **record)
+    print(logbook.stream)
 
-		# Select the next generation population
-		pop = toolbox.select(pop + offspring, MU)
-		record = stats.compile(pop)
-		logbook.record(gen=gen, evals=len(invalid_ind), **record)
-		print(logbook.stream)
+    # Begin the generational process
+    for gen in range(1, NGEN):
+        # Vary the population
+        offspring = tools.selTournamentDCD(pop, len(pop))
+        offspring = [toolbox.clone(ind) for ind in offspring]
 
-	return pop, logbook
-		
+        for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
+            if random.random() <= CXPB:
+                toolbox.mate(ind1, ind2, gen)
+
+            toolbox.mutate(ind1)
+            toolbox.mutate(ind2)
+            del ind1.fitness.values, ind2.fitness.values
+
+        # Evaluate the individuals with an invalid fitness
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
+
+        # Select the next generation population
+        pop = toolbox.select(pop + offspring, MU)
+        record = stats.compile(pop)
+        logbook.record(gen=gen, evals=len(invalid_ind), **record)
+        print(logbook.stream)
+
+    return pop, logbook
+
+
 if __name__ == "__main__":
-	pop, stats = main()
-	pop.sort(key=lambda x: x.fitness.values)
-	
-	#print(stats)
-	'''
-	import matplotlib.pyplot as plt
-	import numpy
-	
-	front = numpy.array([ind.fitness.values for ind in pop])
-	plt.scatter(front[:,0], front[:,1], c="b")
-	plt.axis("tight")
-	plt.show()'''
+    pop, stats = main()
+    pop.sort(key=lambda x: x.fitness.values)
+
+    # print(stats)
+    '''
+    import matplotlib.pyplot as plt
+    import numpy
+    
+    front = numpy.array([ind.fitness.values for ind in pop])
+    plt.scatter(front[:,0], front[:,1], c="b")
+    plt.axis("tight")
+    plt.show()'''
