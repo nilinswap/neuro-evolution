@@ -14,7 +14,7 @@ from deap import tools
 
 from population import *
 from network import Neterr
-from chromosome import Chromosome
+from chromosome import Chromosome, crossover
 
 n_hidden = 10
 indim = 8
@@ -35,8 +35,10 @@ def minimize(individual):
 
 	return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
 
-def mycross(ind1, ind2):
-	return ind1, ind2
+def mycross(ind1, ind2, gen_no):
+	child1 = crossover(ind1, ind2, gen_no, inputdim = 8, outputdim = 1)
+	child2 = crossover(ind1, ind2, gen_no, inputdim = 8, outputdim = 1)
+	return child1, child2
 
 def mymutate(ind1):
 	new_ind = ind1.do_mutation(0.6,0.4,0.2,indim,outdim,numpy.random)
@@ -92,7 +94,7 @@ def main(seed=None):
 		
 		for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
 			if random.random() <= CXPB:
-				toolbox.mate(ind1, ind2)
+				toolbox.mate(ind1, ind2, gen)
 			
 			toolbox.mutate(ind1)
 			toolbox.mutate(ind2)

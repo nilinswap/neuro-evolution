@@ -443,7 +443,7 @@ def aux_non_weightedTest(parentx, parenty):
 
 def crossover(parent1, parent2, gen_no, inputdim = 8, outputdim = 1):
 
-	if gen_no > gene.curr_gen_num:
+	if gen_no > gene.curr_gen_no:
 		gene.dict_of_sm_so_far = {}
 		gene.curr_gen_num = gen_no
 
@@ -542,7 +542,7 @@ def crossover(parent1, parent2, gen_no, inputdim = 8, outputdim = 1):
 
 	point_of_crossover = random.randint(1, outputdim)
 
-	for i in len(output_nodes):
+	for i in range(len(output_nodes)):
 		if i < point_of_crossover:
 			wt = parent1.bias_conn_arr[i].weight
 		else:
