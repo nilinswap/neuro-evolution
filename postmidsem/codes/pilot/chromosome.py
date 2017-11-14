@@ -328,7 +328,7 @@ class Chromosome:
         self.conn_arr.append(new_conn1)
         self.conn_arr.append(new_conn2)
 
-    def do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, rng):
+    def do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim,max_hidden_unit, rng):
         p = len(self.conn_arr)
         flag = 0
         prnd = rng.random()
@@ -341,12 +341,13 @@ class Chromosome:
             flag = 1
         prnd = rng.random()
         if prnd < rate_node:
-            self.node_mutation(inputdim, outputdim, rng)
-            flag = 1
-        if flag:
+            if self.node_ctr <= (max_hidden_unit+inputdim+outputdim):
+                self.node_mutation(inputdim, outputdim, rng)
+                flag = 1
+        """if flag:
             print("before mutation length", p)
             print("after mutation length", len(self.conn_arr))
-
+        """
     def convert_to_empirical_string(self):
 
         st = ''
@@ -454,7 +455,7 @@ def aux_non_weightedTest(parentx, parenty):
 
 
 def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
-    print("cross between lengths", len(parent1.conn_arr), len(parent2.conn_arr))
+    #print("cross between lengths", len(parent1.conn_arr), len(parent2.conn_arr))
     if gen_no > gene.curr_gen_no:
         gene.dict_of_sm_so_far = {}
         gene.curr_gen_num = gen_no

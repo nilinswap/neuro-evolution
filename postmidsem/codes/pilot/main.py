@@ -45,7 +45,7 @@ def mycross(ind1, ind2, gen_no):
 
 def mymutate(ind1):
 
-    new_ind = ind1.do_mutation(0.2, 0.1, 0.05, indim, outdim, numpy.random)
+    new_ind = ind1.do_mutation(0.2, 0.1, 0.8, indim, outdim,n_hidden, numpy.random)
     return new_ind
 
 
@@ -92,17 +92,17 @@ def main(seed=None):
     record = stats.compile(pop)
     logbook.record(gen=0, evals=len(invalid_ind), **record)
     print(logbook.stream)
-
+    maxi = 0
     # Begin the generational process
     for gen in range(1, NGEN):
         # Vary the population
         offspring = tools.selTournamentDCD(pop, len(pop))
         offspring = [toolbox.clone(ind) for ind in offspring]
-
+        print(maxi)
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
             if random.random() <= CXPB:
                 toolbox.mate(ind1, ind2, gen)
-
+            maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
             toolbox.mutate(ind1)
             toolbox.mutate(ind2)
             del ind1.fitness.values, ind2.fitness.values
