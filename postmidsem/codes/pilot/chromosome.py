@@ -108,17 +108,18 @@ class Chromosome:
 		WeightMatrix['H2O'] = np.zeros((NatureCtrDict['H2'], outputdim))
 		"""
 		for con in self.conn_arr:
-			if con.status == True:
-				if con.source.nature + con.destination.nature not in ConnMatrix.keys():
-					ConnMatrix[con.source.nature + con.destination.nature] = np.zeros(
-						(NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
-					WeightMatrix[con.source.nature + con.destination.nature] = np.zeros(
-						(NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
+			
+			if con.source.nature + con.destination.nature not in ConnMatrix.keys():
+				ConnMatrix[con.source.nature + con.destination.nature] = np.zeros(
+					(NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
+				WeightMatrix[con.source.nature + con.destination.nature] = np.zeros(
+					(NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
 
-				ConnMatrix[con.source.nature + con.destination.nature][
-					dictionary[con.source.nature][con.source]][
-					dictionary[con.destination.nature][con.destination]] = 1
+			ConnMatrix[con.source.nature + con.destination.nature][
+				dictionary[con.source.nature][con.source]][
+				dictionary[con.destination.nature][con.destination]] = 1
 			couple_to_conn_map[con.get_couple()] = con
+			#print(con.source.nature + con.destination.nature)
 			WeightMatrix[con.source.nature + con.destination.nature][dictionary[con.source.nature][con.source]][
 				dictionary[con.destination.nature][con.destination]] = con.weight
 
@@ -218,7 +219,10 @@ class Chromosome:
 		# key_list.remove('IO')
 		# print(key_list)
 
+		
 		chosen_key = rng.choice(key_list)
+		while chosen_key not in newmatenc.CMatrix.keys():
+			chosen_key = rng.choice(key_list)
 
 		mat = newmatenc.CMatrix[chosen_key]
 		# print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
@@ -231,7 +235,7 @@ class Chromosome:
 		# print(split_key1, split_key2)
 		# couple = (newmatenc.node_map[split_key1][i], newmatenc.node_map[split_key2][j])
 		ctr = 0
-		print(mat[i][j])
+		#print(mat[i][j])
 		while mat[i][j] != 0:
 			i = rng.randint(0, mat.shape[0])
 			if mat.shape[1] > 1:
@@ -271,6 +275,15 @@ class Chromosome:
 		elif prndm > 0:
 			ind = 0
 		chosen_key = key_list[ind]
+		while chosen_key not in newmatenc.CMatrix.keys():
+			prndm = rng.random()
+			if prndm > 0.4:
+				ind = 2
+			elif prndm > 0.1:
+				ind = 1
+			elif prndm > 0:
+				ind = 0
+			chosen_key = key_list[ind]
 		# key_list.remove('IO')
 		# print(key_list)
 

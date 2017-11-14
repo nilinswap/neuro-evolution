@@ -12,7 +12,7 @@ from deap.benchmarks.tools import diversity, convergence
 from deap import creator
 from deap import tools
 
-from Population import *
+from population import *
 from network import Neterr
 from chromosome import Chromosome
 
@@ -39,7 +39,7 @@ def mycross(ind1, ind2):
 	return ind1, ind2
 
 def mymutate(ind1):
-	new_ind = ind1#.do_mutation(1,1,1,1,1,1,1)
+	new_ind = ind1.do_mutation(0.6,0.4,0.2,indim,outdim,numpy.random)
 	return new_ind
 
 def initIndividual(ind_class, inputdim, outputdim):
@@ -56,8 +56,8 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
 	random.seed(seed)
 
-	NGEN = 1
-	MU = 6
+	NGEN = 50
+	MU = 100
 	CXPB = 0.9
 
 	stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -109,17 +109,6 @@ def main(seed=None):
 		record = stats.compile(pop)
 		logbook.record(gen=gen, evals=len(invalid_ind), **record)
 		print(logbook.stream)
-
-
-	print("Population")
-	for i in range(0,MU):
-		print(str(i) + ": " + str(pop[i].fitness))
-	pareto_fronts = tools.sortNondominated(pop, len(pop))
-	print("Pareto Fronts: ")
-	print(pareto_fronts)
-	for x in pareto_fronts:
-		for y in x:
-			print(y.fitness)
 
 	return pop, logbook
 		
