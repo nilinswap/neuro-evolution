@@ -342,8 +342,7 @@ class Chromosome:
 	def convert_to_empirical_string(self):
 
 		st = ''
-		self.conn_arr[0].pp()
-		self.conn_arr[1].pp()
+		
 		for con in self.conn_arr:
 			tup = con.get_couple()
 			st += tup[0].nature + tup[1].nature + str(con.innov_num)
