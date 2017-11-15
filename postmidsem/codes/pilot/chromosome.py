@@ -205,12 +205,14 @@ class Chromosome:
 
         return newchromo
 
-    def weight_mutation(self, rng, factor=0.1):
+    def weight_mutation(self, rng, factor=0.1, individual_change_probablity = 0.1):
         import copy
-        lis = copy.deepcopy(self.conn_arr) + self.bias_conn_arr
-        chosen_ind = rng.choice(range(len(lis)))
-        lis[chosen_ind].weight += (rng.random() - 0.5) * 2 * factor
-        return chosen_ind
+        lis = self.conn_arr + self.bias_conn_arr
+        #chosen_ind = rng.choice(range(len(lis)))
+        for item in lis:
+            if rng.random() < individual_change_probablity:
+                item.weight += (rng.random() - 0.5) * 2 * factor
+        #return chosen_ind
 
     def edge_mutation(self, inputdim, outputdim, rng):  # not tested, might just have some error!
 
@@ -479,7 +481,7 @@ def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
     nodeDict = {}
     c1 = 0
     c2 = 0
-
+    dominating_parent = None
     input_nodes = []
     output_nodes = []
     hidden_nodes = []
@@ -556,6 +558,7 @@ def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
                 connObj = Conn(i.innov_num, (nodeObj1, nodeObj2), i.weight, i.status)
                 child.conn_arr.append(connObj)
 
+
             break
 
     input_nodes.sort(key=lambda x: x.node_num)
@@ -587,8 +590,17 @@ def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
 
 
     child.set_node_ctr()
+    """
+    assert ( parent1.node_ctr == child.node_ctr or parent2.node_ctr == child.node_ctr)
+    assert ( len(parent1.conn_arr) == len(child.conn_arr) or len(parent2.conn_arr) == len(child.conn_arr))
+    if dominating_parent:
+        #print("FOUND ONE")
+        for i in range(len(dominating_parent.conn_arr)):
+            assert( dominating_parent.conn_arr[i].innov_num == child.conn_arr[i].innov_num)
+            assert( dominating_parent.conn_arr[i].source.nature + dominating_parent.conn_arr[i].destination.nature == child.conn_arr[i].source.nature + child.conn_arr[i].destination.nature)
+        assert ( set([item.node_num for item in dominating_parent.node_arr]) == set([item.node_num for item in child.node_arr])  )
     return child
-
+    """
 
 def crossoverTest(parentx, parenty, gen_no, inputdim=8, outputdim=1):
     parent1 = parentx[0]

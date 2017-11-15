@@ -50,6 +50,7 @@ class Neterr:
         self.test_sety = tf.Variable(initial_value = self.testy, name='test_sety', dtype=tf.int32)
         #self.inputarr = inputarr
         self.inputarr = self.restx
+        #print("shape here",self.restx.shape)
 
     def feedforward_cm(self, chromo, middle_activation = relu, final_activation = sigmoid,play = 0):
 
