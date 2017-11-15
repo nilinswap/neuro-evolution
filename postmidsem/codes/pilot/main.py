@@ -100,11 +100,11 @@ def main(seed=None):
         # Vary the population
         offspring = tools.selTournamentDCD(pop, len(pop))
         offspring = [toolbox.clone(ind) for ind in offspring]
-        print("changed?", gen)
+        #print("changed?", gen)
         #print(maxi)
         #print("length",len(offspring))
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
-            print(ind1.fitness)
+            #print(ind1.fitness)
             if random.random() <= CXPB:
                 toolbox.mate(ind1, ind2, gen)
             maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
