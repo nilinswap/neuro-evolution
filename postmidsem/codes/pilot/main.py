@@ -89,12 +89,13 @@ def main(seed=None):
     # This is just to assign the crowding distance to the individuals
     # no actual selection is done
     pop = toolbox.select(pop, len(pop))
-
+    #print(pop)
     record = stats.compile(pop)
     logbook.record(gen=0, evals=len(invalid_ind), **record)
     print(logbook.stream)
     maxi = 0
     # Begin the generational process
+    
     for gen in range(1, NGEN):
 
         # Vary the population
@@ -129,7 +130,7 @@ def main(seed=None):
 
 if __name__ == "__main__":
     pop, stats = main()
-    pop.sort(key=lambda x: x.fitness.values)
+    #pop.sort(key=lambda x: x.fitness.values)
 
     # print(stats)
     '''
