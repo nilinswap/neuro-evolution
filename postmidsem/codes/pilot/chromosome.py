@@ -389,7 +389,7 @@ def aux_weighted(parent1, parent2):
         else:
             return parent2
 
-
+'''
 def aux_weightedTest(parentx, parenty):  # parentx, parenty represents a tuple (parent, fitness_arr)
     parent1 = parentx[0]
     parent2 = parenty[0]
@@ -406,19 +406,22 @@ def aux_weightedTest(parentx, parenty):  # parentx, parenty represents a tuple (
             return parent1
         else:
             return parent2
-
+'''
 
 def aux_non_weighted(parent1, parent2):
     fitness_tup1 = parent1.fitness
     fitness_tup2 = parent2.fitness
-    if fitness_tup1 <= fitness_tup2:
+
+    arr1 = np.array(fitness_tup1)
+    arr2 = np.array(fitness_tup2)
+    if np.all(arr1 <= arr2):
         return parent1
-    elif fitness_tup1 > fitness_tup2:
+    elif np.all(arr1 > arr2):
         return parent2
     else:
-        if fitness_tup1[0] <= fitness_tup2[0] and fitness_tup1[2:4] <= fitness_tup2[2:4]:
+        if fitness_tup1[0] <= fitness_tup2[0] and np.all(arr1[2:4] <= arr2[2:4]):
             return parent1
-        elif fitness_tup1[0] > fitness_tup2[0] and fitness_tup1[2:4] > fitness_tup2[2:4]:
+        elif fitness_tup1[0] > fitness_tup2[0] and np.all(arr1[2:4] > arr2[2:4]):
             return parent2
         elif ((fitness_tup1[0] <= fitness_tup2[0]) and (
                     (fitness_tup1[2] <= fitness_tup2[2]) or (fitness_tup1[3] <= fitness_tup2[3]))):
@@ -427,7 +430,9 @@ def aux_non_weighted(parent1, parent2):
                     (fitness_tup1[2] > fitness_tup2[2]) or (fitness_tup1[3] > fitness_tup2[3]))):
             return parent2
         else:
-            return np.random.choice(parent1, parent2)
+            return np.random.choice((parent1, parent2))
+
+
 
 
 def aux_non_weightedTest(parentx, parenty):
@@ -435,14 +440,16 @@ def aux_non_weightedTest(parentx, parenty):
     fitness_tup2 = parenty[1]
     parent1 = parentx[0]
     parent2 = parenty[0]
-    if fitness_tup1 <= fitness_tup2:
+    arr1 = np.array(fitness_tup1)
+    arr2 = np.array(fitness_tup2)
+    if np.all(arr1 <= arr2):
         return parent1
-    elif fitness_tup1 > fitness_tup2:
+    elif np.all(arr1 > arr2):
         return parent2
     else:
-        if fitness_tup1[0] <= fitness_tup2[0] and fitness_tup1[2:4] <= fitness_tup2[2:4]:
+        if fitness_tup1[0] <= fitness_tup2[0] and np.all(arr1[2:4] <= arr2[2:4]):
             return parent1
-        elif fitness_tup1[0] > fitness_tup2[0] and fitness_tup1[2:4] > fitness_tup2[2:4]:
+        elif fitness_tup1[0] > fitness_tup2[0] and np.all(arr1[2:4] > arr2[2:4]):
             return parent2
         elif ((fitness_tup1[0] <= fitness_tup2[0]) and (
                     (fitness_tup1[2] <= fitness_tup2[2]) or (fitness_tup1[3] <= fitness_tup2[3]))):
@@ -451,7 +458,7 @@ def aux_non_weightedTest(parentx, parenty):
                     (fitness_tup1[2] > fitness_tup2[2]) or (fitness_tup1[3] > fitness_tup2[3]))):
             return parent2
         else:
-            return np.random.choice(parent1, parent2)
+            return np.random.choice((parent1, parent2))
 
 
 def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
