@@ -1,6 +1,6 @@
 # gene.py
 dict_of_sm_so_far = { }# error! error! error!
-curr_gen_no = 0
+curr_gen_no = 1
 
 class Node:
     def __init__(self, node_num, nature):
