@@ -25,33 +25,33 @@ toolbox = base.Toolbox()
 
 
 def minimize(individual):
-    network_obj = Neterr(indim, outdim, n_hidden, np.random)
-    outputarr = network_obj.feedforward_ne(individual)
+	network_obj = Neterr(indim, outdim, n_hidden, np.random)
+	outputarr = network_obj.feedforward_ne(individual)
 
-    neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
-    mean_square_error_val = give_mse(outputarr, network_obj.resty)
-    false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
-    false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
+	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
+	mean_square_error_val = give_mse(outputarr, network_obj.resty)
+	false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
+	false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
 
-    return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+	return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
 
 
 def mycross(ind1, ind2, gen_no):
-    child1 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
-    child2 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
+	child1 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
+	child2 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
 
-    return child1, child2
+	return child1, child2
 
 
 def mymutate(ind1):
 
-    new_ind = ind1.do_mutation(0.2, 0.1, 0.8, indim, outdim,n_hidden, numpy.random)
-    return new_ind
+	new_ind = ind1.do_mutation(0.2, 0.1, 0.8, indim, outdim,n_hidden, numpy.random)
+	return new_ind
 
 
 def initIndividual(ind_class, inputdim, outputdim):
-    ind = ind_class(inputdim, outputdim)
-    return ind
+	ind = ind_class(inputdim, outputdim)
+	return ind
 
 
 toolbox.register("individual", initIndividual, creator.Individual, indim, outdim)
