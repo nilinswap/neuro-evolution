@@ -56,6 +56,7 @@ def initIndividual(ind_class, inputdim, outputdim):
 
 toolbox.register("individual", initIndividual, creator.Individual, indim, outdim)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+
 toolbox.register("evaluate", minimize)
 toolbox.register("mate", mycross)
 toolbox.register("mutate", mymutate)
@@ -66,7 +67,7 @@ def main(seed=None):
     random.seed(seed)
 
     NGEN = 50
-    MU = 100
+    MU = 12
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -95,11 +96,15 @@ def main(seed=None):
     maxi = 0
     # Begin the generational process
     for gen in range(1, NGEN):
+
         # Vary the population
         offspring = tools.selTournamentDCD(pop, len(pop))
         offspring = [toolbox.clone(ind) for ind in offspring]
-        print(maxi)
+        print("changed?", gen)
+        #print(maxi)
+        #print("length",len(offspring))
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
+            print(ind1.fitness)
             if random.random() <= CXPB:
                 toolbox.mate(ind1, ind2, gen)
             maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)

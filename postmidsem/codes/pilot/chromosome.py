@@ -364,6 +364,7 @@ def normalize_conn_arr_for_this_gen(chromo, tup):
     global innov_ctr
     if (st, (tup[0].node_num, tup[1].node_num)) in gene.dict_of_sm_so_far.keys():
         innov_num = gene.dict_of_sm_so_far[(st, (tup[0].node_num, tup[1].node_num))]
+        print("matches")
     else:
 
         innov_num = innov_ctr
@@ -457,12 +458,14 @@ def aux_non_weightedTest(parentx, parenty):
 def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
     #print("cross between lengths", len(parent1.conn_arr), len(parent2.conn_arr))
     if gen_no > gene.curr_gen_no:
+
         gene.dict_of_sm_so_far = {}
-        gene.curr_gen_num = gen_no
+        gene.curr_gen_no = gen_no
+        print("yes changed",gene.curr_gen_no)
 
     child = Chromosome(inputdim, outputdim)
     child.reset_chromo_to_zero()
-    child.dob = gen_no
+    child.dob = gen_no + 1
 
     len1 = len(parent1.conn_arr)
     len2 = len(parent2.conn_arr)
