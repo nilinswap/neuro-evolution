@@ -123,8 +123,17 @@ class Neterr:
 
 
 
-    def test(self, weight_arr):
-        pass
+    def test_err(self, chromo):
+        self.inputarr = self.testx
+        arr = self.feedforward_ne(chromo)
+        if arr.shape[1] == 1:
+            newar = np.where(arr > 0.5, 1, 0)
+            newar = np.ravel(newar)
+        else:
+            newar = np.argmax(arr, axis=1)
+        newarr = np.where(newar != self.testy, 1, 0)
+        #print(newarr)
+        return np.mean(newarr)
 
 
 

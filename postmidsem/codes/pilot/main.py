@@ -65,8 +65,8 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
     random.seed(seed)
 
-    NGEN = 1000
-    MU = 100
+    NGEN = 350
+    MU = 4*25 #this has to be a multiple of 4. period.
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
@@ -124,15 +124,16 @@ def main(seed=None):
         record = stats.compile(pop)
         logbook.record(gen=gen, evals=len(invalid_ind), **record)
         print(logbook.stream)
-        print(len(pop))
+        #print(len(pop))
     return pop, logbook
 
 
 if __name__ == "__main__":
     pop, stats = main()
-    # pop.sort(key=lambda x: x.fitness.values)
+    neter = Neterr(indim, outdim, n_hidden, np.random)
+    print("test on one with min validation error",neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
 
-    # print(stats)
+    #print(stats)
     '''
     import matplotlib.pyplot as plt
     import numpy

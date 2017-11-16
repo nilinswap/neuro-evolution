@@ -363,6 +363,8 @@ class Chromosome:
         return st
 
 
+
+
 def normalize_conn_arr_for_this_gen(chromo, tup):
     st = chromo.convert_to_empirical_string()
 
@@ -465,9 +467,9 @@ def aux_non_weightedTest(parentx, parenty):
     elif np.all(arr1 > arr2):
         return parent2
     else:
-        if fitness_tup1[0] <= fitness_tup2[0] and np.all(arr1[2:4] <= arr2[2:4]):
+        if fitness_tup1[0] <= fitness_tup2[0] and np.all(arr1[2:] <= arr2[2:]):
             return parent1
-        elif fitness_tup1[0] > fitness_tup2[0] and np.all(arr1[2:4] > arr2[2:4]):
+        elif fitness_tup1[0] > fitness_tup2[0] and np.all(arr1[2:] > arr2[2:]):
             return parent2
         elif ((fitness_tup1[0] <= fitness_tup2[0]) and (
                     (fitness_tup1[2] <= fitness_tup2[2]) or (fitness_tup1[3] <= fitness_tup2[3]))):
