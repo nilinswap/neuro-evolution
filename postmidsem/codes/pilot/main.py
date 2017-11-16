@@ -141,4 +141,3 @@ if __name__ == "__main__":
     plt.scatter(front[:,0], front[:,1], c="b")
     plt.axis("tight")
     plt.show()'''
->>>>>>> dd8c4bf24d73cccc73bfe3ce94e80cfade1ec205

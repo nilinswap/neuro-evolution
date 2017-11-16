@@ -34,7 +34,7 @@ def test1():
     newchromo.set_node_ctr(node_ctr)
 
     # newchromo.pp()
-    def calc_output_directly(inputarr):
+        def calc_output_directly(inputarr):
         lis = []
         for arr in inputarr:
             output1 = sigmoid(relu(arr[0] * 0.5) * 0.4 + 0.25 * arr[1] + 0.7 * arr[2] - 0.2)
@@ -655,7 +655,11 @@ def test_for_cros2():
     tup2 = (0.6, 0.4, 0.6, 0.7)
 
     # chromosome.crossover(newchromo, newnewchromo, gen_no).pp()
-    chromosome.crossoverTest((newchromo, tup1), (newnewchromo, tup2), gen_no).pp()
+    # chromosome.crossoverTest((newchromo, tup1), (newnewchromo, tup2), gen_no).pp()
+    wt_muta = 0.3
+    node_muta = 0.1
+    conn_muta = 0.2
+    chromosome.do_mutation(wt_muta, conn_muta ,node_muta, indim, outdim, 5)
 
 if __name__ == '__main__':
     test_for_cros2()
