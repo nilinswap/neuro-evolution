@@ -19,9 +19,9 @@ import gene
 def give_neg_log_likelihood( arr , oneDarr):
     parr = arr #normalize(arr,axis = 0)
     if parr.shape[1] == 1:
-         summer = np.sum([ - (oneDarr[i]*np.log(parr[i,0] ) + (1-oneDarr[i])*np.log(1 - parr[i,0])) for i in range(parr.shape[0]) ])
+         summer = np.sum([ - (oneDarr[i]*np.log(parr[i,0]+ 0.000000000001 ) + (1-oneDarr[i])*np.log(1 - parr[i,0]+0.000000000001)) for i in range(parr.shape[0]) ])
     else:
-         summer = np.sum ([ - np.log(parr[i,oneDarr[i]]) for i in range(parr.shape[0]) ]   )
+         summer = np.sum ([ - np.log(parr[i,oneDarr[i]]+ 0.000000000001) for i in range(parr.shape[0]) ]   )
     return summer/parr.shape[0]
 
 def give_mse(arr, oneDarr):
