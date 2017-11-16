@@ -100,7 +100,7 @@ def main(seed=None):
 
         # Vary the population
         offspring = tools.selTournamentDCD(pop, len(pop))
-        offspring = [toolbox.clone(ind) for ind in offspring]
+        #offspring = [toolbox.clone(ind) for ind in offspring]
 
         #print("changed?", gen)
         #print(maxi)
