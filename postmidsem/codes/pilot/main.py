@@ -15,7 +15,7 @@ from population import *
 from network import Neterr
 from chromosome import Chromosome, crossover
 
-n_hidden = 10
+n_hidden = 100
 indim = 8
 outdim = 1
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, -1.0))
@@ -25,33 +25,32 @@ toolbox = base.Toolbox()
 
 
 def minimize(individual):
-	network_obj = Neterr(indim, outdim, n_hidden, np.random)
-	outputarr = network_obj.feedforward_ne(individual)
+    network_obj = Neterr(indim, outdim, n_hidden, np.random)
+    outputarr = network_obj.feedforward_ne(individual)
 
-	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
-	mean_square_error_val = give_mse(outputarr, network_obj.resty)
-	false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
-	false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
+    neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
+    mean_square_error_val = give_mse(outputarr, network_obj.resty)
+    false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
+    false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
 
-	return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+    return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
 
 
 def mycross(ind1, ind2, gen_no):
-	child1 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
-	child2 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
+    child1 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
+    child2 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
 
-	return child1, child2
+    return child1, child2
 
 
 def mymutate(ind1):
-
-	new_ind = ind1.do_mutation(0.2, 0.1, 0.8, indim, outdim,n_hidden, numpy.random)
-	return new_ind
+    new_ind = ind1.do_mutation(0.2, 0.1, 0.05, indim, outdim, n_hidden, numpy.random)
+    return new_ind
 
 
 def initIndividual(ind_class, inputdim, outputdim):
-	ind = ind_class(inputdim, outputdim)
-	return ind
+    ind = ind_class(inputdim, outputdim)
+    return ind
 
 
 toolbox.register("individual", initIndividual, creator.Individual, indim, outdim)
@@ -66,8 +65,8 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
     random.seed(seed)
 
-    NGEN = 50
-    MU = 12
+    NGEN = 1000
+    MU = 100
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -89,24 +88,24 @@ def main(seed=None):
     # This is just to assign the crowding distance to the individuals
     # no actual selection is done
     pop = toolbox.select(pop, len(pop))
-    #print(pop)
+    # print(pop)
     record = stats.compile(pop)
     logbook.record(gen=0, evals=len(invalid_ind), **record)
     print(logbook.stream)
     maxi = 0
     # Begin the generational process
-    #print(pop.__dir__())
+    # print(pop.__dir__())
     for gen in range(1, NGEN):
 
         # Vary the population
         offspring = tools.selTournamentDCD(pop, len(pop))
-        #offspring = [toolbox.clone(ind) for ind in offspring]
+        # offspring = [toolbox.clone(ind) for ind in offspring]
 
-        #print("changed?", gen)
-        #print(maxi)
-        #print("length",len(offspring))
+        # print("changed?", gen)
+        # print(maxi)
+        # print("length",len(offspring))
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
-            #print(ind1.fitness)
+            # print(ind1.fitness)
             if random.random() <= CXPB:
                 toolbox.mate(ind1, ind2, gen)
             maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
@@ -131,7 +130,7 @@ def main(seed=None):
 
 if __name__ == "__main__":
     pop, stats = main()
-    #pop.sort(key=lambda x: x.fitness.values)
+    # pop.sort(key=lambda x: x.fitness.values)
 
     # print(stats)
     '''
