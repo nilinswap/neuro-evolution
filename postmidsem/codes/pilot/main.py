@@ -65,10 +65,12 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
     random.seed(seed)
 
-    NGEN = 350
+    NGEN = 400
     MU = 4*25 #this has to be a multiple of 4. period.
     CXPB = 0.9
-
+    file_ob = open("log.txt", "w")
+    file_ob.write(str('swapnil'))
+    file_ob.close()
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
     # stats.register("avg", numpy.mean, axis=0)
     # stats.register("std", numpy.std, axis=0)
@@ -93,6 +95,7 @@ def main(seed=None):
     logbook.record(gen=0, evals=len(invalid_ind), **record)
     print(logbook.stream)
     maxi = 0
+    stri = ''
     # Begin the generational process
     # print(pop.__dir__())
     for gen in range(1, NGEN):
@@ -123,15 +126,28 @@ def main(seed=None):
         pop = toolbox.select(pop + offspring, MU)
         record = stats.compile(pop)
         logbook.record(gen=gen, evals=len(invalid_ind), **record)
-        print(logbook.stream)
+        anost = logbook.stream
+        print(anost)
+        stri += anost+'\n'
+        #file_ob.write(str(logbook.stream))
         #print(len(pop))
+    #file_ob.close()
+    print(stri)
+    file_ob = open("log.txt", "w")
+    file_ob.write(stri)
+    file_ob.close()
     return pop, logbook
 
 
 if __name__ == "__main__":
     pop, stats = main()
     neter = Neterr(indim, outdim, n_hidden, np.random)
-    print("test on one with min validation error",neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    file_ob = open("log.txt", "a")
+    print("\ntest on one with min validation error",neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    file_ob.write(
+        "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
+    file_ob.close()
+    #file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
     #print(stats)
     '''
