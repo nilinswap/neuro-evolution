@@ -440,7 +440,19 @@ def aux_non_weighted(parent1, parent2):
         else:
             return np.random.choice((parent1, parent2))
 
+def aux_non_weighted_1(parent1, parent2):
+    fitness_tup1 = parent1.fitness
+    fitness_tup2 = parent2.fitness
 
+    arr1 = np.array(fitness_tup1)
+    arr2 = np.array(fitness_tup2)
+    if np.all(arr1 <= arr2):
+        return parent1
+    elif np.all(arr1 > arr2):
+        return parent2
+    else:
+
+        return np.random.choice((parent1, parent2))
 def aux_non_weightedTest(parentx, parenty):
     fitness_tup1 = parentx[1]
     fitness_tup2 = parenty[1]
@@ -532,7 +544,7 @@ def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
             c1 += 1
             c2 += 1
         else:
-            dominating_parent = aux_non_weighted(parent1, parent2)
+            dominating_parent = aux_non_weighted_1(parent1, parent2)
             length = len(dominating_parent.conn_arr)
             while c1 < length:
                 i = dominating_parent.conn_arr[c1]
