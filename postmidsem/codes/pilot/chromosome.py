@@ -349,11 +349,11 @@ class Chromosome:
 			self.weight_mutation(rng)
 			flag = 1
 		prnd = rng.random()
-		if prnd < rate_conn_itself:
+		elif prnd < rate_conn_itself:
 			self.edge_mutation(inputdim, outputdim, rng)
 			flag = 1
 		prnd = rng.random()
-		if prnd < rate_node:
+		elif prnd < rate_node:
 			if self.node_ctr <= (max_hidden_unit+inputdim+outputdim):
 				self.node_mutation(inputdim, outputdim, rng)
 				flag = 1
