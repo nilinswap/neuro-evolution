@@ -34,13 +34,13 @@ def test1():
     newchromo.set_node_ctr(node_ctr)
 
     # newchromo.pp()
-        def calc_output_directly(inputarr):
-        lis = []
-        for arr in inputarr:
-            output1 = sigmoid(relu(arr[0] * 0.5) * 0.4 + 0.25 * arr[1] + 0.7 * arr[2] - 0.2)
-            output2 = sigmoid(arr[0] * 0.25 + arr[1] * 0.5 + relu(arr[2] * 0.3) * 0.6 - 0.1)
-            lis.append([output1, output2])
-        return np.array(lis)
+    def calc_output_directly(inputarr):
+    lis = []
+    for arr in inputarr:
+        output1 = sigmoid(relu(arr[0] * 0.5) * 0.4 + 0.25 * arr[1] + 0.7 * arr[2] - 0.2)
+        output2 = sigmoid(arr[0] * 0.25 + arr[1] * 0.5 + relu(arr[2] * 0.3) * 0.6 - 0.1)
+        lis.append([output1, output2])
+    return np.array(lis)
 
     inputarr = np.array([[3, 2, 1], [4, 1, 2]])
     indim = 3

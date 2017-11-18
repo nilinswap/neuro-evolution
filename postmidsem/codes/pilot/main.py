@@ -66,11 +66,9 @@ def main(seed=None):
     random.seed(seed)
 
     NGEN = 100
-    MU = 4 * 15  # this has to be a multiple of 4. period.
+    MU = 4 * 25  # this has to be a multiple of 4. period.
     CXPB = 0.9
-    file_ob = open("log.txt", "w")
-    file_ob.write(str('swapnil'))
-    file_ob.close()
+
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
     # stats.register("avg", numpy.mean, axis=0)
     # stats.register("std", numpy.std, axis=0)
@@ -152,9 +150,15 @@ if __name__ == "__main__":
     print("Pareto Front: ",[ item.fitness.values for item in pareto_front])
     neter = Neterr(indim, outdim, n_hidden, np.random)
     file_ob = open("log.txt", "a")
-    print("\ntest on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+
+    print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    tup = neter.test_on_pareto_patch(pareto_front)
+
+    print("\n test: avg on sampled pareto set", tup[0], "least found avg", tup[1])
     file_ob.write(
         "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
+    file_ob.write("\ntest: avg on sampled pareto set " + str(tup[0]) + " least found avg " +
+                  str(tup[1]))
     file_ob.close()
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 

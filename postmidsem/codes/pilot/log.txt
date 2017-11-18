@@ -1,10 +1,4 @@
-1  	60   	   	154	   	193
-2  	60   	   	154	   	183
-3  	60   	   	154	   	169
-4  	60   	   	154	   	163
-5  	60   	   	154	   	163
-6  	60   	   	154	   	163
-7  	60   	   	154	   	172
-8  	60   	   	152	   	172
-9  	60   	   	152	   	171
-test on one with min validation error 0.282608695652
+1  	60   	   	154	   	184
+2  	60   	   	154	   	175
+test on one with min validation error 0.273913043478
+ test: avg on sampled pareto set0.276811594203least found avg0.247826086957

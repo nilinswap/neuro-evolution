@@ -124,6 +124,7 @@ class Neterr:
 
 
     def test_err(self, chromo):
+        temp = self.inputarr
         self.inputarr = self.testx
         arr = self.feedforward_ne(chromo)
         if arr.shape[1] == 1:
@@ -133,7 +134,27 @@ class Neterr:
             newar = np.argmax(arr, axis=1)
         newarr = np.where(newar != self.testy, 1, 0)
         #print(newarr)
+        self.inputarr = temp
         return np.mean(newarr)
+
+    def test_on_pareto_patch(self,pareto_set):
+        temp = self.inputarr
+        self.inputarr = self.testx
+        lis = []
+        minh = 1000000
+        for chromo in pareto_set:
+            arr = self.feedforward_ne(chromo)
+            if arr.shape[1] == 1:
+                newar = np.where(arr > 0.5, 1, 0)
+                newar = np.ravel(newar)
+            else:
+                newar = np.argmax(arr, axis=1)
+            newarr = np.where(newar != self.testy, 1, 0)
+            lis += list(newarr)
+            minh = min(minh,np.mean(newarr))
+        #print(newarr)
+        self.inputarr = temp
+        return np.mean(lis),minh
 
 
 
