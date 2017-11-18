@@ -317,6 +317,7 @@ def test_mtbp():
     indim = 8
     outdim = 2
     newchromo = Chromosome(indim, outdim)
+    newchromo.reset_chromo_to_zero()
     newchromo.__setattr__('conn_arr', conn_lis)
     newchromo.__setattr__('bias_conn_arr', bias_conn_lis)
     newchromo.__setattr__('node_arr', node_lis)
