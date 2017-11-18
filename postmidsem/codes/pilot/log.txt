@@ -1,4 +1,3 @@
-1  	60   	   	154	   	184
-2  	60   	   	154	   	175
-test on one with min validation error 0.273913043478
- test: avg on sampled pareto set0.276811594203least found avg0.247826086957
+1  	100  	   	152	   	193
+test on one with min validation error 0.252173913043
+test: avg on sampled pareto set 0.272608695652 least found avg 0.252173913043

@@ -65,7 +65,7 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
     random.seed(seed)
 
-    NGEN = 100
+    NGEN = 250
     MU = 4 * 25  # this has to be a multiple of 4. period.
     CXPB = 0.9
 
@@ -147,7 +147,10 @@ if __name__ == "__main__":
     else:
 
         pareto_front =  random.sample(fronts[0], 30)
-    print("Pareto Front: ",[ item.fitness.values for item in pareto_front])
+    print("Pareto Front: ")
+    for i in range(len(pareto_front)):
+        print(pareto_front[i].fitness.values)
+
     neter = Neterr(indim, outdim, n_hidden, np.random)
     file_ob = open("log.txt", "a")
 
