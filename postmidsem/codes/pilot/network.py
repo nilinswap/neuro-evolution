@@ -140,6 +140,7 @@ class Neterr:
     def test_on_pareto_patch(self,pareto_set):
         temp = self.inputarr
         self.inputarr = self.testx
+        ctr =0
         lis = []
         minh = 1000000
         for chromo in pareto_set:
@@ -151,10 +152,15 @@ class Neterr:
                 newar = np.argmax(arr, axis=1)
             newarr = np.where(newar != self.testy, 1, 0)
             lis += list(newarr)
+
+            tempo = minh
             minh = min(minh,np.mean(newarr))
+            if minh < tempo:
+                ind = ctr
+            ctr +=1
         #print(newarr)
         self.inputarr = temp
-        return np.mean(lis),minh
+        return np.mean(lis),minh,ind
 
 
 

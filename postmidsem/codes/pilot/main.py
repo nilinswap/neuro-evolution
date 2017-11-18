@@ -131,7 +131,7 @@ def main(seed=None):
         # file_ob.write(str(logbook.stream))
         # print(len(pop))
         # file_ob.close()
-    print(stri)
+    #print(stri)
     file_ob = open("log.txt", "w")
     file_ob.write(stri)
     file_ob.close()

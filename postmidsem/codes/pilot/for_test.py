@@ -35,12 +35,12 @@ def test1():
 
     # newchromo.pp()
     def calc_output_directly(inputarr):
-    lis = []
-    for arr in inputarr:
-        output1 = sigmoid(relu(arr[0] * 0.5) * 0.4 + 0.25 * arr[1] + 0.7 * arr[2] - 0.2)
-        output2 = sigmoid(arr[0] * 0.25 + arr[1] * 0.5 + relu(arr[2] * 0.3) * 0.6 - 0.1)
-        lis.append([output1, output2])
-    return np.array(lis)
+        lis = []
+        for arr in inputarr:
+            output1 = sigmoid(relu(arr[0] * 0.5) * 0.4 + 0.25 * arr[1] + 0.7 * arr[2] - 0.2)
+            output2 = sigmoid(arr[0] * 0.25 + arr[1] * 0.5 + relu(arr[2] * 0.3) * 0.6 - 0.1)
+            lis.append([output1, output2])
+        return np.array(lis)
 
     inputarr = np.array([[3, 2, 1], [4, 1, 2]])
     indim = 3
@@ -309,7 +309,7 @@ def test_mtbp():
                 (20, (12, 7), 0.4, True),
                 (21, (3, 12), 0.8, True), (22, (2, 9), 0.9, True), (23, (12, 4), 0.75, True),
                 (24, (11, 5), 0.25, True),
-                ]
+        ]
     conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in
                 for_conn]
     for_bias = [(4, 0.2), (5, 0.1)]
@@ -322,7 +322,7 @@ def test_mtbp():
     newchromo.__setattr__('bias_conn_arr', bias_conn_lis)
     newchromo.__setattr__('node_arr', node_lis)
     newchromo.__setattr__('dob', dob)
-    newchromo.set_node_ctr(node_ctr)
+    newchromo.set_node_ctr()
 
     # newchromo.pp()
     def calc_output_directly(inputarr):
@@ -369,17 +369,17 @@ def test_mtbp():
             lis.append([output1, output2])
         return np.array(lis)
 
-    inputarr = np.array([[0.0, 2, 1], [0.8, 1, 2]])
+    #inputarr = np.array([[0.0, 2, 1], [0.8, 1, 2]])
     indim = 8
     outdim = 2
 
     # np.random
-    rng = np.random
-    num_data = 10
+    # rng = np.random
+    # num_data = 10
     # inputarr = np.random.random((num_data, indim))
-    neter = Neterr(indim, outdim, 10, np.random)
+    neter = network.Neterr(indim, outdim, 10, np.random)
 
-    ka = np.random.randint(0, 2, (num_data,))
+    # ka = np.random.randint(0, 2, (num_data,))
     # print(neter.feedforward_ne(chromo))
     """
     targetarr = np.zeros((num_data,outdim)).astype(dtype = 'float32')
@@ -389,14 +389,16 @@ def test_mtbp():
     print("target is ", targetarr)
     """
 
-    targetarr = ka.astype('int32')
-    print(targetarr.dtype)
-    inputarr = inputarr.astype('float32')
+    #targetarr = ka.astype('int32')
+    #print(targetarr.dtype)
+    #inputarr = inputarr.astype('float32')
 
     tempchromo = copy.deepcopy(newchromo)
     arr = newchromo.node_arr
     newmatenc = tempchromo.convert_to_MatEnc(indim, outdim)
     newmatenc = copy.deepcopy(newmatenc)
+
+    print(newmatenc.CMatrix['IO'])
 
     newchromo.modify_thru_backprop(indim, outdim, neter.rest_setx, neter.rest_sety)
     if not newchromo.node_arr == arr:
@@ -423,7 +425,7 @@ def newtest():
     # inputarr = np.random.random((num_data, indim))
     neter = network.Neterr(indim, outdim, 10, np.random)
 
-    ka = np.random.randint(0, 2, (num_data,))
+    # ka = np.random.randint(0, 2, (num_data,))
     # print(neter.feedforward_ne(chromo))
     """
     targetarr = np.zeros((num_data,outdim)).astype(dtype = 'float32')
@@ -663,4 +665,4 @@ def test_for_cros2():
     chromosome.do_mutation(wt_muta, conn_muta ,node_muta, indim, outdim, 5)
 
 if __name__ == '__main__':
-    test_for_cros2()
+    test_mtbp()

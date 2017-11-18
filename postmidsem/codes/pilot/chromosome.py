@@ -114,10 +114,10 @@ class Chromosome:
                     (NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
                 WeightMatrix[con.source.nature + con.destination.nature] = np.zeros(
                     (NatureCtrDict[con.source.nature], NatureCtrDict[con.destination.nature]))
-
-            ConnMatrix[con.source.nature + con.destination.nature][
-                dictionary[con.source.nature][con.source]][
-                dictionary[con.destination.nature][con.destination]] = 1
+            if con.status == 1:
+                ConnMatrix[con.source.nature + con.destination.nature][
+                    dictionary[con.source.nature][con.source]][
+                    dictionary[con.destination.nature][con.destination]] = 1
             couple_to_conn_map[con.get_couple()] = con
             # print(con.source.nature + con.destination.nature)
             WeightMatrix[con.source.nature + con.destination.nature][dictionary[con.source.nature][con.source]][
