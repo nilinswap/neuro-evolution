@@ -65,8 +65,8 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
 	random.seed(seed)
 
-	NGEN = 400
-	MU = 4*25 #this has to be a multiple of 4. period.
+	NGEN = 2
+	MU = 4*15 #this has to be a multiple of 4. period.
 	CXPB = 0.9
 	file_ob = open("log.txt", "w")
 	file_ob.write(str('swapnil'))
@@ -142,8 +142,9 @@ def main(seed=None):
 
 if __name__ == "__main__":
 	pop, stats = main()
-	fronts = sortNondominated(pop, len(pop))
+	fronts = tools.sortNondominated(pop, len(pop))
 	pareto_front = fronts[0]
+	print("Pareto Front: ", pareto_front)
 	neter = Neterr(indim, outdim, n_hidden, np.random)
 	file_ob = open("log.txt", "a")
 	print("\ntest on one with min validation error",neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
