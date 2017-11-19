@@ -66,8 +66,8 @@ bp_rate = 0.05
 def main(seed=None, play = 0):
     random.seed(seed)
 
-    NGEN = 10
-    MU = 4 * 10  # this has to be a multiple of 4. period.
+    NGEN = 250
+    MU = 4 * 25  # this has to be a multiple of 4. period.
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
