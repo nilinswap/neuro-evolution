@@ -66,7 +66,7 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
     random.seed(seed)
 
-    NGEN = 2
+    NGEN = 3
     MU = 4 * 2  # this has to be a multiple of 4. period.
     CXPB = 0.9
 
@@ -143,7 +143,7 @@ def main(seed=None):
     return pop, logbook
 
 def note_this_string(new_st):
-
+    stringh="_without_clustering_bp"
     """flag_ob = open("flag.txt","r+")
 
     ctr = None
@@ -161,7 +161,7 @@ def note_this_string(new_st):
         flag_ob.close()
     """
 
-    ctr_ob = open("ctr.txt", "r+")
+    ctr_ob = open("ctr_folder/ctr"+stringh+".txt", "r+")
     ctr = int(ctr_ob.read().rstrip())
     ctr_ob.seek(0)
     ctr_ob.write(str(ctr+1)+"\n")
@@ -170,7 +170,8 @@ def note_this_string(new_st):
         flag_ob.write("0\n")
         flag_ob.close()
     """
-    new_file_ob = open("log_folder/log.txt", "a+")
+
+    new_file_ob = open("log_folder/log"+stringh+".txt", "a+")
     new_file_ob.write(str(ctr)+" "+new_st+"\n")
     new_file_ob.close()
     return ctr
@@ -193,7 +194,7 @@ if __name__ == "__main__":
         print(pareto_front[i].fitness.values)
 
     neter = Neterr(indim, outdim, n_hidden, np.random)
-    file_ob = open("log.txt", "a")
+
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
     tup = neter.test_on_pareto_patch(pareto_front)

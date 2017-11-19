@@ -11,7 +11,7 @@ from chromosome import *
 import copy
 import population
 import network
-
+import cluster
 
 def test1():
     for_node = [(i, 'I') for i in range(1, 4)]
@@ -49,9 +49,9 @@ def test1():
     num_data = 2
     # inputarr = np.random.random((num_data, indim))
     neter = Neterr(indim, outdim, inputarr, 10, np.random)
-    print(neter.feedforward_ne(newchromo))
+    print(neter.feedforward_ne(newchromo4))
     print(calc_output_directly(inputarr))
-    print(neter.feedforward_cm(newchromo))
+    print(neter.feedforward_cm(newchromo4))
 
 
 # print(neter.feedforward_ne(newchromo, play =1))
@@ -664,5 +664,197 @@ def test_for_cros2():
     conn_muta = 0.2
     chromosome.do_mutation(wt_muta, conn_muta ,node_muta, indim, outdim, 5)
 
+
+def test_for_cluster():
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    for_node += [(i, 'H2') for i in range(6, 8)]
+    node_ctr = 8
+    indim = 3
+    outdim =2
+    innov_num = 11
+    dob = 0
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.4, False), (2, (1, 5), 0.25, True), (3, (2, 4), 0.25, True), (4, (2, 5), 0.5, True),
+                (5, (3, 4), 0.7, True),
+                (6, (3, 5), 0.6, False), (7, (1, 6), 0.5, True), (8, (6, 4), 0.4, True), (9, (3, 7), 0.3, True),
+                (10, (7, 5), 0.6, True)
+                ]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+
+    newchromo1 = Chromosome(indim, outdim)
+    newchromo1.__setattr__('conn_arr', conn_lis)
+    newchromo1.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo1.__setattr__('node_arr', node_lis)
+    newchromo1.__setattr__('dob', dob)
+    newchromo1.set_node_ctr(node_ctr)
+
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    st = '2212211'
+    for_node += [(i + 6, 'H' + st[i]) for i in range(len(st))]
+    node_ctr = 13
+    innov_num = 25
+    dob = 0
+    indim = 8
+    outdim = 2
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.3, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+                (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
+                (9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
+                (13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True),
+                (17, (1, 11), 0.25, True), (18, (11, 9), 0.15, True), (19, (2, 12), 0.6, True),
+                (20, (12, 7), 0.4, True),
+                (21, (3, 12), 0.8, True), (22, (2, 9), 0.9, True), (23, (12, 4), 0.75, True), (24, (11, 5), 0.25, True),
+                ]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo2 = Chromosome(indim, outdim)
+    newchromo2.__setattr__('conn_arr', conn_lis)
+    newchromo2.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo2.__setattr__('node_arr', node_lis)
+    newchromo2.__setattr__('dob', dob)
+    newchromo2.set_node_ctr(node_ctr)
+
+    # newchromo.pp()
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    st = '221221'
+    for_node += [(i + 6, 'H' + st[i]) for i in range(len(st))]
+    node_ctr = 12
+    dob = 0
+    indim = 3
+    outdim = 2
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.3, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+                (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
+                (9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
+                (13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True),
+                (19, (2, 11), 0.6, True), (20, (11, 7), 0.4, True), (22, (3, 11), 0.75, True)]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo3 = Chromosome(indim, outdim)
+    newchromo3.__setattr__('conn_arr', conn_lis)
+    newchromo3.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo3.__setattr__('node_arr', node_lis)
+    newchromo3.__setattr__('dob', dob)
+    newchromo3.set_node_ctr(node_ctr)
+
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    st = '221221'
+    for_node += [(i + 6, 'H' + st[i]) for i in range(len(st))]
+    node_ctr = 12
+    innov_num = 21
+    dob = 0
+    indim = 3
+    outdim = 2
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.3, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+                (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
+                (9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
+                (13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True),
+                (17, (1, 11), 0.25, True), (18, (11, 9), 0.15, True), (21, (2, 9), 0.65, True)]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo4 = Chromosome(indim, outdim)
+    newchromo4.__setattr__('conn_arr', conn_lis)
+    newchromo4.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo4.__setattr__('node_arr', node_lis)
+    newchromo4.__setattr__('dob', dob)
+    newchromo4.set_node_ctr(node_ctr)
+
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    st = '2212211'
+    for_node += [(i + 6, 'H' + st[i]) for i in range(len(st))]
+    node_ctr = 13
+    innov_num = 25
+    dob = 0
+    indim = 3
+    outdim = 2
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.3, False), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+                (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
+                (9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
+                (13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True),
+                (17, (1, 11), 0.25, True),
+                (21, (3, 12), 0.8, True), (22, (2, 9), 0.9, True), (23, (12, 4), 0.75, True), (24, (11, 5), 0.25, True),
+                ]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo5 = Chromosome(indim, outdim)
+    newchromo5.__setattr__('conn_arr', conn_lis)
+    newchromo5.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo5.__setattr__('node_arr', node_lis)
+    newchromo5.__setattr__('dob', dob)
+    newchromo5.set_node_ctr(node_ctr)
+
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    st = '22122'
+    for_node += [(i + 6, 'H' + st[i]) for i in range(len(st))]
+    node_ctr = 11
+    innov_num = 17
+    dob = 0
+    indim = 3
+    outdim = 2
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.8, True), (2, (1, 5), 0.25, False), (3, (2, 4), 0.25, False), (4, (2, 5), 0.5, False),
+                (5, (3, 4), 0.7, False), (6, (3, 5), 0.5, True), (7, (1, 6), 0.2, True), (8, (6, 4), 0.1, True),
+                (9, (2, 7), 0.1, True), (10, (7, 4), 0.15, True), (11, (1, 8), 0.5, True), (12, (8, 6), 0.7, True),
+                (13, (1, 9), 0.3, False), (14, (9, 5), 1.0, True), (15, (3, 10), 0.33, True), (16, (10, 5), 0.77, True)
+                ]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo6 = Chromosome(indim, outdim)
+    newchromo6.__setattr__('conn_arr', conn_lis)
+    newchromo6.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo6.__setattr__('node_arr', node_lis)
+    newchromo6.__setattr__('dob', dob)
+    newchromo6.set_node_ctr(node_ctr)
+
+    for_node = [(i, 'I') for i in range(1, 4)]
+    for_node += [(i, 'O') for i in range(4, 6)]
+    for_node += [(i, 'H2') for i in range(6, 8)]
+    node_ctr = 8
+    indim = 3
+    outdim = 2
+    innov_num = 11
+    dob = 0
+    node_lis = [gene.Node(x, y) for x, y in for_node]
+    for_conn = [(1, (1, 4), 0.4, False), (2, (1, 5), 0.25, True), (3, (2, 4), 0.25, True), (4, (2, 5), 0.5, True),
+                (5, (3, 4), 0.7, True),
+                (6, (3, 5), 0.6, False), (7, (1, 6), 0.5, True), (8, (6, 4), 0.4, True), (9, (3, 7), 0.3, True)
+
+                ]
+    conn_lis = [gene.Conn(x, (node_lis[tup[0] - 1], node_lis[tup[1] - 1]), w, status) for x, tup, w, status in for_conn]
+    for_bias = [(4, 0.2), (5, 0.1)]
+    bias_conn_lis = [gene.BiasConn(node_lis[x - 1], y) for x, y in for_bias]
+    newchromo7 = Chromosome(indim, outdim)
+    newchromo7.__setattr__('conn_arr', conn_lis)
+    newchromo7.__setattr__('bias_conn_arr', bias_conn_lis)
+    newchromo7.__setattr__('node_arr', node_lis)
+    newchromo7.__setattr__('dob', dob)
+    newchromo7.set_node_ctr(node_ctr)
+
+
+    chromo_list = [newchromo1, newchromo2, newchromo3, newchromo4, newchromo5, newchromo6, newchromo7]
+    #print([item.pp() for item in chromo_list])
+
+    print( cluster.distance(newchromo3,newchromo2) )
+
+    cluster.give_cluster_head(chromo_list, 2)
+    inputarr = np.array([[0, 2, 1], [0.8, 1, 2]])
+
+
+
 if __name__ == '__main__':
-    test_mtbp()
+    test_for_cluster()
