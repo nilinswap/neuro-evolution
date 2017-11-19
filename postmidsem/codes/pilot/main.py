@@ -3,14 +3,14 @@ import random
 
 import numpy
 from math import sqrt
-
+import cluster
 from deap import algorithms
 from deap import base
 from deap import benchmarks
 from deap.benchmarks.tools import diversity, convergence
 from deap import creator
 from deap import tools
-
+import os
 from population import *
 from network import Neterr
 from chromosome import Chromosome, crossover
@@ -62,12 +62,12 @@ toolbox.register("mate", mycross)
 toolbox.register("mutate", mymutate)
 toolbox.register("select", tools.selNSGA2)
 
-
-def main(seed=None):
+bp_rate = 0.05
+def main(seed=None, play = 0):
     random.seed(seed)
 
-    NGEN = 3
-    MU = 4 * 2  # this has to be a multiple of 4. period.
+    NGEN = 10
+    MU = 4 * 10  # this has to be a multiple of 4. period.
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
@@ -103,10 +103,14 @@ def main(seed=None):
         # Vary the population
         offspring = tools.selTournamentDCD(pop, len(pop))
         offspring = [toolbox.clone(ind) for ind in offspring]
+        if play == 1:
+            if gen == int(NGEN*0.1):
+                print("gen:",gen, "doing clustering")
+                to_bp_lis = cluster.give_cluster_head(offspring, int(MU*bp_rate))
+                assert (to_bp_lis[0] in offspring )
+                print( "doing bp")
+                [ item.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
 
-        # print("changed?", gen)
-        # print(maxi)
-        # print("length",len(offspring))
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
             # print(ind1.fitness.values)
             """if not flag :
@@ -114,6 +118,7 @@ def main(seed=None):
                 flag = 1
                 print("just testing")
             """
+
             if random.random() <= CXPB:
                 toolbox.mate(ind1, ind2, gen)
             maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
@@ -133,6 +138,11 @@ def main(seed=None):
         record = stats.compile(pop)
         logbook.record(gen=gen, evals=len(invalid_ind), **record)
         anost = logbook.stream
+        liso = [item.rstrip() for item in anost.split("\t")]
+        mse = int(liso[3])
+        if (mse == 120 ):
+            print("already achieved a decent performance(validation), breaking at gen_no.", gen)
+            break
         print(anost)
         stri += anost + '\n'
         # file_ob.write(str(logbook.stream))
@@ -142,8 +152,8 @@ def main(seed=None):
 
     return pop, logbook
 
-def note_this_string(new_st):
-    stringh="_without_clustering_bp"
+def note_this_string(new_st,stringh):
+
     """flag_ob = open("flag.txt","r+")
 
     ctr = None
@@ -159,14 +169,23 @@ def note_this_string(new_st):
         flag_ob.seek(0)
         flag_ob.write("1\n")
         flag_ob.close()
+        '/home/robita/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt.meta'
     """
+    name = "./ctr_folder/ctr"+stringh+".txt"
+    if not os.path.isfile(name):
+        new_f = open(name, "w+")
+        new_f.write("0\n")
+        new_f.close()
 
-    ctr_ob = open("ctr_folder/ctr"+stringh+".txt", "r+")
-    ctr = int(ctr_ob.read().rstrip())
+    ctr_ob = open(name, "r+")
+    strin = ctr_ob.read().rstrip()
+    assert (strin is not '')
+    ctr = int(strin)
     ctr_ob.seek(0)
     ctr_ob.write(str(ctr+1)+"\n")
     ctr_ob.close()
-    """  flag_ob = open("flag.txt","w")
+    """  
+        flag_ob = open("flag.txt","w")
         flag_ob.write("0\n")
         flag_ob.close()
     """
@@ -178,31 +197,54 @@ def note_this_string(new_st):
 
 
 
-
-
-if __name__ == "__main__":
+def test_it_without_bp():
     pop, stats = main()
-
+    stringh = "_without_bp"
     fronts = tools.sortNondominated(pop, len(pop))
     if len(fronts[0]) < 30:
         pareto_front = fronts[0]
     else:
 
-        pareto_front =  random.sample(fronts[0], 30)
+        pareto_front = random.sample(fronts[0], 30)
     print("Pareto Front: ")
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
     neter = Neterr(indim, outdim, n_hidden, np.random)
 
+    print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    tup = neter.test_on_pareto_patch(pareto_front)
+
+    print("\n test: avg on sampled pareto set", tup[0], "least found avg", tup[1])
+
+    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup[0]) + " " + str(tup[1])
+    print(note_this_string(st, stringh))
+
+def test_it_with_bp():
+    pop, stats = main( play = 1)
+    stringh = "_with_bp"
+    fronts = tools.sortNondominated(pop, len(pop))
+    if len(fronts[0]) < 30:
+        pareto_front = fronts[0]
+    else:
+
+        pareto_front = random.sample(fronts[0], 30)
+    print("Pareto Front: ")
+    for i in range(len(pareto_front)):
+        print(pareto_front[i].fitness.values)
+
+    neter = Neterr(indim, outdim, n_hidden, np.random)
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
     tup = neter.test_on_pareto_patch(pareto_front)
 
     print("\n test: avg on sampled pareto set", tup[0], "least found avg", tup[1])
 
-    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) +" "+ str(tup[0]) + " " + str(tup[1])
-    print(note_this_string(st))
+    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup[0]) + " " + str(tup[1])
+    print(note_this_string(st, stringh))
+
+if __name__ == "__main__":
+    test_it_with_bp()
 
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))

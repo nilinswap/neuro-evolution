@@ -188,13 +188,13 @@ class Chromosome:
                     break;
             end1 = time.time()
             print("time ", end1 - start1)
-
+            print("now ending")
             for key in newneu_net.wei_mat_var_map.keys():
                 newneu_net.mat_enc.WMatrix[key] = newneu_net.wei_mat_var_map[key].eval()
             for i in range(len(newneu_net.bias_wei_arr)):
                 ar = newneu_net.bias_var.eval()
                 newneu_net.mat_enc.Bias_conn_arr[i].set_weight(ar[i])
-        print(newneu_net.mat_enc.CMatrix['IO'], 'final')
+        #print(newneu_net.mat_enc.CMatrix['IO'], 'final')
         newchromo = newneu_net.mat_enc.convert_to_chromosome(inputdim, outputdim, self.dob)
 
         self.conn_arr = newchromo.conn_arr

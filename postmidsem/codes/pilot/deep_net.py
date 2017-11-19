@@ -145,7 +145,7 @@ class DeepNet(object):
             dadum = tf.constant(0.5, dtype=self.p_y_given_x.dtype)
             q = tf.scan(lambda last, current: current[0], elems=self.p_y_given_x, initializer=dadum)
             s = tf.scan(lambda y, x: tf.greater_equal(x, half), elems=q, initializer=False)
-            print("herehrerhehrehrehrehrhe", s)
+            #print("herehrerhehrehrehrehrhe", s)
             # print("hi",s)
             self.y_pred = tf.cast(s, dtype=tf.int32)
 
