@@ -68,10 +68,52 @@ class DeepNet(object):
         self.bias_wei_arr = np.array( [ item.weight for item in self.mat_enc.Bias_conn_arr] )
         self.bias_var = tf.Variable( initial_value = self.bias_wei_arr, name  = "bias", dtype = tf.float32)
 
+        input_till_H2 = None
 
-        input_till_H1 = middle_activation(tf.sparse_matmul( self.input, to_effec_mat_node_map['IH1'], b_is_sparse = True))
+        if 'IH1' in to_effec_mat_node_map.keys():
+            input_till_H1 = middle_activation(tf.sparse_matmul( self.input, to_effec_mat_node_map['IH1'], b_is_sparse = True))
 
-        input_till_H2 = middle_activation(
+        if 'IH2' in to_effec_mat_node_map.keys():
+            input_till_H2 =  tf.sparse_matmul(self.input, to_effec_mat_node_map['IH2'], b_is_sparse = True)
+
+        if 'H1H2' in to_effec_mat_node_map.keys():
+            assert( 'IH1' in to_effec_mat_node_map.keys())
+            twoh = tf.sparse_matmul( input_till_H1, to_effec_mat_node_map['H1H2'], b_is_sparse = True)
+            if 'IH2' in to_effec_mat_node_map.keys():
+                input_till_H2 =     tf.add(twoh, input_till_H2)
+
+            else:
+                input_till_H2 =  twoh
+
+        if input_till_H2 is not None:
+            input_till_H2 = middle_activation(input_till_H2)
+
+        output = None
+        if 'H2O' in to_effec_mat_node_map.keys():
+            assert('IH2' in to_effec_mat_node_map.keys() or 'H1H2' in to_effec_mat_node_map.keys())
+            threeh = tf.sparse_matmul(input_till_H2, to_effec_mat_node_map['H2O'], b_is_sparse=True)
+
+            output = threeh
+
+        if 'H1O' in to_effec_mat_node_map.keys():
+            assert ('IH1' in to_effec_mat_node_map.keys())
+            fourh = tf.sparse_matmul(input_till_H1, to_effec_mat_node_map['H1O'], b_is_sparse = True)
+
+            if output is not None:
+                output = tf.add( output, fourh)
+            else:
+                output = fourh
+
+        if 'IO' in to_effec_mat_node_map.keys():
+            assert ('IO' in to_effec_mat_node_map.keys())
+            fifth = tf.sparse_matmul(self.input, to_effec_mat_node_map['IO'] , b_is_sparse = True)
+            if output is not None:
+                output = tf.add( output, fifth)
+            else:
+                output = fifth
+
+        output = final_activation(output)
+        """input_till_H2 = middle_activation(
                             tf.add(
                                 tf.sparse_matmul(self.input, to_effec_mat_node_map['IH2'], b_is_sparse = True),
                                 tf.sparse_matmul( input_till_H1, to_effec_mat_node_map['H1H2'], b_is_sparse = True)
@@ -92,7 +134,7 @@ class DeepNet(object):
                             self.bias_var
                         )
                     )
-
+        """
         self.p_y_given_x = output
 
         half = tf.constant(0.5, dtype=self.p_y_given_x.dtype)

@@ -17,7 +17,7 @@ from chromosome import Chromosome, crossover
 
 n_hidden = 100
 indim = 8
-outdim = 1
+outdim = 2
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, -1.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 
@@ -37,8 +37,8 @@ def minimize(individual):
 
 
 def mycross(ind1, ind2, gen_no):
-    child1 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
-    child2 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=1)
+    child1 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=2)
+    child2 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=2)
 
     return child1, child2
 
@@ -78,7 +78,7 @@ def main(seed=None):
     logbook = tools.Logbook()
     logbook.header = "gen", "evals", "std", "min", "avg", "max"
     pop = toolbox.population(n=MU)
-
+    network_obj = Neterr(indim, outdim, n_hidden, np.random)
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop if not ind.fitness.valid]
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -94,6 +94,7 @@ def main(seed=None):
     print(logbook.stream)
     maxi = 0
     stri = ''
+    flag= 0
     # Begin the generational process
     # print(pop.__dir__())
     for gen in range(1, NGEN):
@@ -107,6 +108,9 @@ def main(seed=None):
         # print("length",len(offspring))
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
             # print(ind1.fitness.values)
+            if not flag :
+                ind1.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10)
+                flag = 1
             if random.random() <= CXPB:
                 toolbox.mate(ind1, ind2, gen)
             maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
