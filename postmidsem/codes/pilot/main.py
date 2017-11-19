@@ -18,10 +18,11 @@ from chromosome import Chromosome, crossover
 n_hidden = 100
 indim = 8
 outdim = 2
-creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, -1.0))
+creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, 0.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
+
 
 
 def minimize(individual):
@@ -65,8 +66,8 @@ toolbox.register("select", tools.selNSGA2)
 def main(seed=None):
     random.seed(seed)
 
-    NGEN = 250
-    MU = 4 * 25  # this has to be a multiple of 4. period.
+    NGEN = 2
+    MU = 4 * 2  # this has to be a multiple of 4. period.
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
@@ -108,9 +109,11 @@ def main(seed=None):
         # print("length",len(offspring))
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
             # print(ind1.fitness.values)
-            if not flag :
+            """if not flag :
                 ind1.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10)
                 flag = 1
+                print("just testing")
+            """
             if random.random() <= CXPB:
                 toolbox.mate(ind1, ind2, gen)
             maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
@@ -136,10 +139,44 @@ def main(seed=None):
         # print(len(pop))
         # file_ob.close()
     #print(stri)
-    file_ob = open("log.txt", "w")
-    file_ob.write(stri)
-    file_ob.close()
+
     return pop, logbook
+
+def note_this_string(new_st):
+
+    """flag_ob = open("flag.txt","r+")
+
+    ctr = None
+    st = flag_ob.read()
+    flag = int(st.rstrip())
+    while flag ==1:
+        flag_ob.seek(0)
+        st = flag_ob.read()
+        flag = int(st.rstrip())
+        time.sleep(3)
+    if flag == 0:
+        flag = 1
+        flag_ob.seek(0)
+        flag_ob.write("1\n")
+        flag_ob.close()
+    """
+
+    ctr_ob = open("ctr.txt", "r+")
+    ctr = int(ctr_ob.read().rstrip())
+    ctr_ob.seek(0)
+    ctr_ob.write(str(ctr+1)+"\n")
+    ctr_ob.close()
+    """  flag_ob = open("flag.txt","w")
+        flag_ob.write("0\n")
+        flag_ob.close()
+    """
+    new_file_ob = open("log_folder/log.txt", "a+")
+    new_file_ob.write(str(ctr)+" "+new_st+"\n")
+    new_file_ob.close()
+    return ctr
+
+
+
 
 
 if __name__ == "__main__":
@@ -162,11 +199,11 @@ if __name__ == "__main__":
     tup = neter.test_on_pareto_patch(pareto_front)
 
     print("\n test: avg on sampled pareto set", tup[0], "least found avg", tup[1])
-    file_ob.write(
-        "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
-    file_ob.write("\ntest: avg on sampled pareto set " + str(tup[0]) + " least found avg " +
-                  str(tup[1]))
-    file_ob.close()
+
+    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) +" "+ str(tup[0]) + " " + str(tup[1])
+    print(note_this_string(st))
+
+
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
     # print(stats)
