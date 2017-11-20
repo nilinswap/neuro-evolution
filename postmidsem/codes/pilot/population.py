@@ -6,7 +6,7 @@ import tensorflow as tf
 import time
 import gene
 
-
+import copy
 
 
 
@@ -28,13 +28,13 @@ def give_neg_log_likelihood( arr , oneDarr):
     return summer/parr.shape[0]
 
 def give_mse(arr, oneDarr):
-    if arr.shape[1]==1:
-        newar = np.where(arr>0.5,1,0)
-        newar = np.ravel(newar)
-    else:
-        newar = np.argmax(arr, axis = 1)
-    #print(newar-oneDarr)
-    return  np.sum((newar-oneDarr)**2)
+    onedarr = oneDarr.astype( dtype = 'int32')
+    twodarr = np.zeros(arr.shape)
+    for i in range(onedarr.shape[0]):
+        twodarr[i][onedarr[i]] = 1
+    return np.sum((arr - twodarr)**2)
+
+
 
 def give_false_positive_ratio(arr, oneDarr):
     if arr.shape[1] > 2:

@@ -19,7 +19,7 @@ n_hidden = 100
 indim = 8
 outdim = 2
 network_obj = Neterr(indim, outdim, n_hidden, np.random)
-creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, 0.0))
+creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
@@ -64,7 +64,7 @@ toolbox.register("mutate", mymutate)
 toolbox.register("select", tools.selNSGA2)
 
 bp_rate = 0.05
-def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
+def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     random.seed(seed)
 
 
@@ -140,7 +140,7 @@ def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
         logbook.record(gen=gen, evals=len(invalid_ind), **record)
         anost = logbook.stream
         liso = [item.rstrip() for item in anost.split("\t")]
-        mse = int(liso[3])
+        mse = float(liso[3])
         if (mse <= 115 ):
             print("already achieved a decent performance(validation), breaking at gen_no.", gen)
             break
@@ -199,7 +199,7 @@ def note_this_string(new_st,stringh):
 
 
 def test_it_without_bp():
-    pop, stats = main()
+    pop, stats = main(NGEN = 200 , MU = 4 * 25)
     stringh = "_without_bp"
     fronts = tools.sortNondominated(pop, len(pop))
     if len(fronts[0]) < 30:
@@ -214,11 +214,11 @@ def test_it_without_bp():
     neter = Neterr(indim, outdim, n_hidden, np.random)
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-    tup = neter.test_on_pareto_patch(pareto_front)
+    tup = neter.test_on_pareto_patch_correctone(pareto_front)
 
-    print("\n test: avg on sampled pareto set", tup[0], "least found avg", tup[1])
+    print("\n test: avg on sampled pareto set", tup)
 
-    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup[0]) + " " + str(tup[1])
+    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
     print(note_this_string(st, stringh))
 
 def test_it_with_bp():
@@ -237,11 +237,11 @@ def test_it_with_bp():
     neter = Neterr(indim, outdim, n_hidden, np.random)
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-    tup = neter.test_on_pareto_patch(pareto_front)
+    tup = neter.test_on_pareto_patch_correctone(pareto_front)
 
-    print("\n test: avg on sampled pareto set", tup[0], "least found avg", tup[1])
+    print("\n test: avg on sampled pareto set", tup)
 
-    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup[0]) + " " + str(tup[1])
+    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
     print(note_this_string(st, stringh))
 
 if __name__ == "__main__":

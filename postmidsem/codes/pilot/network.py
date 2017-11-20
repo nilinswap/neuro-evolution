@@ -15,6 +15,10 @@ def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
 def relu(arr):
     return np.where(arr>0,arr,0)
+def softmax(arr):
+    assert(arr.shape[1] > 1)
+    comp_wise_exp = np.exp(arr)
+    return comp_wise_exp/comp_wise_exp.sum(axis = 1).reshape((arr.shape[0],1))
 def priortize_connections(conn_lis):
     dict={'IH1':[],
           'H1H2':[],
@@ -162,6 +166,60 @@ class Neterr:
         self.inputarr = temp
         return np.mean(lis),minh,ind
 
+
+    def test_on_pareto_patch_correctone(self,pareto_set):
+        temp = self.inputarr
+        temper = copy.deepcopy(self.testx)
+        grand_lis  = []
+        for row in temper:
+            row_matrix = row.reshape((1, row.shape[0]))
+            lis = []
+            self.inputarr = row_matrix
+            for chromo in pareto_set:
+
+                arr = self.feedforward_ne(chromo)
+                assert (arr.shape[0] == 1)
+                lis.append(list(arr.reshape((arr.shape[1], ))))
+            output_of_all_nn_on_one_data_point = np.array(lis)
+            activated_output_of_all_nn_on_one_data_point = softmax(output_of_all_nn_on_one_data_point)
+            avrg = np.mean( activated_output_of_all_nn_on_one_data_point, axis = 0)
+            argmax_at_avg = avrg.argmax()
+            grand_lis.append(argmax_at_avg)
+        grand_lis_arr = np.array(grand_lis)
+        assert (grand_lis_arr.shape == self.testy.shape)
+        
+        difference = self.testy - grand_lis_arr
+
+        to_find_mean_arr = np.where( difference != 0, 1, 0 )
+        self.inputarr = temp
+        return np.mean(to_find_mean_arr) 
+
+
+
+
+
+        """ctr =0
+        lis = []
+        minh = 1000000
+        for chromo in pareto_set:
+            arr = self.feedforward_ne(chromo)
+            if arr.shape[1] == 1:
+                newar = np.where(arr > 0.5, 1, 0)
+                newar = np.ravel(newar)
+            else:
+                newar = np.argmax(arr, axis=1)
+            newarr = np.where(newar != self.testy, 1, 0)
+            lis += list(newarr)
+
+            tempo = minh
+            minh = min(minh,np.mean(newarr))
+            if minh < tempo:
+                ind = ctr
+            ctr +=1
+        #print(newarr)
+        self.inputarr = temp
+        return np.mean(lis),minh,ind
+        """
 
 
 
