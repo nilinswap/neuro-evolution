@@ -64,11 +64,11 @@ toolbox.register("mutate", mymutate)
 toolbox.register("select", tools.selNSGA2)
 
 bp_rate = 0.05
-def main(seed=None, play = 0):
+def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
     random.seed(seed)
 
-    NGEN = 250
-    MU = 4 * 25  # this has to be a multiple of 4. period.
+
+      # this has to be a multiple of 4. period.
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
@@ -105,7 +105,7 @@ def main(seed=None, play = 0):
         offspring = tools.selTournamentDCD(pop, len(pop))
         offspring = [toolbox.clone(ind) for ind in offspring]
         if play == 1:
-            if gen == int(NGEN*0.1):
+            if gen == int(NGEN*0.9):
                 print("gen:",gen, "doing clustering")
                 to_bp_lis = cluster.give_cluster_head(offspring, int(MU*bp_rate))
                 assert (to_bp_lis[0] in offspring )
@@ -222,7 +222,7 @@ def test_it_without_bp():
     print(note_this_string(st, stringh))
 
 def test_it_with_bp():
-    pop, stats = main( play = 1)
+    pop, stats = main( play = 1, NGEN = 40)
     stringh = "_with_bp"
     fronts = tools.sortNondominated(pop, len(pop))
     if len(fronts[0]) < 30:
@@ -245,7 +245,7 @@ def test_it_with_bp():
     print(note_this_string(st, stringh))
 
 if __name__ == "__main__":
-    test_it_without_bp()
+    test_it_with_bp()
 
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
