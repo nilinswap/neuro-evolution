@@ -14,10 +14,11 @@ import os
 from population import *
 from network import Neterr
 from chromosome import Chromosome, crossover
-network_obj = Neterr(indim, outdim, n_hidden, np.random)
+
 n_hidden = 100
 indim = 8
 outdim = 2
+network_obj = Neterr(indim, outdim, n_hidden, np.random)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, 0.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 
@@ -140,7 +141,7 @@ def main(seed=None, play = 0):
         anost = logbook.stream
         liso = [item.rstrip() for item in anost.split("\t")]
         mse = int(liso[3])
-        if (mse <= 120 ):
+        if (mse <= 115 ):
             print("already achieved a decent performance(validation), breaking at gen_no.", gen)
             break
         print(anost)
