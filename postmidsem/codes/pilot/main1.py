@@ -25,9 +25,7 @@ creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 toolbox = base.Toolbox()
 
 
-
 def minimize(individual):
-
     outputarr = network_obj.feedforward_ne(individual)
 
     neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
@@ -64,11 +62,12 @@ toolbox.register("mutate", mymutate)
 toolbox.register("select", tools.selNSGA2)
 
 bp_rate = 0.05
-def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
+
+
+def main(seed=None, play=0, NGEN=250, MU=4 * 25):
     random.seed(seed)
 
-
-      # this has to be a multiple of 4. period.
+    # this has to be a multiple of 4. period.
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
@@ -80,7 +79,7 @@ def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
     logbook = tools.Logbook()
     logbook.header = "gen", "evals", "std", "min", "avg", "max"
     pop = toolbox.population(n=MU)
-    #network_obj = Neterr(indim, outdim, n_hidden, np.random)
+    # network_obj = Neterr(indim, outdim, n_hidden, np.random)
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop if not ind.fitness.valid]
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -96,7 +95,7 @@ def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
     print(logbook.stream)
     maxi = 0
     stri = ''
-    flag= 0
+    flag = 0
     # Begin the generational process
     # print(pop.__dir__())
     for gen in range(1, NGEN):
@@ -105,12 +104,13 @@ def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
         offspring = tools.selTournamentDCD(pop, len(pop))
         offspring = [toolbox.clone(ind) for ind in offspring]
         if play == 1:
-            if gen == int(NGEN*0.9):
-                print("gen:",gen, "doing clustering")
-                to_bp_lis = cluster.give_cluster_head(offspring, int(MU*bp_rate))
-                assert (to_bp_lis[0] in offspring )
-                print( "doing bp")
-                [ item.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
+            if gen == int(NGEN * 0.9):
+                print("gen:", gen, "doing clustering")
+                to_bp_lis = cluster.give_cluster_head(offspring, int(MU * bp_rate))
+                assert (to_bp_lis[0] in offspring)
+                print("doing bp")
+                [item.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10,
+                                           learning_rate=0.1, n_par=10) for item in to_bp_lis]
 
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
             # print(ind1.fitness.values)
@@ -141,7 +141,7 @@ def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
         anost = logbook.stream
         liso = [item.rstrip() for item in anost.split("\t")]
         mse = int(liso[3])
-        if (mse <= 115 ):
+        if (mse <= 115):
             print("already achieved a decent performance(validation), breaking at gen_no.", gen)
             break
         print(anost)
@@ -149,12 +149,12 @@ def main(seed=None, play = 0, NGEN = 250, MU = 4 * 25):
         # file_ob.write(str(logbook.stream))
         # print(len(pop))
         # file_ob.close()
-    #print(stri)
+    # print(stri)
 
     return pop, logbook
 
-def note_this_string(new_st,stringh):
 
+def note_this_string(new_st, stringh):
     """flag_ob = open("flag.txt","r+")
 
     ctr = None
@@ -172,7 +172,7 @@ def note_this_string(new_st,stringh):
         flag_ob.close()
         '/home/robita/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt.meta'
     """
-    name = "./ctr_folder/ctr"+stringh+".txt"
+    name = "./ctr_folder/ctr" + stringh + ".txt"
     if not os.path.isfile(name):
         new_f = open(name, "w+")
         new_f.write("0\n")
@@ -183,7 +183,7 @@ def note_this_string(new_st,stringh):
     assert (strin is not '')
     ctr = int(strin)
     ctr_ob.seek(0)
-    ctr_ob.write(str(ctr+1)+"\n")
+    ctr_ob.write(str(ctr + 1) + "\n")
     ctr_ob.close()
     """  
         flag_ob = open("flag.txt","w")
@@ -191,11 +191,10 @@ def note_this_string(new_st,stringh):
         flag_ob.close()
     """
 
-    new_file_ob = open("log_folder/log"+stringh+".txt", "a+")
-    new_file_ob.write(str(ctr)+" "+new_st+"\n")
+    new_file_ob = open("log_folder/log" + stringh + ".txt", "a+")
+    new_file_ob.write(str(ctr) + " " + new_st + "\n")
     new_file_ob.close()
     return ctr
-
 
 
 def test_it_without_bp():
@@ -221,8 +220,9 @@ def test_it_without_bp():
     st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup[0]) + " " + str(tup[1])
     print(note_this_string(st, stringh))
 
+
 def test_it_with_bp():
-    pop, stats = main( play = 1, NGEN = 40)
+    pop, stats = main(play=1, NGEN=40)
     stringh = "_with_bp"
     fronts = tools.sortNondominated(pop, len(pop))
     if len(fronts[0]) < 30:
@@ -244,9 +244,9 @@ def test_it_with_bp():
     st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup[0]) + " " + str(tup[1])
     print(note_this_string(st, stringh))
 
-if __name__ == "__main__":
-    test_it_without_bp()
 
+if __name__ == "__main__":
+    test_it_with_bp()
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
@@ -254,7 +254,7 @@ if __name__ == "__main__":
     '''
     import matplotlib.pyplot as plt
     import numpy
-    
+
     front = numpy.array([ind.fitness.values for ind in pop])
     plt.scatter(front[:,0], front[:,1], c="b")
     plt.axis("tight")
