@@ -14,7 +14,7 @@ import os
 from population import *
 from network import Neterr
 from chromosome import Chromosome, crossover
-
+network_obj = Neterr(indim, outdim, n_hidden, np.random)
 n_hidden = 100
 indim = 8
 outdim = 2
@@ -26,7 +26,7 @@ toolbox = base.Toolbox()
 
 
 def minimize(individual):
-    network_obj = Neterr(indim, outdim, n_hidden, np.random)
+
     outputarr = network_obj.feedforward_ne(individual)
 
     neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
@@ -79,7 +79,7 @@ def main(seed=None, play = 0):
     logbook = tools.Logbook()
     logbook.header = "gen", "evals", "std", "min", "avg", "max"
     pop = toolbox.population(n=MU)
-    network_obj = Neterr(indim, outdim, n_hidden, np.random)
+    #network_obj = Neterr(indim, outdim, n_hidden, np.random)
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop if not ind.fitness.valid]
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -140,7 +140,7 @@ def main(seed=None, play = 0):
         anost = logbook.stream
         liso = [item.rstrip() for item in anost.split("\t")]
         mse = int(liso[3])
-        if (mse == 120 ):
+        if (mse <= 120 ):
             print("already achieved a decent performance(validation), breaking at gen_no.", gen)
             break
         print(anost)
@@ -244,7 +244,7 @@ def test_it_with_bp():
     print(note_this_string(st, stringh))
 
 if __name__ == "__main__":
-    test_it_with_bp()
+    test_it_without_bp()
 
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
