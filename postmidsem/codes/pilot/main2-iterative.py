@@ -1,6 +1,6 @@
 import array
 import random
-
+import sys
 import numpy
 from math import sqrt
 import cluster
@@ -226,10 +226,10 @@ def test_it_without_bp():
     print(note_this_string(st, stringh))
 
 
-def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
+def test_it_with_bp( arghv, play = 1,NGEN = 100, MU = 4*25):
     
     pop, stats = main( play = play, NGEN = NGEN, MU = MU)
-    stringh = "_with_bp"+str(play)+"_"+str(NGEN)
+    stringh = "_with_bp"+str(play)+"_"+ arghv
     fronts = tools.sortNondominated(pop, len(pop))
     if len(fronts[0]) < 30:
         pareto_front = fronts[0]
@@ -252,7 +252,8 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
 
 
 if __name__ == "__main__":
-    test_it_with_bp(play = 1, NGEN = 80, MU = 4*25)
+    ngen = int(sys.argv[1])
+    test_it_with_bp(arghv= sys.argv[1], play = 1, NGEN = ngen, MU = 4*25)
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 

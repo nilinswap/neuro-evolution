@@ -57,10 +57,10 @@ def give_new_head(dic):
 
 def give_cluster_head(chromo_list, k):
     #print("hi")
-    predefined_iter = 5
+    predefined_iter = 20
     #print(chromo_list)
-    #current_cluster_head_list = random.sample(chromo_list, k)
-    current_cluster_head_list = chromo_list[:k]
+    current_cluster_head_list = random.sample(chromo_list, k)
+    #current_cluster_head_list = chromo_list[:k]
     #print(current_cluster_head_list)
 
     dic = { key : set([]) for key in current_cluster_head_list}
