@@ -199,7 +199,7 @@ def note_this_string(new_st,stringh):
 
 
 def test_it_without_bp():
-    pop, stats = main(NGEN = 200 , MU = 4 * 25)
+    pop, stats = main(NGEN = 80 , MU = 4 * 25)
     stringh = "_without_bp"
     fronts = tools.sortNondominated(pop, len(pop))
     if len(fronts[0]) < 30:
@@ -225,6 +225,7 @@ def test_it_with_bp():
     pop, stats = main( play = 1, NGEN = 40)
     stringh = "_with_bp"
     fronts = tools.sortNondominated(pop, len(pop))
+
     if len(fronts[0]) < 30:
         pareto_front = fronts[0]
     else:

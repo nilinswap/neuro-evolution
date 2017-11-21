@@ -231,6 +231,13 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
     pop, stats = main( play = play, NGEN = NGEN, MU = MU)
     stringh = "_with_bp"+str(play)+"_"+str(NGEN)
     fronts = tools.sortNondominated(pop, len(pop))
+
+    file_ob = open("./log_folder/log_for_graph.txt", "w+")
+    for item in fronts[0]:
+        st = str(item.fitness.values[0]) + " " + str(item.fitness.values[1])+"\n"
+        file_ob.write( st )
+    file_ob.close()
+
     if len(fronts[0]) < 30:
         pareto_front = fronts[0]
     else:
