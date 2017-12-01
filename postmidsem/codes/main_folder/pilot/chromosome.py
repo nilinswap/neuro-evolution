@@ -10,7 +10,7 @@ import deep_net
 import time
 
 inputnumber = 8
-outputnumber = 1  # here could be an error, after all that's why I don't use global variables
+outputnumber = 2  # here could be an error, after all that's why I don't use global variables
 innov_ctr = inputnumber * outputnumber + 1
 
 

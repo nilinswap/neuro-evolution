@@ -259,7 +259,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
 
 
 if __name__ == "__main__":
-    test_it_with_bp(play = 1, NGEN = 80, MU = 4*25)
+    test_it_with_bp(play = 1, NGEN = 60, MU = 4*25)
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 

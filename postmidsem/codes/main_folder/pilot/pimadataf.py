@@ -1,5 +1,5 @@
 
-
+import random
 import numpy as np
 #import pylab as pl
 def standardize_dataset(traindata, means, stdevs):
@@ -9,8 +9,8 @@ def standardize_dataset(traindata, means, stdevs):
             row[i] = (row[i] - means[i])
             if stdevs[i]:
                 row[i]/=stdevs[i]
-rng=np.random
-rng.seed(123)
+rng=random
+
 pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
 
 rng.shuffle(pimadata)
