@@ -18,7 +18,7 @@ class Population(object):
 		self.rng=rng
 		self.size = size
 		self.max_hidden_units = max_hidden_units
-		self.list_chromo = self.aux_pop(size, limittup) #a numpy array
+		#self.list_chromo = self.aux_pop(size, limittup) #a numpy array
 		self.fits_pops = []
 				
 		self.trainx = rest_set[0]
@@ -28,7 +28,7 @@ class Population(object):
 		
 		self.strainx, self.strainy = tup[0]
 		self.stestx, self.stesty = tup[1]
-		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo, trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
+		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], trainx=self.trainx, trainy=self.trainy, testx=self.testx, testy=self.testy,strainx=self.strainx, strainy=self.strainy, stestx=self.stestx, stesty=self.stesty)
 		self.net_dict={} #dictionary of networks for back-propagation, one for each n_hid
 	
 	def create_dict(self):
@@ -112,6 +112,10 @@ def main():
 	print(pop.sum_dict)
 	neter = Network.Neterr(dimtup[0],dimtup[1],pop.list_chromo,pop.trainx,pop.trainy,pop.testx,pop.testy)
 	Network.Backnet(4,neter)
+def main1():
 
+	import random
+	popul_obj = Population( np.random, 100)
+	popul_obj.net_err.modify_thru_backprop(100)
 if __name__=='__main__':
-	main()
+	main1()
