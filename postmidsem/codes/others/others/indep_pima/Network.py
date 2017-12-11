@@ -99,6 +99,7 @@ class Neterr:
 		test_model=theano.function([],fullnet.find_error(y),givens={y:self.stesty},on_unused_input='ignore')
 
 
+		val_model = theano.function([],fullnet.find_val_error(),givens={},on_unused_input='ignore')
 
 		prev = 1
 		curr = 0
@@ -110,7 +111,7 @@ class Neterr:
 			print("in back  training",i,hid_nodes,p)
 			if i%5 == 0:
 				prev = curr
-				curr = fullnet.find_val_error()
+				curr = val_model()
 				if prev - curr < 0.001:
 					break
 		print("here sub testing",test_model())
