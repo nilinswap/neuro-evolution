@@ -85,7 +85,7 @@ class Neterr:
 
 		fullnet=newmlp
 		params=fullnet.params
-		cost=fullnet.cost_func(y)
+		cost=fullnet.newcost_func(y)
 
 		gparams=[T.grad(cost, j) for j in params]
 		updates = [
@@ -100,14 +100,19 @@ class Neterr:
 
 
 
-
+		prev = 1
+		curr = 0
 		for i in range(1,epochs):
 			#p=train_model(rest_setx.get_value(),fun())
 
 			p=train_model()
 
 			print("in back  training",i,hid_nodes,p)
-
+			if i%5 == 0:
+				prev = curr
+				curr = fullnet.find_val_error()
+				if prev - curr < 0.001:
+					break
 		print("here sub testing",test_model())
 		print(self.test(fullnet.turn_weights_into_chromosome()))
 

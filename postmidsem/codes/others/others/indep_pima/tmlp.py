@@ -24,8 +24,10 @@ class MLP:
 		self.n_in=n_in
 		self.n_out=n_out
 		self.n_hid=n_hid
-		self.trainx=trainx
-		self.trainy=trainy
+		self.trainx=trainx[:438]
+		self.trainy=trainy[:438]
+		self.valx = trainx[ 438: ]
+		self.valy = trainy[ 438: ]
 		self.testx=testx
 		self.testy=testy
 		self.w1 = theano.shared(value=W_values, name='w1', borrow=True)
@@ -50,6 +52,7 @@ class MLP:
 				)
 		self.params=[self.w1,self.b1,self.w2,self.b2]
 		self.input=self.trainx
+		self.vinput = self.valx
 		self.tinput=self.testx
 		lin_midout=T.dot(self.input,self.w1)+self.b1
 		midout=T.nnet.sigmoid(lin_midout)
@@ -66,6 +69,14 @@ class MLP:
 		tlin_out=T.dot(tmidout,self.w2)+self.b2
 		toutput=T.nnet.sigmoid(tlin_out)
 		self.toutput=toutput
+
+		vlin_midout = T.dot(self.vinput, self.w1) + self.b1
+		vmidout = T.nnet.sigmoid(vlin_midout)
+
+		vlin_out = T.dot(vmidout, self.w2) + self.b2
+		voutput = T.nnet.sigmoid(vlin_out)
+		self.voutput = voutput
+
 		self.funb=theano.function([],[self.b1,self.b2])
 	def set_weights(self,w1,b1,w2,b2):
 		self.w1.set_value(w1)
@@ -113,6 +124,12 @@ class MLP:
 		results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=p)
 
 		return (T.mean(abs(results-y)))
+
+	def find_val_error(self):
+		p=self.voutput.ravel()
+		results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=p)
+
+		return (T.mean(abs(results-self.valy)))
 
 def main():
 	lis=pimadataf.give_datainshared()
