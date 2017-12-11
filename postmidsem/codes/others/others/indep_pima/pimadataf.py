@@ -10,8 +10,9 @@ def standardize_dataset(traindata, means, stdevs):
             row[i] = (row[i] - means[i])
             if stdevs[i]:
                 row[i]/=stdevs[i]
-rng=np.random
-rng.seed(1234)
+import random
+rng=random
+
 pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
 
 rng.shuffle(pimadata)

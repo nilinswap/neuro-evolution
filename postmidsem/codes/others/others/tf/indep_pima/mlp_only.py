@@ -127,12 +127,13 @@ class Neterr:
 						self.x: self.train_x_to_be.eval(feed_dict={self.prmsdind: ind}),
 						self.y: self.train_y_to_be.eval(feed_dict={self.prmsdind: ind})})
 
-					if epoch % (epochs // 4) == 0:
+					if epoch % 4 == 0:
+
 						q = fullnet.errors(self.y).eval(
 							feed_dict={self.x: self.valid_x_to_be.eval(feed_dict={self.prmsdind: ind}),
 									   self.y: self.valid_y_to_be.eval(feed_dict={self.prmsdind: ind})})
 						listisi.append(q)
-				if epoch % (epochs // 4) == 0:
+				if epoch % 4 == 0:
 					prev = current
 					current = np.mean(listisi)
 					print('validation', current)
