@@ -1,6 +1,6 @@
 
-import theano
-import theano.tensor as T
+#import theano
+#import theano.tensor as T
 import numpy as np
 #import pylab as pl
 def standardize_dataset(traindata, means, stdevs):

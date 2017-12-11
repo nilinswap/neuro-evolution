@@ -1,5 +1,6 @@
 import numpy as np
 import Network
+import mlp_only
 import pimadataf
 import tensorflow as tf
 import os
@@ -24,7 +25,7 @@ class Population(object):
 		self.rng=rng
 		self.size = size
 		self.max_hidden_units = max_hidden_units
-		self.list_chromo = self.aux_pop(size, limittup) #a numpy array
+		#self.list_chromo = self.aux_pop(size, limittup) #a numpy array
 		self.fits_pops = []
 		restn=538										#a flaw here ,one has to know no. of datapoints in both set before opening it(inside program)
 		testn=230		
@@ -33,7 +34,7 @@ class Population(object):
 		self.rest_sety=tf.Variable(initial_value=np.zeros((restn,)),name='rest_sety',dtype=tf.int32)
 		self.test_setx=tf.Variable(initial_value=np.zeros((testn,self.dimtup[0])),name='rest_sety',dtype=tf.float64)
 		self.test_sety=tf.Variable(initial_value=np.zeros((testn,)),name='test_sety',dtype=tf.int32)
-		if not os.path.isfile('/home/robita/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt.meta'):
+		if not os.path.isfile('/home/iit2015087/forgit/neuro-evolution/postmidsem/others/state/tf/indep_pima/input/model.ckpt.meta'):
 			
 
 			
@@ -48,12 +49,16 @@ class Population(object):
 			with tf.Session() as sess:
 				sess.run([i for i in nodelis])
 				print("saving checkpoint")
-				save_path = savo.save(sess, "/home/robita/forgit/neuro-evolution/05/state/tf/indep_pima/input/model.ckpt")
+				save_path = savo.save(sess, "/home/iit2015087/forgit/neuro-evolution/postmidsem/others/state/tf/indep_pima/input/model.ckpt")
 
 		
 		
 		
-		self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo,rest_setx=self.rest_setx,rest_sety=self.rest_sety,test_setx=self.test_setx,test_sety=self.test_sety,rng=self.rng)
+		#self.net_err = Network.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1], arr_of_net=self.list_chromo,rest_setx=self.rest_setx,rest_sety=self.rest_sety,test_setx=self.test_setx,test_sety=self.test_sety,rng=self.rng)
+		self.net_err = mlp_only.Neterr(inputdim=self.dimtup[0], outputdim=self.dimtup[1],
+									  rest_setx=self.rest_setx, rest_sety=self.rest_sety, test_setx=self.test_setx,
+									  test_sety=self.test_sety, rng=self.rng)
+
 		self.net_dict={} #dictionary of networks for back-propagation, one for each n_hid
 	
 	def create_dict(self):
@@ -141,5 +146,10 @@ def main():
 	neter = Network.Neterr(dimtup[0],dimtup[1],pop.list_chromo,pop.trainx,pop.trainy,pop.testx,pop.testy)
 	Network.Backnet(4,neter)
 
+def main1():
+
+	import random
+	popul_obj = Population( np.random, 100)
+	popul_obj.net_err.modify_thru_backprop(100)
 if __name__=='__main__':
-	main()
+	main1()
