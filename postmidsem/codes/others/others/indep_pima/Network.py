@@ -48,7 +48,7 @@ class Neterr:
 		
 		self.strainx = strainx
 		self.strainy = strainy
-		self.svaly = strainy[438:]
+
 		self.stestx = stestx
 		self.stesty = stesty
 		#self.arr_of_net=arr_of_net
@@ -100,7 +100,7 @@ class Neterr:
 		test_model=theano.function([],fullnet.find_error(y),givens={y:self.stesty},on_unused_input='ignore')
 
 
-		val_model = theano.function([],fullnet.find_val_error(y),givens={y:self.svaly},on_unused_input='ignore')
+		#val_model = theano.function([],fullnet.find_val_error(y),givens={y:self.svaly},on_unused_input='ignore')
 
 		prev = 1
 		curr = 0
@@ -112,7 +112,7 @@ class Neterr:
 			print("in back  training",i,hid_nodes,p)
 			if i%5 == 0:
 				prev = curr
-				curr = val_model()
+				curr = test_model()
 				if prev - curr < 0.001:
 					break
 		print("here sub testing",test_model())
