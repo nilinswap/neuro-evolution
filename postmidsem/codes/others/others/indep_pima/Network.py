@@ -115,6 +115,8 @@ class Neterr:
 				curr = test_model()
 				if prev - curr < 0.001:
 					break
+				print("validation", curr)
+				print(fullnet.funb())
 		print("here sub testing",test_model())
 		print(self.test(fullnet.turn_weights_into_chromosome()))
 

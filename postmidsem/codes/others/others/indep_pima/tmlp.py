@@ -69,9 +69,9 @@ class MLP:
 		toutput=T.nnet.sigmoid(tlin_out)
 		self.toutput=toutput
 
+		self.funb = theano.function([], [self.p])
 
 
-		self.funb=theano.function([],[self.b1,self.b2])
 	def set_weights(self,w1,b1,w2,b2):
 		self.w1.set_value(w1)
 		self.b1=b1
@@ -114,8 +114,9 @@ class MLP:
 
 		return T.mean(results)
 	def find_error(self,y):
-		p=self.toutput.ravel()
-		results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=p)
+		self.p=self.toutput.ravel()
+
+		results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=self.p)
 
 		return (T.mean(abs(results-y)))
 
