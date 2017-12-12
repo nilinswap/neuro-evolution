@@ -101,9 +101,9 @@ class Neterr:
 
 
 		#val_model = theano.function([],fullnet.find_val_error(y),givens={y:self.svaly},on_unused_input='ignore')
-
-		prev = 1
-		curr = 0
+		prevtoprev = 501
+		prev = 500
+		curr = 499
 		for i in range(1,epochs):
 			#p=train_model(rest_setx.get_value(),fun())
 
@@ -111,9 +111,10 @@ class Neterr:
 
 			print("in back  training",i,hid_nodes,p)
 			if i%5 == 0:
+				prevtoprev = prev
 				prev = curr
 				curr = test_model()
-				if prev - curr < 0.001:
+				if prev - prevtoprev > 0.0001 and curr-prev > 0.0001:
 					break
 				print("validation", curr)
 				print(fullnet.funb())
