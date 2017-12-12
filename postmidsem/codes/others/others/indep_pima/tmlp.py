@@ -70,6 +70,7 @@ class MLP:
 		toutput=T.nnet.sigmoid(tlin_out)
 		self.toutput=toutput
 
+		self.newfunb = theano.function([],[self.b1, self.b2])
 
 
 
@@ -90,7 +91,7 @@ class MLP:
 	def turn_weights_into_chromosome(self):
 		w1,b1,w2,b2=self.get_weights()
 		w1=list(w1.reshape(((self.n_in*self.n_hid),)))
-		b1,b2=self.funb()#somehow direct access to b1,b2 is barred because of casting, it is not even a shared variable
+		b1,b2=self.newfunb()#somehow direct access to b1,b2 is barred because of casting, it is not even a shared variable
 		b1=list(b1)
 		w2=list(w2.reshape(((self.n_hid*self.n_out),)))
 		b2=list(b2)
