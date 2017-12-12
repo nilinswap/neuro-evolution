@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/placements2018/forgit/neuro-evolution/05/state/tf/test/model.ckpt"
+all_model_checkpoint_paths: "/home/placements2018/forgit/neuro-evolution/05/state/tf/test/model.ckpt"

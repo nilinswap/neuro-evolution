@@ -1,0 +1,82 @@
+1. 'first pcn using numpy', dated:7/8/17
+	 made a perceptron for iris,  achieved 80% accuracy (best)
+	 , 	clearly not enough.
+		
+		questions raised:
+			1. why isn't there a pattern in eta_vs_error and epochs_vs_error?
+
+			2. works without normalization
+
+
+
+
+
+2. 'pcn with random and mlp', dated:7/8/17
+
+	 made a perceptron for iris,  achieved 
+	 avg- error: 5%
+	 max error: 6.6% 
+	 points observed:
+		 USED SHUFFLE in list and saw a boost in performance
+
+		  erratic relation between epochs and eta still did not resolve
+
+	made MLP for iris,
+		 pretty much same performance like pcn with random 
+
+		 points raised:
+		  	MLP without random has better performance than pcn without random
+
+		  	no. of nodes required if confusion matrix is used for validmeanerr is much less than squaremean( 4 and 1)
+
+		  	We don't need MLP for iris
+
+		  	normalization is important here
+
+3. 'mnist with unstable accuracy'
+		a fluctuating training accuracy between 80 to 95 %
+
+		first in theano
+
+		perceptron with softmax
+
+4. 'mnist improved'
+		
+		for a simple model, target achieved , 91 % on testing
+
+		NORMALISATION is a big fish
+
+5.'cards completed with 87%'
+	
+	normalization again
+
+	100 nodes taken with 1000 epochs
+
+	used crossvalidation (LSO-CV)
+
+	Theano with OOP
+	
+	improvement in design aimed
+
+6. 'rastrigin doing fine' 
+
+	only got close to 0 by +- 1.5 worst and +- .9 avg.
+
+	used generation limit 2000, mutation  rate 0.01, and mutation scale .0001
+
+	
+
+		
+
+
+
+
+
+
+
+
+
+
+
+	 
+
