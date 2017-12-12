@@ -125,11 +125,11 @@ class MLP:
 
 		return (T.mean(abs(results-y)))
 
-	def find_val_error(self):
-		p=self.voutput.ravel()
-		results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=p)
+	def find_val_error(self,y):
+		p = self.voutput.ravel()
+		results, updates = theano.scan(fn=lambda x: ifelse(T.lt(x, 0.5), 0, 1), sequences=p)
 
-		return (T.mean(abs(results-self.valy)))
+		return (T.mean(abs(results - y)))
 
 def main():
 	lis=pimadataf.give_datainshared()

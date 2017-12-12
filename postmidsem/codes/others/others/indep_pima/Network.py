@@ -48,6 +48,7 @@ class Neterr:
 		
 		self.strainx = strainx
 		self.strainy = strainy
+		self.svaly = strainy[438:]
 		self.stestx = stestx
 		self.stesty = stesty
 		#self.arr_of_net=arr_of_net
@@ -99,7 +100,7 @@ class Neterr:
 		test_model=theano.function([],fullnet.find_error(y),givens={y:self.stesty},on_unused_input='ignore')
 
 
-		val_model = theano.function([],fullnet.find_val_error(),givens={},on_unused_input='ignore')
+		val_model = theano.function([],fullnet.find_val_error(y),givens={y:self.svaly},on_unused_input='ignore')
 
 		prev = 1
 		curr = 0
