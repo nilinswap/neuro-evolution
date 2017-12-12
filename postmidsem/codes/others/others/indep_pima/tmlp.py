@@ -6,6 +6,7 @@ import pimadataf
 rng=np.random
 n_in=8
 n_out=1
+flag  = 0
 n_hid=120
 class MLP:
 
@@ -26,7 +27,7 @@ class MLP:
 		self.n_hid=n_hid
 		self.trainx=trainx
 		self.trainy=trainy
-		self.p = T.dvector("p")
+		#self.p = T.dvector("p")
 		self.testx=testx
 		self.testy=testy
 		self.w1 = theano.shared(value=W_values, name='w1', borrow=True)
@@ -69,7 +70,7 @@ class MLP:
 		toutput=T.nnet.sigmoid(tlin_out)
 		self.toutput=toutput
 
-		self.funb = theano.function([], [self.p])
+
 
 
 	def set_weights(self,w1,b1,w2,b2):
@@ -117,7 +118,10 @@ class MLP:
 		self.p=self.toutput.ravel()
 
 		results,updates=theano.scan(fn=lambda x: ifelse(T.lt(x,0.5),0,1),sequences=self.p)
-
+		global flag
+		if not flag:
+			self.funb = theano.function([], [self.p])
+			flag = 1
 		return (T.mean(abs(results-y)))
 
 
