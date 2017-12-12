@@ -26,7 +26,7 @@ class MLP:
 		self.n_hid=n_hid
 		self.trainx=trainx
 		self.trainy=trainy
-
+		self.p = T.dvector("p")
 		self.testx=testx
 		self.testy=testy
 		self.w1 = theano.shared(value=W_values, name='w1', borrow=True)
