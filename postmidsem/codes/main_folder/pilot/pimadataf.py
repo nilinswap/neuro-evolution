@@ -16,17 +16,15 @@ pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
 rng.shuffle(pimadata)
 
 
-pimadata=pimadata.astype(float)
-traindata=pimadata
-means= traindata.mean(axis=0)
-
-stdevs=np.std(traindata,axis=0)
+pimadata = pimadata.astype(float)
+traindata = pimadata
+#print("terain", traindata.shape)
+means = traindata.mean(axis=0)
+#print("meeans",means[8])
+stdevs = np.std(traindata,axis=0)
 # standardize dataset
-standardize_dataset(traindata[:,:8],means,stdevs)
-def get_dimension():
-    in_dem = 8
-    out_dem = 1
-    return (in_dem, out_dem)
+standardize_dataset(traindata[:, :8], means, stdevs)
+
 
 def myrange(start,end,step):
     i=start
@@ -46,7 +44,9 @@ def give_data():
     
     
     rest_setx=pimadata[:538,:8]#tuple of two shared variable of array
+
     rest_sety=pimadata[:538,8:]
+    #print("rhest", rest_sety[0])
     test_setx=pimadata[538:,:8]
     test_sety=pimadata[538:,8:]
     #print(pimadata.shape)

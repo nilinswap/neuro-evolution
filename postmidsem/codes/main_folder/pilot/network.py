@@ -7,6 +7,7 @@ import gene
 import matenc
 import chromosome
 import pimadataf
+import mnistdataf
 import deep_net
 from chromosome import *
 import copy
@@ -38,11 +39,14 @@ class Neterr:
         #self.inputarr=inputarr  #self explanatory
         self.hidden_unit_lim = hidden_unit_lim
         self.rng = rng
-        rest_set, test_set = pimadataf.give_data()
+        rest_set, test_set = pimadataf.give_data()#a two tuple of ( two tuple of array)
+        #rest_set, test_set = mnistdataf.give_data()  # a two tuple of ( two tuple of array)
+
         self.restx = rest_set[0]
         resty = rest_set[1]
         self.testx = test_set[0]
         testy = test_set[1]
+        #print("one time", resty.shape, testy.shape, self.restx.shape)
 
         self.resty = np.ravel(resty)
         self.testy = np.ravel(testy)
@@ -198,28 +202,6 @@ class Neterr:
 
 
 
-        """ctr =0
-        lis = []
-        minh = 1000000
-        for chromo in pareto_set:
-            arr = self.feedforward_ne(chromo)
-            if arr.shape[1] == 1:
-                newar = np.where(arr > 0.5, 1, 0)
-                newar = np.ravel(newar)
-            else:
-                newar = np.argmax(arr, axis=1)
-            newarr = np.where(newar != self.testy, 1, 0)
-            lis += list(newarr)
-
-            tempo = minh
-            minh = min(minh,np.mean(newarr))
-            if minh < tempo:
-                ind = ctr
-            ctr +=1
-        #print(newarr)
-        self.inputarr = temp
-        return np.mean(lis),minh,ind
-        """
 
 
 

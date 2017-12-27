@@ -6,7 +6,7 @@ mndata = MNIST('./dataset')
 traintup=mndata.load_training()
 
 
-
+#print(traintup)
 traindata=traintup[0]#60000 X 784
 traindata=list(traindata)
 traindata=np.array(traindata)
@@ -42,12 +42,14 @@ trainlabel=trainlabel[:3000]
 testtup=mndata.load_testing()
 
 testdata=testtup[0]#60000 X 784
+
 testdata=list(testdata)
 testdata=np.array(testdata)
+#print( "testdata", testdata.shape)
 testlabel=testtup[1] #vector of 60000
 testlabel=list(testlabel)
 testlabel=np.array(testlabel)
-
+print( "testlabel", testlabel.shape)
 # Normalizing
 
 # Convert string column to float
