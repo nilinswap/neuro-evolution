@@ -39,8 +39,8 @@ clumped_training = np.concatenate( (traindata, trainlabel), axis = 1)
 clumped_training = clumped_training.astype(float)
 rng.shuffle(clumped_training)
 
-traindata_new = clumped_training[:100,:-1]
-trainlabel_new = clumped_training[:100,-1:]
+traindata_new = clumped_training[:,:-1]
+trainlabel_new = clumped_training[:,-1:]
 
 
 
@@ -71,8 +71,8 @@ clumped_testing = np.concatenate( (testdata, testlabel), axis = 1)
 clumped_testing = clumped_testing.astype(float)
 rng.shuffle(clumped_testing)
 
-testdata_new = clumped_testing[:10,:-1]
-testlabel_new = clumped_testing[:10,-1:]
+testdata_new = clumped_testing[:,:-1]
+testlabel_new = clumped_testing[:,-1:]
 
 
 

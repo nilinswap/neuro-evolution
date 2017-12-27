@@ -19,7 +19,8 @@ n_hidden = 100
 indim = 784
 outdim = 10
 network_obj = Neterr(indim, outdim, n_hidden, np.random)
-creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
+#creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
+creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 print("here network object created")
 toolbox = base.Toolbox()
@@ -30,15 +31,10 @@ def minimize(individual):
 
     neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
     mean_square_error_val = give_mse(outputarr, network_obj.resty)
-    if outdim in {1,2}:
-        false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
-        false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
-    else:
-        false_negative_rat = random.random()
-        false_positve_rat = random.random()
-        #anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
-    return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
 
+        #anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
+    #return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+    return neg_log_likelihood_val, mean_square_error_val
 
 def mycross(ind1, ind2, gen_no):
     child1 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
@@ -267,7 +263,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
 
 
 if __name__ == "__main__":
-    test_it_with_bp(play = 0, NGEN = 10, MU = 4*5)
+    test_it_with_bp(play = 1, NGEN = 100, MU = 4*25)
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
