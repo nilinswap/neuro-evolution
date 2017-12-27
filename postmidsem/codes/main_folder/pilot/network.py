@@ -33,15 +33,15 @@ def priortize_connections(conn_lis):
         dict[tup[0].nature+tup[1].nature].append(concsn)
     return dict['IH1']+['breakH1']+dict['H1H2']+dict['IH2']+['breakH2']+dict['H2O']+dict['H1O']+dict['IO']
 class Neterr:
-    def __init__(self, inputdim, outputdim,   hidden_unit_lim ,rng):
+    def __init__(self, inputdim, outputdim,   hidden_unit_lim ,rng):# HYPERPARAMETER hid_unit_lim
         self.inputdim = inputdim
         self.outputdim = outputdim
         #self.inputarr=inputarr  #self explanatory
         self.hidden_unit_lim = hidden_unit_lim
         self.rng = rng
-        rest_set, test_set = pimadataf.give_data()#a two tuple of ( two tuple of array)
-        #rest_set, test_set = mnistdataf.give_data()  # a two tuple of ( two tuple of array)
-
+        #rest_set, test_set = pimadataf.give_data()#a two tuple of ( two tuple of array)
+        rest_set, test_set = mnistdataf.give_data()  # a two tuple of ( two tuple of array)
+        # FOR ANY CHANGE IN DATASET, CHANGE DIMENSION NO. MENTIONED IN THESE THREE FILES - cluster.py, chromosome.py and main.py
         self.restx = rest_set[0]
         resty = rest_set[1]
         self.testx = test_set[0]

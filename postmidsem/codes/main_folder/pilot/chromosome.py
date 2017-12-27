@@ -9,8 +9,8 @@ import tensorflow as tf
 import deep_net
 import time
 
-inputnumber = 8
-outputnumber = 2  # here could be an error, after all that's why I don't use global variables
+inputnumber = 784
+outputnumber = 10  # here could be an error, after all that's why I don't use global variables
 innov_ctr = inputnumber * outputnumber + 1
 
 
@@ -481,7 +481,7 @@ def aux_non_weightedTest(parentx, parenty):
             return np.random.choice((parent1, parent2))
 
 
-def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
+def crossover(parent1, parent2, gen_no, inputdim, outputdim):
     # print("cross between lengths", len(parent1.conn_arr), len(parent2.conn_arr))
     if gen_no > gene.curr_gen_no:
         gene.dict_of_sm_so_far = {}
@@ -614,7 +614,7 @@ def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
     """
 
 
-def crossoverTest(parentx, parenty, gen_no, inputdim=8, outputdim=1):
+def crossoverTest(parentx, parenty, gen_no, inputdim, outputdim):
     parent1 = parentx[0]
     parent2 = parenty[0]
 
