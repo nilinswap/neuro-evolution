@@ -177,10 +177,112 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     fronts = tools.sortNondominated(pop_src, len(pop_src))
 
     toolbox.register("evaluate", minimize_tar)
-    #if(len(fronts[0]) <)
+    pareto_front = fronts[0]
+
+    if len(pareto_front) < MU:
+        diff = MU - len(pareto_front)
+        pop_tar = pareto_front + toolbox.population(n=diff)
+
+    else:
+        pop_tar = pareto_front
+
+    #reiterating
+    CXPB = 0.9
+
+    stats = tools.Statistics(lambda ind: ind.fitness.values[1])
+    # stats.register("avg", numpy.mean, axis=0)
+    # stats.register("std", numpy.std, axis=0)
+    stats.register("min", numpy.min, axis=0)
+    stats.register("max", numpy.max, axis=0)
+
+    logbook = tools.Logbook()
+    logbook.header = "gen", "evals", "std", "min", "avg", "max"
+    #toolbox.register("evaluate", minimize_tar)
+    #pop_tar = toolbox.population(n=MU)
+    print(type(pop_tar))
+    #print("population initialized")
+    #network_obj = Neterr(indim, outdim, n_hidden, np.random)
+    # Evaluate the individuals with an invalid fitness
+    invalid_ind = [ind for ind in pop_tar if not ind.fitness.valid]
+    
+    fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+    for ind, fit in zip(invalid_ind, fitnesses):
+        ind.fitness.values = fit
+
+    # This is just to assign the crowding distance to the individuals
+    # no actual selection is done
+    pop_tar = toolbox.select(pop_tar, len(pop_tar))
+    #print( "first population selected, still outside main loop")
+    # print(pop)
+    record = stats.compile(pop_tar)
+    logbook.record(gen=0, evals=len(invalid_ind), **record)
+    print(logbook.stream)
+    maxi = 0
+    stri = ''
+    flag= 0
+    # Begin the generational process
+    # print(pop.__dir__())
+    for gen in range(1, NGEN):
+
+        # Vary the population
+        print()
+        print("here in gen no.", gen)
+        offspring = tools.selTournamentDCD(pop_tar, len(pop_tar))
+        offspring = [toolbox.clone(ind) for ind in offspring]
+        if play :
+            if play == 1:
+                pgen = NGEN*0.1
+            elif play == 2 :
+                pgen = NGEN*0.9
+
+            if gen == int(pgen):
+                print("gen:",gen, "doing clustering")
+                to_bp_lis = cluster.give_cluster_head(offspring, int(MU*bp_rate))
+                assert (to_bp_lis[0] in offspring )
+                print( "doing bp")
+                [ item.modify_thru_backprop(indim, outdim, network_obj_tar.rest_setx, network_obj_tar.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
+
+        for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
+            # print(ind1.fitness.values)
+            """if not flag :
+                ind1.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10)
+                flag = 1
+                print("just testing")
+            """
+
+            if random.random() <= CXPB:
+                toolbox.mate(ind1, ind2, gen)
+            maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
+            toolbox.mutate(ind1)
+            toolbox.mutate(ind2)
+            del ind1.fitness.values, ind2.fitness.values
+
+        # Evaluate the individuals with an invalid fitness
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
+
+        # Select the next generation population
+        pop_tar = toolbox.select(pop_tar + offspring, MU)
+
+        record = stats.compile(pop_tar)
+        logbook.record(gen=gen, evals=len(invalid_ind), **record)
+        anost = logbook.stream
+        liso = [item.rstrip() for item in anost.split("\t")]
+        mse = float(liso[3])
+
+        print(anost)
+        stri += anost + '\n'
+        print("generation done")
+        # file_ob.write(str(logbook.stream))
+        # print(len(pop))
+        # file_ob.close()
+    #print(stri)
+
 
     ##from here starting target
-    return pop_src, logbook
+    return pop_tar, logbook
 
 
 def note_this_string(new_st, stringh):
