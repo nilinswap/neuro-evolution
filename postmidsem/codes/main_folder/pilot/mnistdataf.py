@@ -37,7 +37,9 @@ trainlabel = trainlabel.reshape( (trainlabel.shape[0], 1) )
 #traindata = pimadata
 clumped_training = np.concatenate( (traindata, trainlabel), axis = 1)
 clumped_training = clumped_training.astype(float)
-rng.shuffle(clumped_training)
+numlis = np.arange(clumped_training.shape[0])
+rng.shuffle(numlis)
+clumped_training = clumped_training[ numlis ]
 
 traindata_new = clumped_training[:,:-1]
 trainlabel_new = clumped_training[:,-1:]
@@ -69,7 +71,10 @@ testlabel = testlabel.reshape( (testlabel.shape[0], 1) )
 #testdata = pimadata
 clumped_testing = np.concatenate( (testdata, testlabel), axis = 1)
 clumped_testing = clumped_testing.astype(float)
-rng.shuffle(clumped_testing)
+numlis = np.arange(clumped_testing.shape[0])
+rng.shuffle(numlis)
+clumped_testing = clumped_testing[ numlis ]
+
 
 testdata_new = clumped_testing[:,:-1]
 testlabel_new = clumped_testing[:,-1:]

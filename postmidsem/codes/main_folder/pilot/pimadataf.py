@@ -12,8 +12,9 @@ def standardize_dataset(traindata, means, stdevs):
 rng=random
 
 pimadata=np.loadtxt("pima_dataset.csv", delimiter=',')
-
-rng.shuffle(pimadata)
+numlis = np.arange(pimadata.shape[0])
+rng.shuffle(numlis)
+pimadata = pimadata[ numlis ]
 
 
 pimadata = pimadata.astype(float)
