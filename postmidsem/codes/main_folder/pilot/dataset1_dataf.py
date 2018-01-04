@@ -1,7 +1,7 @@
 #dataset1_dataf.py
 '''
-	this contains utilities function to extract and preprocess data from dataset1 ( with reference to all the datasets that is
-	suggested in a mail from rkala dated Jan 2 2018  .) This dataset has two domains, namely, source and target and these two use the same objects and task
+	this contains utility function to extract and preprocess data from dataset1 ( with reference to all the datasets that is
+	suggested in a mail from rkala dated Jan 2 2018  .) This is a dataset for object recognition. These are not raw images but are extracted features of . This dataset has two domains, namely, source and target and these two use the same objects and task
 	except that target has fewer examples and is recorded in a different context. source_features.xlsx and target_features.xlsx are table with 200 X 640 and 50 X 640.
 	there are total 10 objects recorded.
 '''
@@ -43,7 +43,7 @@ clumped_source = clumped_arr[:]
 target_data = pd.read_excel("./dataset_1/target_features.xlsx", header = None)
 target_feat_mat = target_data.as_matrix()
 assert( target_feat_mat.shape[0] == 50 )
-#to read the labels for source
+#to read the labels for target
 file_ob = open( "./dataset_1/target_output.csv", "rb")
 lis = file_ob.readlines()
 lis = lis[1:]

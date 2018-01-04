@@ -12,6 +12,7 @@ import deep_net
 from chromosome import *
 import copy
 import population
+import dataset1_dataf
 def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
 def relu(arr):
@@ -33,14 +34,17 @@ def priortize_connections(conn_lis):
         dict[tup[0].nature+tup[1].nature].append(concsn)
     return dict['IH1']+['breakH1']+dict['H1H2']+dict['IH2']+['breakH2']+dict['H2O']+dict['H1O']+dict['IO']
 class Neterr:
-    def __init__(self, inputdim, outputdim,   hidden_unit_lim ,rng):# HYPERPARAMETER hid_unit_lim
+    def __init__(self, inputdim, outputdim,   hidden_unit_lim , change_to_target , rng = random):# HYPERPARAMETER hid_unit_lim
         self.inputdim = inputdim
         self.outputdim = outputdim
         #self.inputarr=inputarr  #self explanatory
         self.hidden_unit_lim = hidden_unit_lim
         self.rng = rng
         #rest_set, test_set = pimadataf.give_data()#a two tuple of ( two tuple of array)
-        rest_set, test_set = mnistdataf.give_data()  # a two tuple of ( two tuple of array)
+        if not change_to_target:
+            rest_set, test_set = dataset1_dataf.give_source_data()  # a two tuple of ( two tuple of array)
+        else:
+            rest_set, test_set = dataset1_dataf.give_target_data()
         # FOR ANY CHANGE IN DATASET, CHANGE DIMENSION NO. MENTIONED IN THESE THREE FILES - cluster.py, chromosome.py and main.py
         self.restx = rest_set[0]
         resty = rest_set[1]
