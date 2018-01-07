@@ -400,21 +400,21 @@ def aux_weighted(parent1, parent2):
 
 '''
 def aux_weightedTest(parentx, parenty):  # parentx, parenty represents a tuple (parent, fitness_arr)
-	parent1 = parentx[0]
-	parent2 = parenty[0]
-	fitness_tup1 = parentx[1]
-	fitness_tup2 = parenty[1]
-	if fitness_tup1 <= fitness_tup2:
-		return parent1
-	elif fitness_tup1 > fitness_tup2:
-		return parent2
-	else:
-		theta = 0.5 * fitness_tup1[0] + 0.0001 * fitness_tup1[1] + 0.2 * fitness_tup1[2] + 0.2 * fitness_tup1[3]
-		fi = 0.5 * fitness_tup2[0] + 0.0001 * fitness_tup2[1] + 0.2 * fitness_tup2[2] + 0.2 * fitness_tup2[3]
-		if theta < fi:
-			return parent1
-		else:
-			return parent2
+    parent1 = parentx[0]
+    parent2 = parenty[0]
+    fitness_tup1 = parentx[1]
+    fitness_tup2 = parenty[1]
+    if fitness_tup1 <= fitness_tup2:
+        return parent1
+    elif fitness_tup1 > fitness_tup2:
+        return parent2
+    else:
+        theta = 0.5 * fitness_tup1[0] + 0.0001 * fitness_tup1[1] + 0.2 * fitness_tup1[2] + 0.2 * fitness_tup1[3]
+        fi = 0.5 * fitness_tup2[0] + 0.0001 * fitness_tup2[1] + 0.2 * fitness_tup2[2] + 0.2 * fitness_tup2[3]
+        if theta < fi:
+            return parent1
+        else:
+            return parent2
 '''
 
 
