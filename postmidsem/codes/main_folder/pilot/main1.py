@@ -1,6 +1,6 @@
 import array
 import random
-
+import time
 import numpy
 from math import sqrt
 import cluster
@@ -92,7 +92,10 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     logbook = tools.Logbook()
     logbook.header = "gen", "evals", "std", "min", "avg", "max"
     toolbox.register("evaluate", minimize_src)
+    time1 = time.time()
     pop_src = toolbox.population(n=MU)
+    time2 = time.time()
+    print("After population initialisation", time2 - time1)
     print(type(pop_src))
     #print("population initialized")
     #network_obj = Neterr(indim, outdim, n_hidden, np.random)
@@ -102,7 +105,8 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
-
+    time3 = time.time()
+    print("After feedforward", time3 - time2)
     # This is just to assign the crowding distance to the individuals
     # no actual selection is done
     pop_src = toolbox.select(pop_src, len(pop_src))
@@ -116,9 +120,14 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     flag= 0
     # Begin the generational process
     # print(pop.__dir__())
+    time4 = time.time()
     for gen in range(1, NGEN):
 
         # Vary the population
+        if gen == 1:
+            time6 = time.time()
+        if gen == NGEN-1:
+            time7 = time.time()
         print()
         print("here in gen no.", gen)
         offspring = tools.selTournamentDCD(pop_src, len(pop_src))
@@ -135,7 +144,10 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
                 assert (to_bp_lis[0] in offspring )
                 print( "doing bp")
                 [ item.modify_thru_backprop(indim, outdim, network_obj_src.rest_setx, network_obj_src.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
-
+        if gen == 1:
+            time8 = time.time()
+        if gen == NGEN-1:
+            time9 = time.time()
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
             # print(ind1.fitness.values)
             """if not flag :
@@ -150,6 +162,10 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
             toolbox.mutate(ind1)
             toolbox.mutate(ind2)
             del ind1.fitness.values, ind2.fitness.values
+        if gen == 1:
+            print("1st gen after newpool",time.time() - time8)
+        if gen == NGEN-1:
+            print("last gen after newpool", time.time() - time9)
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -172,6 +188,8 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
         # file_ob.write(str(logbook.stream))
         # print(len(pop))
         # file_ob.close()
+    time5 = time.time()
+    print("Overall time", time5 - time4)
     #print(stri)
     print( ' ------------------------------------src done------------------------------------------- ')
     fronts = tools.sortNondominated(pop_src, len(pop_src))
