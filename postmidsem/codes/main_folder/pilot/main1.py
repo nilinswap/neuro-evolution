@@ -80,7 +80,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     #random.seed(seed)
 
 
-      # this has to be a multiple of 4. period.
+      # MU has to be a multiple of 4. period.
     CXPB = 0.9
 
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
@@ -144,6 +144,12 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
                 assert (to_bp_lis[0] in offspring )
                 print( "doing bp")
                 [ item.modify_thru_backprop(indim, outdim, network_obj_src.rest_setx, network_obj_src.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
+
+                # Evaluate the individuals with an invalid fitness
+                invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+                fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+                for ind, fit in zip(invalid_ind, fitnesses):
+                    ind.fitness.values = fit
         if gen == 1:
             time8 = time.time()
         if gen == NGEN-1:
@@ -202,6 +208,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
         pop_tar = pareto_front + toolbox.population(n=diff)
 
     else:
+        assert( len(pareto_front) == MU)
         pop_tar = pareto_front
 
     #reiterating
@@ -259,7 +266,11 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
                 assert (to_bp_lis[0] in offspring )
                 print( "doing bp")
                 [ item.modify_thru_backprop(indim, outdim, network_obj_tar.rest_setx, network_obj_tar.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
-
+                # Evaluate the individuals with an invalid fitness
+                invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+                fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+                for ind, fit in zip(invalid_ind, fitnesses):
+                    ind.fitness.values = fit
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
             # print(ind1.fitness.values)
             """if not flag :
@@ -370,7 +381,7 @@ def test_it_without_bp():
     print(note_this_string(st, stringh))
 
 
-def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
+def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
     
     pop, stats = main( play = play, NGEN = NGEN, MU = MU)
     stringh = "_with_bp"+str(play)+"_"+str(NGEN)
@@ -382,7 +393,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
         file_ob.write( st )
     file_ob.close()
 
-    if len(fronts[0]) < 30:
+    if play_with_whole_pareto or len(fronts[0]) < 30 :
         pareto_front = fronts[0]
     else:
 
@@ -391,19 +402,19 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
+    
 
-    print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-    tup = neter.test_on_pareto_patch_correctone(pareto_front)
+    print("\ntest: test on one with min validation error", network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front)
 
     print("\n test: avg on sampled pareto set", tup)
 
-    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
+    st = str(network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
     print(note_this_string(st, stringh))
 
 
 if __name__ == "__main__":
-    test_it_with_bp(play = 1, NGEN = 100, MU = 4*25)
+    test_it_with_bp(play = 1, NGEN = 100, MU = 4*25, play_with_whole_pareto = 1)
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
