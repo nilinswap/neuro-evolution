@@ -1,6 +1,6 @@
 import array
 import random
-
+import time
 import numpy
 from math import sqrt
 import cluster
@@ -79,14 +79,18 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 
     logbook = tools.Logbook()
     logbook.header = "gen", "evals", "std", "min", "avg", "max"
+    time1 = time.time()
     pop = toolbox.population(n=MU)
+    time2 = time.time()
+    print("After population initialisation", time2 - time1)
     #network_obj = Neterr(indim, outdim, n_hidden, np.random)
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop if not ind.fitness.valid]
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
-
+	time3 = time.time()
+	print("After feedforward", time3 - time2)
     # This is just to assign the crowding distance to the individuals
     # no actual selection is done
     pop = toolbox.select(pop, len(pop))
@@ -99,11 +103,20 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     flag= 0
     # Begin the generational process
     # print(pop.__dir__())
+    time4 = time.time()
     for gen in range(1, NGEN):
-
+		
         # Vary the population
+        if gen == 1:
+        	time6 = time.time()
+        if gen == NGEN-1:
+        	time7 = time.time()
         offspring = tools.selTournamentDCD(pop, len(pop))
         offspring = [toolbox.clone(ind) for ind in offspring]
+        if gen == 1:
+        	print("1st gen after clone",time.time() - time6)
+        if gen == NGEN-1:
+        	print("last gen after clone", time.time() - time7)
         if play :
             if play == 1:
                 pgen = NGEN*0.1
@@ -116,7 +129,12 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
                 assert (to_bp_lis[0] in offspring )
                 print( "doing bp")
                 [ item.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
-
+                
+		if gen == 1:
+        	time8 = time.time()
+        if gen == NGEN-1:
+        	time9 = time.time()
+        	
         for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
             # print(ind1.fitness.values)
             """if not flag :
@@ -131,7 +149,11 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
             toolbox.mutate(ind1)
             toolbox.mutate(ind2)
             del ind1.fitness.values, ind2.fitness.values
-
+            
+		if gen == 1:
+        	print("1st gen after newpool",time.time() - time8)
+        if gen == NGEN-1:
+        	print("last gen after newpool", time.time() - time9)
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -155,7 +177,8 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
         # print(len(pop))
         # file_ob.close()
     #print(stri)
-
+	time5 = time.time()
+	print("Overall time", time5 - time4)
     return pop, logbook
 
 
@@ -215,14 +238,14 @@ def test_it_without_bp():
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
+    #neter = Neterr(indim, outdim, n_hidden, np.random)
 
-    print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-    tup = neter.test_on_pareto_patch(pareto_front)
+    print("\ntest: test on one with min validation error", network_obj.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    tup = network_obj.test_on_pareto_patch(pareto_front)
 
     print("\n test: avg on sampled pareto set", tup[0], "least found avg", tup[1])
 
-    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup[0]) + " " + str(tup[1])
+    st = str(network_obj.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup[0]) + " " + str(tup[1])
     print(note_this_string(st, stringh))
 
 
@@ -247,14 +270,14 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
+    #neter = Neterr(indim, outdim, n_hidden, np.random) -- this was a big
 
-    print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-    tup = neter.test_on_pareto_patch_correctone(pareto_front)
+    print("\ntest: test on one with min validation error", network_obj.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    tup = network_obj.test_on_pareto_patch_correctone(pareto_front)
 
     print("\n test: avg on sampled pareto set", tup)
 
-    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
+    st = str(network_obj.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
     print(note_this_string(st, stringh))
 
 
