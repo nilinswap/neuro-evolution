@@ -17,7 +17,7 @@ from chromosome import Chromosome, crossover
 
 n_hidden = 100
 indim = 32
-outdim = 10
+outdim = 5
 
 network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target = 0, rng = random)
 
@@ -387,11 +387,11 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
     stringh = "_with_bp"+str(play)+"_"+str(NGEN)
     fronts = tools.sortNondominated(pop, len(pop))
 
-    file_ob = open("./log_folder/log_for_graph.txt", "w+")
+    '''file_ob = open("./log_folder/log_for_graph.txt", "w+")
     for item in fronts[0]:
         st = str(item.fitness.values[0]) + " " + str(item.fitness.values[1])+"\n"
         file_ob.write( st )
-    file_ob.close()
+    file_ob.close()'''
 
     if play_with_whole_pareto or len(fronts[0]) < 30 :
         pareto_front = fronts[0]

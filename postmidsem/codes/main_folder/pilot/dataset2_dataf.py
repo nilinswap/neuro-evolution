@@ -90,6 +90,24 @@ def give_target_data():
 	assert( test_sety.shape == (13,1))'''
 	return ((rest_setx,rest_sety),(test_setx,test_sety))
 
+def give_source_data_just_src():
+	'''
+		returns two tuples each tuple has one array as feature set and other as column arrray of numerical labels
+		this one is for source
+	'''
+	aann = ann*3//4
+	#print(aann)
+	rest_setx=clumped_source[:aann,:-1]#tuple of two shared variable of array
+
+	rest_sety=clumped_source[:aann,-1:]
+	test_setx=clumped_source[aann:,:-1]
+	test_sety=clumped_source[aann:,-1:]
+	'''assert( rest_setx.shape == (150,128))
+	#print(rest_sety.shape)
+	assert( rest_sety.shape == (150,1))
+	assert( test_setx.shape == (50,640))
+	assert( test_sety.shape == (50,1))'''
+	return ((rest_setx,rest_sety),(test_setx,test_sety))
 def main():
 	print( give_source_data()[0][0][:10])
 	print( give_target_data()[1][0][:10])
