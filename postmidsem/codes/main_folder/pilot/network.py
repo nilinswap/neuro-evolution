@@ -12,7 +12,7 @@ import deep_net
 from chromosome import *
 import copy
 import population
-import dataset1_dataf
+import dataset2_dataf
 def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
 def relu(arr):
@@ -42,9 +42,9 @@ class Neterr:
         self.rng = rng
         #rest_set, test_set = pimadataf.give_data()#a two tuple of ( two tuple of array)
         if not change_to_target:
-            rest_set, test_set = dataset1_dataf.give_source_data()  # a two tuple of ( two tuple of array)
+            rest_set, test_set = dataset2_dataf.give_source_data()  # a two tuple of ( two tuple of array)
         else:
-            rest_set, test_set = dataset1_dataf.give_target_data()
+            rest_set, test_set = dataset2_dataf.give_target_data()
         # FOR ANY CHANGE IN DATASET, CHANGE DIMENSION NO. MENTIONED IN THESE THREE FILES - cluster.py, chromosome.py and main.py
         self.restx = rest_set[0]
         resty = rest_set[1]
