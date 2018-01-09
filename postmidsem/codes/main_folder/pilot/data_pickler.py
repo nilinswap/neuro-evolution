@@ -36,14 +36,14 @@ def find_features_amazon( file_st ):
 	image = np.asarray(PIL.Image.open(file_st))
 	image = to_gray(image)
 	#print(image.shape)
-	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(75, 75),block_norm = 'L1-sqrt',
+	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(150, 150),block_norm = 'L1-sqrt',
 						cells_per_block=(1, 1), visualise=True)
 	return fd
 def find_features_dslr( file_st ):
 	image = np.asarray(PIL.Image.open(file_st))
 	image = to_gray(image)
 	#print(image.shape)
-	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(250, 250),block_norm = 'L1-sqrt',
+	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(500, 500),block_norm = 'L1-sqrt',
 						cells_per_block=(1, 1), visualise=True)
 	return fd
 def make_data_from_image_amazon( stri, dir_lis ):

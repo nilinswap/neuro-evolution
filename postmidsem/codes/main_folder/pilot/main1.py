@@ -16,7 +16,7 @@ from network import Neterr
 from chromosome import Chromosome, crossover
 
 n_hidden = 100
-indim = 128
+indim = 32
 outdim = 10
 
 network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target = 0, rng = random)
