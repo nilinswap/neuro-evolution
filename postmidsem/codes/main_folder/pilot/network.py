@@ -47,7 +47,7 @@ class Neterr:
             rest_set, test_set = dataset2_dataf.give_target_data()
         elif change_to_target == 2:
             rest_set, test_set = dataset2_dataf.give_source_data_just_src()
-        # FOR ANY CHANGE IN DATASET, CHANGE DIMENSION NO. MENTIONED IN THESE THREE FILES - cluster.py, chromosome.py and main.py
+        # FOR ANY CHANGE IN DATASET, CHANGE DIMENSION NO. MENTIONED IN THESE THREE FILES - cluster.py, chromosome.py and main_just_tar.py
         self.restx = rest_set[0]
         resty = rest_set[1]
         self.testx = test_set[0]

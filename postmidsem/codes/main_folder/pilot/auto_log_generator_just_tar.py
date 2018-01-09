@@ -2,4 +2,4 @@
 import os
 import sys
 for i in range(int(sys.argv[1])):
-    os.system("python3 main.py")
+    os.system("python3 main_just_tar.py" )
