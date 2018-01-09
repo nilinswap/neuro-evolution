@@ -30,14 +30,21 @@ def to_gray(image_ar):
 		for colnum in range(image_ar.shape[1]):
 			grey_ar[rownum][colnum] = do_weighted_avg(image_ar[rownum][colnum])
 	return grey_ar
-def find_features( file_st ):
+def find_features_amazon( file_st ):
 	image = np.asarray(PIL.Image.open(file_st))
 	image = to_gray(image)
 	#print(image.shape)
 	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(75, 75),block_norm = 'L1-sqrt',
 						cells_per_block=(1, 1), visualise=True)
 	return fd
-def make_data_from_image( stri, dir_lis ):
+def find_features_dslr( file_st ):
+	image = np.asarray(PIL.Image.open(file_st))
+	image = to_gray(image)
+	#print(image.shape)
+	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(250, 250),block_norm = 'L1-sqrt',
+						cells_per_block=(1, 1), visualise=True)
+	return fd
+def make_data_from_image_amazon( stri, dir_lis ):
 	lislis = []
 	label_lis = []
 	for dirnum, dir_st in enumerate(dir_lis):
@@ -48,7 +55,26 @@ def make_data_from_image( stri, dir_lis ):
 		
 		for file_st in file_lis:
 
-			fd_ar = find_features( new_dir_stri + file_st)
+			fd_ar = find_features_amazon( new_dir_stri + file_st)
+			lis.append(list( fd_ar ))
+			label_lis.append(dirnum)
+		lislis += lis
+	oned_ar = np.array( label_lis, dtype = 'float64' )
+	twod_ar = np.array(lislis, dtype = 'float64')
+	assert( twod_ar.shape[0] == oned_ar.shape[0])
+	return twod_ar,oned_ar
+def make_data_from_image_dslr( stri, dir_lis ):
+	lislis = []
+	label_lis = []
+	for dirnum, dir_st in enumerate(dir_lis):
+		new_dir_stri =   stri + dir_st +'/'
+		file_lis = list(files( new_dir_stri))
+		lis = []
+		print( file_lis)
+		
+		for file_st in file_lis:
+
+			fd_ar = find_features_dslr( new_dir_stri + file_st)
 			lis.append(list( fd_ar ))
 			label_lis.append(dirnum)
 		lislis += lis
@@ -60,7 +86,7 @@ def make_source_data():
 	global fstri, dir_lis
 	stri = fstri + 'amazon/images/'
 	dir_lis = [ 'back_pack', 'bike']
-	tup = make_data_from_image( stri, dir_lis )
+	tup = make_data_from_image_amazon( stri, dir_lis )
 	fs = open( fstri+"pickle_jar/src_data.pickle", "wb")
 	pickle.dump( tup , fs)
 	fs.close()
@@ -70,7 +96,7 @@ def make_target_data():
 	global fstri, dir_lis
 	stri = fstri + 'dslr/images/'
 	dir_lis = [ 'back_pack', 'bike']
-	tup = make_data_from_image( stri, dir_lis )
+	tup = make_data_from_image_dslr( stri, dir_lis )
 	fs = open( fstri+"pickle_jar/tar_data.pickle", "wb")
 	pickle.dump( tup , fs)
 	fs.close()
