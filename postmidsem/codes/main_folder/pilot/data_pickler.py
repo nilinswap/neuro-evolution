@@ -7,8 +7,8 @@ from skimage.feature import hog
 from skimage import data, exposure
 import PIL
 import pickle
-pstri = '.'
-fstri = '/Users/swapnilsharma/Downloads/domain_adaptation_images/'
+pstri = './'
+fstri = '/home/robita/forgit/Dataset2/domain_adaptation_images/'
 dir_lis = [ 'back_pack', 'bike', 'bike_helmet', 'bookcase', 'bottle']
 def files(path):  
     for file in os.listdir(path):

@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import random
 import numpy as np
@@ -22,16 +23,17 @@ sorted_lis.sort()
 dic = { sorted_lis[i]:i for i in range(len(sorted_lis)) }
 print(dic)
 source_label_lis_num = [ dic[item] for item in source_label_lis ]'''
-pstri = '.'
+pstri = './'
 path = 'pickle_jar/'
 assert( os.path.isfile(os.path.join(pstri + path, 'src_data.pickle')))
 fs = open( pstri + "pickle_jar/src_data.pickle", "rb")
-source_label_lis, source_label_lis_num_arr = pickle.load(fs)
+source_feat_mat, source_label_lis_num_arr = pickle.load(fs)
 fs.close()
 
 dum_arr = source_label_lis_num_arr.reshape((source_label_lis_num_arr.shape[0], 1))
 clumped_arr = np.concatenate( (source_feat_mat, dum_arr), axis = 1)
 numlis = np.arange(clumped_arr.shape[0])
+ann = source_feat_mat.shape[0]
 print(clumped_arr[:3])
 rng.shuffle(numlis)
 clumped_arr = clumped_arr[ numlis ]
@@ -39,7 +41,8 @@ clumped_source = clumped_arr[:]
  
 assert( os.path.isfile(os.path.join(pstri + path, 'tar_data.pickle')))
 fs = open( pstri + "pickle_jar/tar_data.pickle", "rb")
-target_label_lis, target_label_lis_num_arr = pickle.load(fs)
+target_feat_mat, target_label_lis_num_arr = pickle.load(fs)
+bann = target_feat_mat.shape[0]
 fs.close()
 
 dum_arr = target_label_lis_num_arr.reshape((target_label_lis_num_arr.shape[0], 1))

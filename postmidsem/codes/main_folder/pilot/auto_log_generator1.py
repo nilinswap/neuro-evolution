@@ -2,4 +2,4 @@
 import os
 import sys
 for i in range(int(sys.argv[1])):
-    os.system("python3.5 main1.py")
+    os.system("python3 main1.py")
