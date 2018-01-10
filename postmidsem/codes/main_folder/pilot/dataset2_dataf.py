@@ -22,10 +22,10 @@ sorted_lis.sort()
 dic = { sorted_lis[i]:i for i in range(len(sorted_lis)) }
 print(dic)
 source_label_lis_num = [ dic[item] for item in source_label_lis ]'''
-fstri = '/Users/swapnilsharma/Downloads/domain_adaptation_images/'
+pstri = '.'
 path = 'pickle_jar/'
-assert( os.path.isfile(os.path.join(fstri + path, 'src_data.pickle')))
-fs = open( fstri + "pickle_jar/src_data.pickle", "rb")
+assert( os.path.isfile(os.path.join(pstri + path, 'src_data.pickle')))
+fs = open( pstri + "pickle_jar/src_data.pickle", "rb")
 source_label_lis, source_label_lis_num_arr = pickle.load(fs)
 fs.close()
 
@@ -37,8 +37,8 @@ rng.shuffle(numlis)
 clumped_arr = clumped_arr[ numlis ]
 clumped_source = clumped_arr[:]
  
-assert( os.path.isfile(os.path.join(fstri + path, 'tar_data.pickle')))
-fs = open( fstri + "pickle_jar/tar_data.pickle", "rb")
+assert( os.path.isfile(os.path.join(pstri + path, 'tar_data.pickle')))
+fs = open( pstri + "pickle_jar/tar_data.pickle", "rb")
 target_label_lis, target_label_lis_num_arr = pickle.load(fs)
 fs.close()
 

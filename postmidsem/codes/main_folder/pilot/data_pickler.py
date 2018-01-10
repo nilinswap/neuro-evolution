@@ -7,7 +7,9 @@ from skimage.feature import hog
 from skimage import data, exposure
 import PIL
 import pickle
+pstri = '.'
 fstri = '/Users/swapnilsharma/Downloads/domain_adaptation_images/'
+dir_lis = [ 'back_pack', 'bike', 'bike_helmet', 'bookcase', 'bottle']
 def files(path):  
     for file in os.listdir(path):
         if os.path.isfile(os.path.join(path, file)):
@@ -85,9 +87,9 @@ def make_data_from_image_dslr( stri, dir_lis ):
 def make_source_data():
 	global fstri, dir_lis
 	stri = fstri + 'amazon/images/'
-	dir_lis = [ 'back_pack', 'bike']
+	
 	tup = make_data_from_image_amazon( stri, dir_lis )
-	fs = open( fstri+"pickle_jar/src_data.pickle", "wb")
+	fs = open( pstri+"pickle_jar/src_data.pickle", "wb")
 	pickle.dump( tup , fs)
 	fs.close()
 
@@ -95,9 +97,9 @@ def make_source_data():
 def make_target_data():
 	global fstri, dir_lis
 	stri = fstri + 'dslr/images/'
-	dir_lis = [ 'back_pack', 'bike']
+	
 	tup = make_data_from_image_dslr( stri, dir_lis )
-	fs = open( fstri+"pickle_jar/tar_data.pickle", "wb")
+	fs = open( pstri+"pickle_jar/tar_data.pickle", "wb")
 	pickle.dump( tup , fs)
 	fs.close()
 if __name__ == '__main__':
