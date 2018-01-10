@@ -370,7 +370,8 @@ def test_it_without_bp():
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
+    neter = Neterr(indim, outdim, n_hidden, random)
+    neter = Neterr(indim, outdim, n_hidden, random)
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
     tup = neter.test_on_pareto_patch(pareto_front)

@@ -11,6 +11,7 @@ import time
 import numpy as np
 import chromosome
 import gene
+import random
 import matenc
 
 import tensorflow as tf
@@ -278,12 +279,12 @@ def test2():
     outdim = 2
 
     #np.random
-    rng = np.random
+    rng = random
     num_data = 2
     # inputarr = np.random.random((num_data, indim))
     #neter = Neterr(indim, outdim, inputarr, 10, np.random)
 
-    ka = np.random.randint(0,2,(num_data,))
+    ka = random.randint(0,2,(num_data,))
     """
     targetarr = np.zeros((num_data,outdim)).astype(dtype = 'float32')
     for i in range(num_data):

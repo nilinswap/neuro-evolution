@@ -18,7 +18,7 @@ from chromosome import Chromosome, crossover
 n_hidden = 100
 indim = 784
 outdim = 10
-network_obj = Neterr(indim, outdim, n_hidden, np.random)
+network_obj = Neterr(indim, outdim, n_hidden, random)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 
@@ -217,7 +217,7 @@ def test_it_without_bp():
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
+    neter = Neterr(indim, outdim, n_hidden, random)
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
     tup = neter.test_on_pareto_patch(pareto_front)
@@ -242,7 +242,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
+    neter = Neterr(indim, outdim, n_hidden, random)
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
     tup = neter.test_on_pareto_patch_correctone(pareto_front)
