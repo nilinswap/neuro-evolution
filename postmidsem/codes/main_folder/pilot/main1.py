@@ -48,6 +48,15 @@ def minimize_tar(individual):
     #return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
     return neg_log_likelihood_val, mean_square_error_val
 
+def minimize_tar_approach2(individual):
+    outputarr = network_obj_tar.feedforward_ne(individual)
+    outputarr_src = network_obj_src.feedforward_ne( individual )
+    neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
+    neg_log_likelihood_val_src = give_neg_log_likelihood( outputarr_src,network_obj_src.resty)
+
+    # anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
+    # return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+    return neg_log_likelihood_val, neg_log_likelihood_val_src
 def mycross(ind1, ind2, gen_no):
     child1 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
     child2 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
@@ -194,14 +203,16 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
         # file_ob.write(str(logbook.stream))
         # print(len(pop))
         # file_ob.close()
+
     time5 = time.time()
     print("Overall time", time5 - time4)
     #print(stri)
     print( ' ------------------------------------src done------------------------------------------- ')
     fronts = tools.sortNondominated(pop_src, len(pop_src))
 
-    toolbox.register("evaluate", minimize_tar)
-    pareto_front = fronts[0]
+
+
+
 
     if len(pareto_front) < MU:
         diff = MU - len(pareto_front)
@@ -211,9 +222,12 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
         assert( len(pareto_front) == MU)
         pop_tar = pareto_front
 
+
+
     #reiterating
     CXPB = 0.9
-
+    toolbox.register("evaluate", minimize_tar_approach2)
+    pareto_front = fronts[0]
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
     # stats.register("avg", numpy.mean, axis=0)
     # stats.register("std", numpy.std, axis=0)
@@ -370,8 +384,7 @@ def test_it_without_bp():
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, random)
-    neter = Neterr(indim, outdim, n_hidden, random)
+    neter = Neterr(indim, outdim, n_hidden, np.random)
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
     tup = neter.test_on_pareto_patch(pareto_front)
@@ -385,7 +398,7 @@ def test_it_without_bp():
 def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
     
     pop, stats = main( play = play, NGEN = NGEN, MU = MU)
-    stringh = "_with_bp"+str(play)+"_"+str(NGEN)
+    stringh = "_with_bp_approach2"+str(play)+"_"+str(NGEN)
     fronts = tools.sortNondominated(pop, len(pop))
 
     '''file_ob = open("./log_folder/log_for_graph.txt", "w+")
