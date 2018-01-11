@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 from skimage.feature import hog
 from skimage import data, exposure
@@ -24,7 +24,7 @@ def to_gray(image_ar):
 	return grey_ar
 
 
-image = np.asarray(PIL.Image.open('Downloads/domain_adaptation_images/dslr/images/back_pack/frame_0001.jpg'))
+image = np.asarray(PIL.Image.open('/home/adi/Desktop/domain_adaptation_images/dslr/images/back_pack/frame_0001.jpg'))
 image = to_gray(image)
 print(image.shape)
 fd, hog_image = hog(image, orientations=8, pixels_per_cell=(250, 250),block_norm = 'L1-sqrt',
@@ -44,4 +44,4 @@ ax2.axis('off')
 ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
 ax2.set_title('Histogram of Oriented Gradients')
 ax1.set_adjustable('box-forced')
-plt.show()
+#plt.show()
