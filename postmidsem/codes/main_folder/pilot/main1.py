@@ -202,15 +202,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 
     toolbox.register("evaluate", minimize_tar)
     pareto_front = fronts[0]
-
-    if len(pareto_front) < MU:
-        diff = MU - len(pareto_front)
-        pop_tar = pareto_front + toolbox.population(n=diff)
-
-    else:
-        assert( len(pareto_front) == MU)
-        pop_tar = pareto_front
-
+    pop_tar = pareto_front + toolbox.population(n=MU)
     #reiterating
     CXPB = 0.9
 
