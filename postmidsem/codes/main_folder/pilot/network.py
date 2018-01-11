@@ -6,8 +6,8 @@ import time
 import gene
 import matenc
 import chromosome
-import pimadataf
-import mnistdataf
+#import pimadataf
+#import mnistdataf
 import deep_net
 from chromosome import *
 import copy
