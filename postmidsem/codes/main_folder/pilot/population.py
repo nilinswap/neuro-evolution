@@ -8,14 +8,6 @@ import gene
 
 import copy
 
-
-
-
-
-
-
-
-
 def give_neg_log_likelihood( arr , oneDarr):
     parr = arr #normalize(arr,axis = 0)
     if parr.shape[1] == 1:
@@ -33,8 +25,6 @@ def give_mse(arr, oneDarr):
     for i in range(onedarr.shape[0]):
         twodarr[i][onedarr[i]] = 1
     return np.sum((arr - twodarr)**2)
-
-
 
 def give_false_positive_ratio(arr, oneDarr):
     if arr.shape[1] > 2:
@@ -69,10 +59,6 @@ def givesumar(size):
         ar += [ar[i - 1] + i]
     return ar
 
-
-
-
-
 class Population(object):
     """Class to create population object, and handle its methods"""
 
@@ -87,23 +73,6 @@ class Population(object):
 
 
         self.objective_arr = None
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     def set_list_chromo(self, newlist_chromo):
         p = self.list_chromo
@@ -192,4 +161,3 @@ def rand_init(inputdim, outputdim):
     newchromo.bias_arr = [gene.BiasConn(outputt, np.random.random()) for outputt in lisO]
     newchromo.dob = 0
     return newchromo
-
