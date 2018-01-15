@@ -66,12 +66,7 @@ class Population(object):
 
         self.size = size
         self.max_hidden_units = max_hidden_units
-
-
         self.list_chromo = [chromosome.Chromosome(inputdim,outputdim) for i in range(self.size)]
-
-
-
         self.objective_arr = None
 
     def set_list_chromo(self, newlist_chromo):
@@ -79,7 +74,6 @@ class Population(object):
         self.list_chromo = newlist_chromo  # ndarray
         self.set_fitness()
         del (p)
-
 
     def set_objective_arr(self,network_obj):
 

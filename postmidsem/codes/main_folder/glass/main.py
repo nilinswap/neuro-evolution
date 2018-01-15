@@ -17,7 +17,7 @@ from chromosome import Chromosome, crossover
 
 n_hidden = 100
 indim = 9
-outdim = 7
+outdim = 8
 network_obj = Neterr(indim, outdim, n_hidden, np.random)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
@@ -32,15 +32,15 @@ def minimize(individual):
 
     neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
     mean_square_error_val = give_mse(outputarr, network_obj.resty)
-    false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
-    false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
+    #false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
+    #false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
 
-    return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+    return neg_log_likelihood_val, mean_square_error_val, 0, 0
 
 
 def mycross(ind1, ind2, gen_no):
-    child1 = crossover(ind1, ind2, gen_no, inputdim=9, outputdim=7)
-    child2 = crossover(ind1, ind2, gen_no, inputdim=9, outputdim=7)
+    child1 = crossover(ind1, ind2, gen_no, inputdim=9, outputdim=8)
+    child2 = crossover(ind1, ind2, gen_no, inputdim=9, outputdim=8)
 
     return child1, child2
 

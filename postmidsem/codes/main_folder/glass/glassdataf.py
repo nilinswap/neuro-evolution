@@ -29,7 +29,7 @@ standardize_dataset(traindata[:,:9],means,stdevs)
 
 def get_dimension():
     in_dem = 9
-    out_dem = 7
+    out_dem = 1
     return (in_dem, out_dem)
 
 def myrange(start,end,step):
