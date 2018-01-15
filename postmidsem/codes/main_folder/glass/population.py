@@ -1,6 +1,6 @@
 import numpy as np
 import network
-import pimadataf
+#import pimadataf
 import chromosome
 import tensorflow as tf
 import time

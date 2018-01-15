@@ -43,7 +43,7 @@ class Neterr:
         #self.inputarr=inputarr  #self explanatory
         self.hidden_unit_lim = hidden_unit_lim
         self.rng = rng
-        rest_set, test_set = pimadataf.give_data()
+        rest_set, test_set = glassdataf.give_data()
         self.restx = rest_set[0]
         resty = rest_set[1]
         self.testx = test_set[0]
