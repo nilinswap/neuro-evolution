@@ -32,10 +32,10 @@ def minimize(individual):
 
     neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
     mean_square_error_val = give_mse(outputarr, network_obj.resty)
-    #false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
-    #false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
+    false_positve_rat = give_false_positive_ratio(outputarr, network_obj.resty)
+    false_negative_rat = give_false_negative_ratio(outputarr, network_obj.resty)
 
-    return neg_log_likelihood_val, mean_square_error_val, 0, 0
+    return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
 
 
 def mycross(ind1, ind2, gen_no):

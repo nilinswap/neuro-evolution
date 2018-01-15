@@ -27,7 +27,7 @@ def give_mse(arr, oneDarr):
     return np.sum((arr - twodarr)**2)
 
 def give_false_positive_ratio(arr, oneDarr):
-    if arr.shape[1] > 2:
+    #if arr.shape[1] > 2:
         print("false_positive is not appropriate objective, change objective function in Population.py")
         exit(1)
     if arr.shape[1]==1:
@@ -40,7 +40,7 @@ def give_false_positive_ratio(arr, oneDarr):
     return summer/(summer+dummer)
 
 def give_false_negative_ratio(arr, oneDarr):
-    if arr.shape[1] > 2:
+    #if arr.shape[1] > 2:
         print("false_positive is not appropriate objective, change objective function in Population.py")
         exit(1)
     if arr.shape[1]==1:
