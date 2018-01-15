@@ -3,7 +3,7 @@ import chromosome
 import random
 import copy
 indim = 9
-outdim = 8
+outdim = 7
 
 def distance ( chromoA, chromoB):
     same_num = 0
