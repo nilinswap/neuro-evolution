@@ -25,9 +25,10 @@ means= traindata.mean(axis=0)
 
 stdevs=np.std(traindata,axis=0)
 # standardize dataset
-standardize_dataset(traindata[:,:8],means,stdevs)
+standardize_dataset(traindata[:,:9],means,stdevs)
+
 def get_dimension():
-    in_dem = 8
+    in_dem = 9
     out_dem = 7
     return (in_dem, out_dem)
 
@@ -44,10 +45,10 @@ def give_data():
     #3. make setpool out of the dataset
     #4. make pcn and train it
     #5. test on validation and testing set    
-    rest_setx=glassdata[:160,:8]#tuple of two shared variable of array
-    rest_sety=glassdata[:160,8:]
-    test_setx=glassdata[160:,:8]
-    test_sety=glassdata[160:,8:]
+    rest_setx=glassdata[:160,:9]#tuple of two shared variable of array
+    rest_sety=glassdata[:160,9:]
+    test_setx=glassdata[160:,:9]
+    test_sety=glassdata[160:,9:]
     #print(glassdata.shape)
     #print(rest_setx.shape,test_setx.shape)
     return ((rest_setx,rest_sety),(test_setx,test_sety))

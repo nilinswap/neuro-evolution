@@ -16,7 +16,7 @@ from network import Neterr
 from chromosome import Chromosome, crossover
 
 n_hidden = 100
-indim = 8
+indim = 9
 outdim = 7
 network_obj = Neterr(indim, outdim, n_hidden, np.random)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
@@ -37,8 +37,8 @@ def minimize(individual):
 
 
 def mycross(ind1, ind2, gen_no):
-    child1 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=7)
-    child2 = crossover(ind1, ind2, gen_no, inputdim=8, outputdim=7)
+    child1 = crossover(ind1, ind2, gen_no, inputdim=9, outputdim=7)
+    child2 = crossover(ind1, ind2, gen_no, inputdim=9, outputdim=7)
     return child1, child2
 
 

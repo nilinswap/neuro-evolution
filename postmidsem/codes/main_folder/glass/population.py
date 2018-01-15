@@ -108,22 +108,11 @@ class Population(object):
         self.objective_arr =  np.array(lis) # a 2d array of dimension #population X #objectives
         #print(self.objective_arr)
 
-
-
-
-
     def get_best(self):
         pass
 
-
-
-
-
     def get_average(self):
         pass
-
-
-
 
     def squa_test(x):
         return (x ** 2).sum(axis=1)
@@ -131,7 +120,7 @@ class Population(object):
 
 def main():
     import copy
-    dimtup = (8, 1)
+    dimtup = (9, 7)
     pop = Population(4, dimtup, size=9)
 
     print(pop.list_chromo)
