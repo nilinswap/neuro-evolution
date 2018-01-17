@@ -18,7 +18,7 @@ from chromosome import Chromosome, crossover
 n_hidden = 100
 indim = 8
 outdim = 2
-network_obj = Neterr(indim, outdim, n_hidden, np.random)
+network_obj = Neterr(indim, outdim, n_hidden, random)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 

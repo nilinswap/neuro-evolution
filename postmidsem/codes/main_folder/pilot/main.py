@@ -18,7 +18,7 @@ from chromosome import Chromosome, crossover
 n_hidden = 100
 indim = 8
 outdim = 2
-network_obj = Neterr(indim, outdim, n_hidden, np.random)
+network_obj = Neterr(indim, outdim, n_hidden, random)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 
@@ -211,14 +211,14 @@ def test_it_without_bp():
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
 
-    print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-    tup = neter.test_on_pareto_patch_correctone(pareto_front)
+
+    print("\ntest: test on one with min validation error", network_obj.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    tup = network_obj.test_on_pareto_patch_correctone(pareto_front)
 
     print("\n test: avg on sampled pareto set", tup)
 
-    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
+    st = str(network_obj.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup)
     print(note_this_string(st, stringh))
 
 def test_it_with_bp():
@@ -235,15 +235,16 @@ def test_it_with_bp():
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
-
-    print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-    tup = neter.test_on_pareto_patch_correctone(pareto_front)
+    print("\ntest: test on one with min validation error",
+          network_obj.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+    tup = network_obj.test_on_pareto_patch_correctone(pareto_front)
 
     print("\n test: avg on sampled pareto set", tup)
 
-    st = str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
-    print(note_this_string(st, stringh))
+    st = str(network_obj.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup)
+
+
+print(note_this_string(st, stringh))
 
 if __name__ == "__main__":
     test_it_without_bp()

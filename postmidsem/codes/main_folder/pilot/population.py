@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import network
 import pimadataf
@@ -158,6 +160,6 @@ def rand_init(inputdim, outputdim):
             newchromo.conn_arr.append(gene.Conn(innov_ctr, (inputt, outputt), z, status=True))
             z = z+1
             innov_ctr += 1
-    newchromo.bias_arr = [gene.BiasConn(outputt, np.random.random()) for outputt in lisO]
+    newchromo.bias_arr = [gene.BiasConn(outputt, random.random()) for outputt in lisO]
     newchromo.dob = 0
     return newchromo
