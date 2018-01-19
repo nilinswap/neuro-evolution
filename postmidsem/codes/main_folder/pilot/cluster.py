@@ -2,7 +2,7 @@ import numpy as np
 import chromosome
 import random
 import copy
-indim = 8
+indim = 15
 outdim = 2
 def distance ( chromoA, chromoB):
 

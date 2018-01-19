@@ -9,7 +9,7 @@ import tensorflow as tf
 import deep_net
 import time
 
-inputnumber = 8
+inputnumber = 15
 outputnumber = 2  # here could be an error, after all that's why I don't use global variables
 innov_ctr = inputnumber * outputnumber + 1
 
