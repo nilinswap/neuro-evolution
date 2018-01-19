@@ -19,7 +19,7 @@ n_hidden = 100
 indim = 15
 outdim = 2
 network_obj = Neterr(indim, outdim, n_hidden, random)
-creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
+creator.create("FitnessMin", base.Fitness, weights=(0.0, -1.0, 0.0, 0.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
@@ -282,7 +282,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
 
 
 if __name__ == "__main__":
-    test_it_with_bp(play = 1, NGEN = 100, MU = 4*25)
+    test_it_with_bp(play = 1, NGEN = 200, MU = 4*25)
 
     # file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
