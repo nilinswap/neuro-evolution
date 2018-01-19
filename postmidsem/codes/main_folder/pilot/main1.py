@@ -65,8 +65,6 @@ bp_rate = 0.05
 
 
 def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
-    random.seed(seed)
-
 
       # this has to be a multiple of 4. period.
     CXPB = 0.9

@@ -49,7 +49,7 @@ class Neterr:
         self.rest_setx = tf.Variable(initial_value = self.restx, name='rest_setx',
                                      dtype=tf.float32)
         self.rest_sety = tf.Variable(initial_value = self.resty, name='rest_sety', dtype=tf.int32)
-        self.test_setx = tf.Variable(initial_value = self.testx, name='rest_sety',
+        self.test_setx = tf.Variable(initial_value = self.testx, name='test_setx',
                                      dtype=tf.float32)
         self.test_sety = tf.Variable(initial_value = self.testy, name='test_sety', dtype=tf.int32)
         #self.inputarr = inputarr
