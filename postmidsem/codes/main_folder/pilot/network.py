@@ -6,8 +6,8 @@ import time
 import gene
 import matenc
 import chromosome
-import pimadataf
-import mnistdataf
+#import pimadataf
+#import mnistdataf
 import deep_net
 from chromosome import *
 import copy
@@ -46,7 +46,7 @@ class Neterr:
         elif change_to_target == 1:
             rest_set, test_set = dataset2_dataf.give_target_data()
         elif change_to_target == 2:
-            rest_set, test_set = dataset2_dataf.give_source_data_just_src()
+            rest_set, test_set = dataset2_dataf.give_target_data_just_src_just_tar()
         # FOR ANY CHANGE IN DATASET, CHANGE DIMENSION NO. MENTIONED IN THESE THREE FILES - cluster.py, chromosome.py and main_just_tar.py
         self.restx = rest_set[0]
         resty = rest_set[1]

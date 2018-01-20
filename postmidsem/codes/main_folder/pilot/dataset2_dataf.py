@@ -108,6 +108,19 @@ def give_source_data_just_src():
 	assert( test_setx.shape == (50,640))
 	assert( test_sety.shape == (50,1))'''
 	return ((rest_setx,rest_sety),(test_setx,test_sety))
+def give_target_data_just_src_just_tar():
+	bbann = 0
+	rest_setx=clumped_target[:bbann,:-1]
+	rest_sety=clumped_target[:bbann,-1:]
+	test_setx=clumped_target[bbann:,:-1]
+	test_sety=clumped_target[bbann:,-1:]
+	#print(test_setx.shape)
+	#print(test_sety.shape)
+	'''assert( rest_setx.shape == (37,640))
+	assert( rest_sety.shape == (37,1))
+	assert( test_setx.shape == (13,640))
+	assert( test_sety.shape == (13,1))'''
+	return ((rest_setx,rest_sety),(test_setx,test_sety))
 def main():
 	print( give_source_data()[0][0][:10])
 	print( give_target_data()[1][0][:10])

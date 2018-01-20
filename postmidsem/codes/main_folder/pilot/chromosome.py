@@ -40,13 +40,13 @@ class Chromosome:
         p = 1
         for inputt in lisI:
             for outputt in lisO:
-                self.conn_arr.append(gene.Conn(p, (inputt, outputt), np.random.random(), status=True))
+                self.conn_arr.append(gene.Conn(p, (inputt, outputt), random.random(), status=True))
                 p += 1
 
             # print(p)
             # assert (p == innov_ctr)
         self.bias_conn_arr = []
-        self.bias_conn_arr = [gene.BiasConn(outputt, np.random.random() / 1000) for outputt in lisO]
+        self.bias_conn_arr = [gene.BiasConn(outputt, random.random() / 1000) for outputt in lisO]
         self.dob = 0
 
     def reset_chromo_to_zero(self):
@@ -440,7 +440,7 @@ def aux_non_weighted(parent1, parent2):
                     (fitness_tup1[2] > fitness_tup2[2]) or (fitness_tup1[3] > fitness_tup2[3]))):
             return parent2
         else:
-            return np.random.choice((parent1, parent2))
+            return random.choice((parent1, parent2))
 
 def aux_non_weighted_1(parent1, parent2):
     fitness_tup1 = parent1.fitness
@@ -454,7 +454,7 @@ def aux_non_weighted_1(parent1, parent2):
         return parent2
     else:
 
-        return np.random.choice((parent1, parent2))
+        return random.choice((parent1, parent2))
 def aux_non_weightedTest(parentx, parenty):
     fitness_tup1 = parentx[1]
     fitness_tup2 = parenty[1]
@@ -478,7 +478,7 @@ def aux_non_weightedTest(parentx, parenty):
                     (fitness_tup1[2] > fitness_tup2[2]) or (fitness_tup1[3] > fitness_tup2[3]))):
             return parent2
         else:
-            return np.random.choice((parent1, parent2))
+            return random.choice((parent1, parent2))
 
 
 def crossover(parent1, parent2, gen_no, inputdim, outputdim):

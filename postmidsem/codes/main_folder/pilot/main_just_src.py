@@ -19,7 +19,8 @@ n_hidden = 100
 indim = 32
 outdim = 5
 
-network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target=2, rng=random)
+network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target=0, rng=random)
+network_obj_tar = Neterr(indim, outdim, n_hidden, change_to_target=2, rng=random)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 print("here network object created")
@@ -241,11 +242,7 @@ def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
 	stringh = "_with_bp_main2_just_src" + str(play) + "_" + str(NGEN)
 	fronts = tools.sortNondominated(pop, len(pop))
 
-	'''file_ob = open("./log_folder/log_for_graph.txt", "w+")
-    for item in fronts[0]:
-        st = str(item.fitness.values[0]) + " " + str(item.fitness.values[1])+"\n"
-        file_ob.write( st )
-    file_ob.close()'''
+
 
 	if play_with_whole_pareto or len(fronts[0]) < 30:
 		pareto_front = fronts[0]
@@ -257,12 +254,12 @@ def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
 		print(pareto_front[i].fitness.values)
 
 	print("\ntest: test on one with min validation error",
-		  network_obj_src.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-	tup = network_obj_src.test_on_pareto_patch_correctone(pareto_front)
+		  network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+	tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front)
 
 	print("\n test: avg on sampled pareto set", tup)
 
-	st = str(network_obj_src.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup)
+	st = str(network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup)
 	print(note_this_string(st, stringh))
 
 
