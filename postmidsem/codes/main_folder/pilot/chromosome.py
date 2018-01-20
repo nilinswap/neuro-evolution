@@ -205,7 +205,7 @@ class Chromosome:
 
         return newchromo
 
-    def weight_mutation(self, rng, factor=0.1, individual_change_probablity=0.1):
+    def weight_mutation(self, rng, factor=0.01, individual_change_probablity=0.1):
         import copy
         lis = self.conn_arr + self.bias_conn_arr
         # chosen_ind = rng.choice(range(len(lis)))

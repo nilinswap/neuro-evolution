@@ -23,7 +23,7 @@ network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target = 0, rng = ra
 
 network_obj_tar = Neterr(indim, outdim, n_hidden,change_to_target = 1, rng = random)
 #creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
-creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
+creator.create("FitnessMin", base.Fitness, weights=(-1.0, -0.7))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 print("here network object created")
 toolbox = base.Toolbox()
@@ -35,7 +35,7 @@ def minimize_src(individual):
     neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_src.resty)
     mean_square_error_val = give_mse(outputarr, network_obj_src.resty)
 
-        #anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
+    #anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
     #return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
     return neg_log_likelihood_val, mean_square_error_val
 def minimize_tar(individual):
@@ -213,7 +213,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 
 
 
-
+    pareto_front = fronts[0]
     if len(pareto_front) < MU:
         diff = MU - len(pareto_front)
         pop_tar = pareto_front + toolbox.population(n=diff)
@@ -384,7 +384,7 @@ def test_it_without_bp():
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    neter = Neterr(indim, outdim, n_hidden, np.random)
+    neter = Neterr(indim, outdim, n_hidden, random)
 
     print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
     tup = neter.test_on_pareto_patch(pareto_front)
