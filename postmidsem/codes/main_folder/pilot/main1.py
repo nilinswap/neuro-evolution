@@ -407,11 +407,13 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
         file_ob.write( st )
     file_ob.close()'''
 
+
     if play_with_whole_pareto or len(fronts[0]) < 30 :
         pareto_front = fronts[0]
     else:
 
         pareto_front = random.sample(fronts[0], 30)
+
     print("Pareto Front: ")
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)

@@ -15,9 +15,9 @@ import theano.tensor as T
 def load_data(dataset):
 
     def preprocessdata(dataset):
-        path="/home/robita/forgit/neuro-evolution/05/dataset/"
+        path="./"
         import os.path
-        filename=path+"cards/"+dataset
+        filename=path+dataset
         if  os.path.isfile(filename):
             fileo=open(filename,"r+")
             stlis=fileo.readlines()
