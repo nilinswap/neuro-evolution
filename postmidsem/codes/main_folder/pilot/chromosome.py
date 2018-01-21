@@ -184,7 +184,7 @@ class Chromosome:
                     print('validation', current)
                     print(tf.reduce_sum(newneu_net.wei_mat_var_map['IO']).eval())
 
-                if prev - current < 0.002:
+                if current - prev > 0.0002:
                     break;
             end1 = time.time()
             print("time ", end1 - start1)
