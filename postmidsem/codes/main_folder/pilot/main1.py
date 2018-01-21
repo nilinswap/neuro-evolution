@@ -214,6 +214,9 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     toolbox.register("mutate", mymutate_tar)
     pareto_front = fronts[0]
     print(pareto_front)
+    print("Pareto Front: ")
+    for i in range(len(pareto_front)):
+        print(pareto_front[i].fitness.values)
     if len(pareto_front) < MU:
         diff = MU - len(pareto_front)
         pop_tar = pareto_front + toolbox.population(n=diff)
