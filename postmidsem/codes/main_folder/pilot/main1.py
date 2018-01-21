@@ -23,7 +23,7 @@ network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target = 0, rng = ra
 
 network_obj_tar = Neterr(indim, outdim, n_hidden,change_to_target = 1, rng = random)
 #creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
-creator.create("FitnessMin", base.Fitness, weights=(-1.0, -0.7))
+creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 print("here network object created")
 toolbox = base.Toolbox()
@@ -261,7 +261,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     flag= 0
     # Begin the generational process
     # print(pop.__dir__())
-    for gen in range(1, NGEN):
+    for gen in range(1, NGEN//4):
 
         # Vary the population
         print()
