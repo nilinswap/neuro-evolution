@@ -330,7 +330,7 @@ class Chromosome:
         self.conn_arr.append(new_conn1)
         self.conn_arr.append(new_conn2)
 
-    def do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, max_hidden_unit, rng):
+    def do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, weight_factor , inputdim, outputdim, max_hidden_unit, rng):
         # rate_conn_weight > rate_conn_itself >> rate_node
         # 0.2, 0.1, 0.05
         p = len(self.conn_arr)
@@ -346,7 +346,7 @@ class Chromosome:
             self.edge_mutation(inputdim, outputdim, rng)
             flag = 1
         elif prnd < rate_conn_weight:
-            self.weight_mutation(rng)
+            self.weight_mutation(rng, weight_factor)
             flag = 1
         """if flag:
             print("before mutation length", p)

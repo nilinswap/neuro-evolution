@@ -31,20 +31,17 @@ toolbox = base.Toolbox()
 
 def minimize_src(individual):
     outputarr = network_obj_src.feedforward_ne(individual)
-
     neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_src.resty)
     mean_square_error_val = give_mse(outputarr, network_obj_src.resty)
-
     #anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
     #return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
     return neg_log_likelihood_val, mean_square_error_val
+
 def minimize_tar(individual):
     outputarr = network_obj_tar.feedforward_ne(individual)
-
     neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
     mean_square_error_val = give_mse(outputarr, network_obj_tar.resty)
-
-        #anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
+    #anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
     #return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
     return neg_log_likelihood_val, mean_square_error_val
 
@@ -64,10 +61,13 @@ def mycross(ind1, ind2, gen_no):
     return child1, child2
 
 
-def mymutate(ind1):
-    new_ind = ind1.do_mutation(0.2, 0.1, 0.05, indim, outdim, n_hidden, numpy.random)
+def mymutate_src(ind1):
+    #do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, max_hidden_unit, rng)
+    new_ind = ind1.do_mutation(rate_conn_weight = 0.2, rate_conn_itself = 0.1, rate_node = 0.05, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
     return new_ind
-
+def mymutate_tar(ind1):
+    new_ind = ind1.do_mutation(rate_conn_weight = 0.3, rate_conn_itself = 0.2, rate_node = 0.1, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
+    return new_ind
 
 def initIndividual(ind_class, inputdim, outputdim):
     ind = ind_class(inputdim, outputdim)
@@ -79,7 +79,7 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 
 toolbox.register("mate", mycross)
-toolbox.register("mutate", mymutate)
+
 toolbox.register("select", tools.selNSGA2)
 
 bp_rate = 0.05
@@ -102,6 +102,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     logbook.header = "gen", "evals", "std", "min", "avg", "max"
     toolbox.register("evaluate", minimize_src)
     time1 = time.time()
+    toolbox.register("mutate", mymutate_src)
     pop_src = toolbox.population(n=MU)
     time2 = time.time()
     print("After population initialisation", time2 - time1)
@@ -152,7 +153,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
                 to_bp_lis = cluster.give_cluster_head(offspring, int(MU*bp_rate))
                 assert (to_bp_lis[0] in offspring )
                 print( "doing bp")
-                [ item.modify_thru_backprop(indim, outdim, network_obj_src.rest_setx, network_obj_src.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
+                [ item.modify_thru_backprop(indim, outdim, network_obj_src.rest_setx, network_obj_src.rest_sety, epochs=20, learning_rate=0.1, n_par=10) for item in to_bp_lis]
 
                 # Evaluate the individuals with an invalid fitness
                 invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -210,9 +211,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     print( ' ------------------------------------src done------------------------------------------- ')
     fronts = tools.sortNondominated(pop_src, len(pop_src))
 
-
-
-
+    toolbox.register("mutate", mymutate_tar)
     pareto_front = fronts[0]
     if len(pareto_front) < MU:
         diff = MU - len(pareto_front)
@@ -261,7 +260,8 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     flag= 0
     # Begin the generational process
     # print(pop.__dir__())
-    for gen in range(1, NGEN//4):
+    NGEN = NGEN//2
+    for gen in range(1, NGEN):
 
         # Vary the population
         print()
