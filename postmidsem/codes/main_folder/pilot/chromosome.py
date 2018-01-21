@@ -602,6 +602,7 @@ def crossover(parent1, parent2, gen_no, inputdim, outputdim):
         child.bias_conn_arr.append(new_bias_conn)
 
     child.set_node_ctr()
+    return child
     """
     assert ( parent1.node_ctr == child.node_ctr or parent2.node_ctr == child.node_ctr)
     assert ( len(parent1.conn_arr) == len(child.conn_arr) or len(parent2.conn_arr) == len(child.conn_arr))

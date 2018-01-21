@@ -213,6 +213,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 
     toolbox.register("mutate", mymutate_tar)
     pareto_front = fronts[0]
+    print(pareto_front)
     if len(pareto_front) < MU:
         diff = MU - len(pareto_front)
         pop_tar = pareto_front + toolbox.population(n=diff)
@@ -279,7 +280,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
                 to_bp_lis = cluster.give_cluster_head(offspring, int(MU*bp_rate))
                 assert (to_bp_lis[0] in offspring )
                 print( "doing bp")
-                [ item.modify_thru_backprop(indim, outdim, network_obj_tar.rest_setx, network_obj_tar.rest_sety, epochs=10, learning_rate=0.1, n_par=10) for item in to_bp_lis]
+                [ item.modify_thru_backprop(indim, outdim, network_obj_tar.rest_setx, network_obj_tar.rest_sety, epochs=20, learning_rate=0.1, n_par=10) for item in to_bp_lis]
                 # Evaluate the individuals with an invalid fitness
                 invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
                 fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
