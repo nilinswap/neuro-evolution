@@ -228,9 +228,9 @@ class Chromosome:
 
         mat = newmatenc.CMatrix[chosen_key]
         # print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
-        i = rng.randint(0, mat.shape[0])
+        i = rng.randint(0, mat.shape[0]-1)
         if mat.shape[1] > 1:
-            j = rng.randint(0, mat.shape[1])
+            j = rng.randint(0, mat.shape[1]-1)
         else:
             j = 0
         split_key1, split_key2 = matenc.split_key(chosen_key)
@@ -239,9 +239,10 @@ class Chromosome:
         ctr = 0
         # print(mat[i][j])
         while mat[i][j] != 0:
-            i = rng.randint(0, mat.shape[0])
+
+            i = rng.randint(0, mat.shape[0]-1)
             if mat.shape[1] > 1:
-                j = rng.randint(0, mat.shape[1])
+                j = rng.randint(0, mat.shape[1]-1)
             else:
                 j = 0
             if ctr > 10:
@@ -293,9 +294,9 @@ class Chromosome:
 
         mat = newmatenc.CMatrix[chosen_key]
         # print(chosen_key, mat.shape, list(newmatenc.node_map.items()))
-        i = rng.randint(0, mat.shape[0])
+        i = rng.randint(0, mat.shape[0]-1)
         if mat.shape[1] > 1:
-            j = rng.randint(0, mat.shape[1])
+            j = rng.randint(0, mat.shape[1]-1)
         else:
             j = 0
         split_key1, split_key2 = matenc.split_key(chosen_key)
@@ -304,9 +305,9 @@ class Chromosome:
 
         if not newmatenc.WMatrix[chosen_key][i][j] and not type:
             while mat[i][j] == 0:
-                i = rng.randint(0, mat.shape[0])
+                i = rng.randint(0, mat.shape[0]-1)
                 if mat.shape[1] > 1:
-                    j = rng.randint(0, mat.shape[1])
+                    j = rng.randint(0, mat.shape[1]-1)
                 else:
                     j = 0
                 if ctr > 10:
@@ -582,7 +583,7 @@ def crossover(parent1, parent2, gen_no, inputdim, outputdim):
     child.node_arr = input_nodes + output_nodes + hidden_nodes
     if (outputdim != 1):
 
-        point_of_crossover = random.randint(1, outputdim)
+        point_of_crossover = random.randint(1, outputdim - 1)
 
         for i in range(len(output_nodes)):
             if i < point_of_crossover:
@@ -717,7 +718,7 @@ def crossoverTest(parentx, parenty, gen_no, inputdim, outputdim):
 
     child.node_arr = input_nodes + output_nodes + hidden_nodes
 
-    point_of_crossover = random.randint(1, outputdim)
+    point_of_crossover = random.randint(1, outputdim - 1)
 
     for i in range(len(output_nodes)):
         if i < point_of_crossover:
