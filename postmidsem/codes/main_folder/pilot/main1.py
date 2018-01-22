@@ -64,10 +64,10 @@ def mycross(ind1, ind2, gen_no):
 def mymutate_src(ind1):
     #do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, max_hidden_unit, rng)
     new_ind = ind1.do_mutation(rate_conn_weight = 0.2, rate_conn_itself = 0.1, rate_node = 0.05, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
-    return new_ind
+    return ind1
 def mymutate_tar(ind1):
     new_ind = ind1.do_mutation(rate_conn_weight = 0.3, rate_conn_itself = 0.2, rate_node = 0.1, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
-    return new_ind
+    return ind1
 
 def initIndividual(ind_class, inputdim, outputdim):
     ind = ind_class(inputdim, outputdim)
