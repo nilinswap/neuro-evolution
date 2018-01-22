@@ -610,8 +610,9 @@ def crossover(parent1, parent2, gen_no, inputdim=8, outputdim=1):
             assert( dominating_parent.conn_arr[i].innov_num == child.conn_arr[i].innov_num)
             assert( dominating_parent.conn_arr[i].source.nature + dominating_parent.conn_arr[i].destination.nature == child.conn_arr[i].source.nature + child.conn_arr[i].destination.nature)
         assert ( set([item.node_num for item in dominating_parent.node_arr]) == set([item.node_num for item in child.node_arr])  )
-    return child
     """
+    return child
+
 
 
 def crossoverTest(parentx, parenty, gen_no, inputdim=8, outputdim=1):
