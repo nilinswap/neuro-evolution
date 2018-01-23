@@ -28,26 +28,34 @@ class Chromosome:
     """
 
     # here initialization is always with simplest chromosome (AND mainly for innov ctr) , here could be an error
-    def __init__(self, inputdim, outputdim):
+    def __init__(self, inputdim, outputdim, old_chromosome = None):
+        if old_chromosome == None:
+            global innov_ctr
+            self.node_ctr = inputdim + outputdim + 1
+            # NO MORE  # Warning!! these two lines change(reset) global variables, here might be some error
+            lisI = [gene.Node(num_setter, 'I') for num_setter in range(1, self.node_ctr - outputdim)]
+            lisO = [gene.Node(num_setter, 'O') for num_setter in range(inputdim + 1, self.node_ctr)]
+            self.node_arr = lisI + lisO
+            self.conn_arr = []
+            p = 1
+            for inputt in lisI:
+                for outputt in lisO:
+                    self.conn_arr.append(gene.Conn(p, (inputt, outputt), random.random(), status=True))
+                    p += 1
 
-        global innov_ctr
-        self.node_ctr = inputdim + outputdim + 1
-        # NO MORE  # Warning!! these two lines change(reset) global variables, here might be some error
-        lisI = [gene.Node(num_setter, 'I') for num_setter in range(1, self.node_ctr - outputdim)]
-        lisO = [gene.Node(num_setter, 'O') for num_setter in range(inputdim + 1, self.node_ctr)]
-        self.node_arr = lisI + lisO
-        self.conn_arr = []
-        p = 1
-        for inputt in lisI:
-            for outputt in lisO:
-                self.conn_arr.append(gene.Conn(p, (inputt, outputt), random.random(), status=True))
-                p += 1
+                # print(p)
+                # assert (p == innov_ctr)
+            self.bias_conn_arr = []
+            self.bias_conn_arr = [gene.BiasConn(outputt, random.random() / 1000) for outputt in lisO]
+            self.dob = 0
+        else:
+            self.node_ctr = old_chromosome.node_ctr
+            self.conn_arr = old_chromosome.conn_arr
+            self.bias_conn_arr = old_chromosome.bias_conn_arr
+            self.node_arr = old_chromosome.node_arr
+            self.dob = old_chromosome.dob
 
-            # print(p)
-            # assert (p == innov_ctr)
-        self.bias_conn_arr = []
-        self.bias_conn_arr = [gene.BiasConn(outputt, random.random() / 1000) for outputt in lisO]
-        self.dob = 0
+
 
     def reset_chromo_to_zero(self):
         self.node_ctr = 0
