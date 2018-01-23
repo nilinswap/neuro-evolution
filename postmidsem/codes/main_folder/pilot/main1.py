@@ -44,7 +44,7 @@ def mycross(ind1, ind2, gen_no):
 
 
 def mymutate(ind1):
-	new_ind = ind1.do_mutation(0.2, 0.1, 0.05, indim, outdim, n_hidden, numpy.random)
+	new_ind = ind1.do_mutation(rate_conn_weight = 0.2, rate_conn_itself = 0.1, rate_node = 0.05, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
 	return ind1
 
 
@@ -289,7 +289,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25):
 
 
 if __name__ == "__main__":
-	test_it_with_bp(play = 1, NGEN = 80, MU = 4*25)
+	test_it_with_bp(play = 0, NGEN = 80, MU = 4*25)
 
 	# file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
