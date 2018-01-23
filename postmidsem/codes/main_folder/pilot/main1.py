@@ -45,7 +45,7 @@ def mycross(ind1, ind2, gen_no):
 
 def mymutate(ind1):
     new_ind = ind1.do_mutation(0.2, 0.1, 0.05, indim, outdim, n_hidden, numpy.random)
-    return new_ind
+    return ind1
 
 
 def initIndividual(ind_class, inputdim, outputdim):
