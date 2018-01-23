@@ -266,7 +266,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     flag= 0
     # Begin the generational process
     # print(pop.__dir__())
-    NGEN = NGEN//2
+    NGEN = NGEN
     for gen in range(1, NGEN):
 
         # Vary the population
