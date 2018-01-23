@@ -164,6 +164,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 			time8 = time.time()
 		if gen == NGEN-1:
 			time9 = time.time()
+		dum_ctr = 0
 		for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
 			# print(ind1.fitness.values)
 			"""if not flag :
@@ -171,15 +172,20 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 				flag = 1
 				print("just testing")
 			"""
-
+			flag = 0
 			if random.random() <= CXPB:
 				ind1, ind2 = toolbox.mate(ind1, ind2, gen)
 				ind1 = creator.Individual(indim, outdim,  ind1 )
 				ind2 = creator.Individual( indim, outdim, ind2 )
+				flag = 1
 			maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
 			toolbox.mutate(ind1)
 			toolbox.mutate(ind2)
-			del ind1.fitness.values, ind2.fitness.values
+
+			offspring[dum_ctr] = ind1
+			offspring[dum_ctr+1] = ind2
+			del offspring[dum_ctr].fitness.values, offspring[dum_ctr+1].fitness.values
+			dum_ctr+=2
 		if gen == 1:
 			print("1st gen after newpool",time.time() - time8)
 		if gen == NGEN-1:
@@ -193,6 +199,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 
 		# Select the next generation population
 		pop_src = toolbox.select(pop_src + offspring, MU)
+
 
 		record = stats.compile(pop_src)
 		logbook.record(gen=gen, evals=len(invalid_ind), **record)
@@ -440,7 +447,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 
 
 if __name__ == "__main__":
-	test_it_with_bp(play = 1, NGEN = 10, MU = 4*5, play_with_whole_pareto = 1)
+	test_it_with_bp(play = 0, NGEN = 100, MU = 4*25, play_with_whole_pareto = 1)
 
 	# file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
