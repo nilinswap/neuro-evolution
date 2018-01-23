@@ -111,7 +111,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     #network_obj = Neterr(indim, outdim, n_hidden, np.random)
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop_src if not ind.fitness.valid]
-    
+
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
@@ -242,11 +242,13 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
     #toolbox.register("evaluate", minimize_tar)
     #pop_tar = toolbox.population(n=MU)
     print(type(pop_tar))
+    for item in pop_tar:
+       del item.fitness.values
     #print("population initialized")
     #network_obj = Neterr(indim, outdim, n_hidden, np.random)
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop_tar if not ind.fitness.valid]
-    
+
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
@@ -400,7 +402,7 @@ def test_it_without_bp():
 
 
 def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
-    
+
     pop, stats = main( play = play, NGEN = NGEN, MU = MU)
     stringh = "_with_bp_approach2"+str(play)+"_"+str(NGEN)
     fronts = tools.sortNondominated(pop, len(pop))
@@ -422,14 +424,14 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
     for i in range(len(pareto_front)):
         print(pareto_front[i].fitness.values)
 
-    
+
 
     print("\ntest: test on one with min validation error", network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
     tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front)
 
     print("\n test: avg on sampled pareto set", tup)
 
-    st = str(network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup) 
+    st = str(network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup)
     print(note_this_string(st, stringh))
 
 
