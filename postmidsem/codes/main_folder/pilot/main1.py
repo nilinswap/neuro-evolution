@@ -173,7 +173,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
             """
 
             if random.random() <= CXPB:
-                toolbox.mate(ind1, ind2, gen)
+                ind1, ind2 = toolbox.mate(ind1, ind2, gen)
             maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
             toolbox.mutate(ind1)
             toolbox.mutate(ind2)
