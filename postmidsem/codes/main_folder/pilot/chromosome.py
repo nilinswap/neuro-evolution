@@ -591,7 +591,7 @@ def crossover(parent1, parent2, gen_no, inputdim, outputdim):
     child.node_arr = input_nodes + output_nodes + hidden_nodes
     if (outputdim != 1):
 
-        point_of_crossover = random.randint(1, outputdim - 1)
+        point_of_crossover = random.randint(0, outputdim)
 
         for i in range(len(output_nodes)):
             if i < point_of_crossover:
