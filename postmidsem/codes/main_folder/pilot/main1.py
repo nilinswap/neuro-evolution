@@ -31,7 +31,7 @@ toolbox = base.Toolbox()
 
 
 def minimize_src(individual):
-	outputarr = network_obj_src.feedforward_ne(individual)
+	outputarr = network_obj_src.feedforward_ne(individual, final_activation=network.softmax)
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_src.resty)
 	mean_square_error_val = give_mse(outputarr, network_obj_src.resty)
 	#anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
@@ -39,7 +39,7 @@ def minimize_src(individual):
 	return neg_log_likelihood_val, mean_square_error_val
 
 def minimize_tar(individual):
-	outputarr = network_obj_tar.feedforward_ne(individual)
+	outputarr = network_obj_tar.feedforward_ne(individual, final_activation=network.softmax)
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
 	mean_square_error_val = give_mse(outputarr, network_obj_tar.resty)
 	#anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
@@ -166,12 +166,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 			time9 = time.time()
 		dum_ctr = 0
 		for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
-			# print(ind1.fitness.values)
-			"""if not flag :
-				ind1.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10)
-				flag = 1
-				print("just testing")
-			"""
 			flag = 0
 			if random.random() <= CXPB:
 				ind1, ind2 = toolbox.mate(ind1, ind2, gen)
@@ -229,7 +223,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	if len(pareto_front) < MU:
 		diff = MU - len(pareto_front)
 		pop_tar = pareto_front + toolbox.population(n=diff)
-
 	else:
 		assert( len(pareto_front) == MU)
 		pop_tar = pareto_front
@@ -453,7 +446,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 
 
 if __name__ == "__main__":
-	test_it_with_bp(play = 1, NGEN = 100, MU = 4*25, play_with_whole_pareto = 1)
+	test_it_with_bp(play = 1, NGEN = 100, MU = 4*1, play_with_whole_pareto = 1)
 
 	# file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
