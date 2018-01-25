@@ -32,6 +32,7 @@ toolbox = base.Toolbox()
 
 def minimize_src(individual):
 	outputarr = network_obj_src.feedforward_ne(individual, final_activation=network.softmax)
+
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_src.resty)
 	mean_square_error_val = give_mse(outputarr, network_obj_src.resty)
 	#anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
