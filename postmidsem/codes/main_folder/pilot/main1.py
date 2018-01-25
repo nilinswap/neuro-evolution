@@ -48,7 +48,7 @@ def minimize_tar(individual):
 	return neg_log_likelihood_val, mean_square_error_val
 
 def minimize_tar_approach2(individual):
-	outputarr = network_obj_tar.feedforward_ne(individual)
+	outputarr = network_obj_tar.feedforward_ne(individual, final_activation=network.softmax)
 	outputarr_src = network_obj_src.feedforward_ne( individual )
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
 	neg_log_likelihood_val_src = give_neg_log_likelihood( outputarr_src,network_obj_src.resty)
@@ -67,7 +67,7 @@ def mymutate_src(ind1):
 	new_ind = ind1.do_mutation(rate_conn_weight = 0.2, rate_conn_itself = 0.1, rate_node = 0.05, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
 	return ind1
 def mymutate_tar(ind1):
-	new_ind = ind1.do_mutation(rate_conn_weight = 0.3, rate_conn_itself = 0.2, rate_node = 0.1, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
+	new_ind = ind1.do_mutation(rate_conn_weight = 0.25, rate_conn_itself = 0.2, rate_node = 0.1, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
 	return ind1
 
 def initIndividual(ind_class, inputdim, outputdim):
