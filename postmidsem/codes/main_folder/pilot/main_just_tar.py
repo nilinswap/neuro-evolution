@@ -32,7 +32,7 @@ toolbox = base.Toolbox()
 
 
 def minimize_tar(individual):
-	outputarr = network_obj_tar.feedforward_ne(individual)
+	outputarr = network_obj_tar.feedforward_ne(individual,  final_activation=network.softmax)
 
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
 	mean_square_error_val = give_mse(outputarr, network_obj_tar.resty)
@@ -50,7 +50,7 @@ def mycross(ind1, ind2, gen_no):
 
 
 def mymutate(ind1):
-	new_ind = ind1.do_mutation(0.2, 0.1, 0.05, indim, outdim, n_hidden, numpy.random)
+	new_ind = ind1.do_mutation(rate_conn_weight=0.2,rate_conn_itself= 0.1,rate_node= 0.05,weight_factor = 1, inputdim= indim, outputdim=outdim, max_hidden_unit=n_hidden,rng = random)
 	return new_ind
 
 
@@ -58,7 +58,7 @@ def initIndividual(ind_class, inputdim, outputdim):
 	ind = ind_class(inputdim, outputdim)
 	return ind
 
-
+old_chromosome = None
 toolbox.register("individual", initIndividual, creator.Individual, indim, outdim)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
@@ -133,20 +133,28 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 				fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
 				for ind, fit in zip(invalid_ind, fitnesses):
 					ind.fitness.values = fit
+		dum_ctr = 0
 		for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
 			# print(ind1.fitness.values)
 			"""if not flag :
-                ind1.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10)
-                flag = 1
-                print("just testing")
-            """
-
+				ind1.modify_thru_backprop(indim, outdim, network_obj.rest_setx, network_obj.rest_sety, epochs=10, learning_rate=0.1, n_par=10)
+				flag = 1
+				print("just testing")
+			"""
+			flag = 0
 			if random.random() <= CXPB:
-				toolbox.mate(ind1, ind2, gen)
+				ind1, ind2 = toolbox.mate(ind1, ind2, gen)
+				ind1 = creator.Individual(indim, outdim, ind1)
+				ind2 = creator.Individual(indim, outdim, ind2)
+				flag = 1
 			maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
 			toolbox.mutate(ind1)
 			toolbox.mutate(ind2)
-			del ind1.fitness.values, ind2.fitness.values
+
+			offspring[dum_ctr] = ind1
+			offspring[dum_ctr + 1] = ind2
+			del offspring[dum_ctr].fitness.values, offspring[dum_ctr + 1].fitness.values
+			dum_ctr += 2
 
 		# Evaluate the individuals with an invalid fitness
 		invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
