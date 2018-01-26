@@ -31,15 +31,15 @@ def give_new_head(dic):
         assert ( len(st) != 0)
         minfreq = -10000000
         for element in st:
-            map = {}
+            mp = {}
             for element2 in st:
 
                 dis = distance(element, element2)
-                if dis not in map.keys():
-                    map[dis] = 1
+                if dis not in mp.keys():
+                    mp[dis] = 1
                 else:
-                    map[dis] += 1
-            maxx = max(map.values())
+                    mp[dis] += 1
+            maxx = max(mp.values())
             if maxx > minfreq:
                 minfreq = maxx
                 new_head = element
@@ -71,16 +71,16 @@ def give_cluster_head(chromo_list, k):
         dic = {key: set([key]) for key in current_cluster_head_list}
         for chromo in chromo_list:
             #min_head = None
-            min = 10000000000000
+            minn = 10000000000000
             assert (len(current_cluster_head_list) != 0)
             for cluster_head in current_cluster_head_list:
                 assert (chromo is not None)
-                if chromo == cluster_head:
+                if chromo == cluster_head and len(current_cluster_head_list) != 1:
                     continue
                 dist = distance(chromo, cluster_head)
 
-                if min > dist:
-                    min = dist
+                if minn > dist:
+                    minn = dist
                     min_head = cluster_head
             dic[min_head].add(chromo)
 
