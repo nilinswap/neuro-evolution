@@ -1,4 +1,4 @@
-log_fimport array
+import array
 import random
 import time
 import numpy
@@ -203,7 +203,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	print( ' ------------------------------------src done------------------------------------------- ')
 	fronts = tools.sortNondominated(pop_src, len(pop_src))
 
-	toolbox.register("mutate", mymutate_tar)
+	#toolbox.register("mutate", mymutate_tar)
 	pareto_front = fronts[0]
 	print(pareto_front)
 	print("Pareto Front: ")
