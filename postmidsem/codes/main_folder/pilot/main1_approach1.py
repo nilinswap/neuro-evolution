@@ -14,7 +14,7 @@ import os
 from population import *
 from network import Neterr
 from chromosome import Chromosome, crossover
-
+import traceback
 n_hidden = 100
 indim = 32
 outdim = 5
