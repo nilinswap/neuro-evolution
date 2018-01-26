@@ -14,7 +14,7 @@ import os
 from population import *
 from network import Neterr
 from chromosome import Chromosome, crossover
-
+import traceback
 n_hidden = 100
 indim = 32
 outdim = 5
@@ -92,7 +92,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 
 	  # MU has to be a multiple of 4. period.
 	CXPB = 0.9
-
+	
 	stats = tools.Statistics(lambda ind: ind.fitness.values[1])
 	# stats.register("avg", numpy.mean, axis=0)
 	# stats.register("std", numpy.std, axis=0)
@@ -447,8 +447,18 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 
 
 if __name__ == "__main__":
-	test_it_with_bp(play = 1, NGEN = 100, MU = 4*25, play_with_whole_pareto = 1)
-
+	logf = open("log_error_tl.txt", "a")
+	try:
+		test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=1)
+	except Exception as e:
+		print("Error! Error! Error!")
+		logf.write('\n\n')
+		localtime = time.localtime(time.time())
+		logf.write(str(localtime) + '\n')
+		traceback.print_exc(file=logf)
+		logf.write('\n\n')
+	finally:
+		logf.close()
 	# file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
 	# print(stats)
