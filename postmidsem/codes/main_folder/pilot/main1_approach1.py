@@ -203,7 +203,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	print( ' ------------------------------------src done------------------------------------------- ')
 	fronts = tools.sortNondominated(pop_src, len(pop_src))
 
-	#toolbox.register("mutate", mymutate_tar)
+	#toolbox.register("mutate", mymuta_tar)
 	pareto_front = fronts[0]
 	print(pareto_front)
 	print("Pareto Front: ")
@@ -227,7 +227,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 
 	logbook = tools.Logbook()
 	logbook.header = "gen", "evals", "std", "min", "avg", "max"
-	#toolbox.register("evaluate", minimize_tar)
+	toolbox.register("evaluate", minimize_tar)
 	#pop_tar = toolbox.population(n=MU)
 	print(type(pop_tar))
 	for item in pop_tar:
