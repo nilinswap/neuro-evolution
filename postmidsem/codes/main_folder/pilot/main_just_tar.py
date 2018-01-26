@@ -259,8 +259,18 @@ def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
 
 
 if __name__ == "__main__":
-	test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=1)
-
+	logf = open("log_error_just_tar.txt", "a")
+	try:
+		test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=1)
+	except Exception as e:
+		print("Error! Error! Error!")
+		logf.write('\n\n')
+		localtime = time.localtime(time.time())
+		logf.write(str(localtime)+'\n')
+		traceback.print_exc(file=logf)
+		logf.write('\n\n')
+	finally:
+		logf.close()
 	# file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
 	# print(stats)

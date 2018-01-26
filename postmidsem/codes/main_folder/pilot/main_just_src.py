@@ -14,6 +14,7 @@ import os
 from population import *
 from network import Neterr
 from chromosome import Chromosome, crossover
+import traceback
 
 n_hidden = 100
 indim = 32
@@ -62,7 +63,7 @@ toolbox.register("mate", mycross)
 toolbox.register("mutate", mymutate)
 toolbox.register("select", tools.selNSGA2)
 
-bp_rate = 0.05
+bp_rate = 0.1
 
 
 def main(seed=None, play=0, NGEN=40, MU=4 * 10):
@@ -267,7 +268,19 @@ def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
 
 
 if __name__ == "__main__":
-	test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=1)
+	logf = open("log_error_just_src.txt", "a")
+	try:
+		test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=1)
+	except Exception as e:
+		print("Error! Error! Error!")
+		logf.write('\n\n')
+		localtime = time.localtime(time.time())
+		logf.write(str(localtime)+'\n')
+		traceback.print_exc(file=logf)
+		logf.write('\n\n')
+	finally:
+		logf.close()
+
 
 	# file_ob.write( "test on one with min validation error " + str(neter.test_err(min(pop, key=lambda x: x.fitness.values[1]))))
 
