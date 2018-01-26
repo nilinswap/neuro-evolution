@@ -50,14 +50,12 @@ def minimize_tar(individual):
 def mycross(ind1, ind2, gen_no):
 	child1 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
 	child2 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
-
 	return child1, child2
 
 
 def mymutate(ind1):
 	new_ind = ind1.do_mutation(rate_conn_weight=0.2, rate_conn_itself=0.1, rate_node=0.05, weight_factor=1,
 							   inputdim=indim, outputdim=outdim, max_hidden_unit=n_hidden, rng=random)
-
 	return ind1
 
 
@@ -123,7 +121,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	# print(pop.__dir__())
 	time4 = time.time()
 	for gen in range(1, NGEN):
-
 		# Vary the population
 		if gen == 1:
 			time6 = time.time()
@@ -166,7 +163,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 			maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
 			toolbox.mutate(ind1)
 			toolbox.mutate(ind2)
-
 			offspring[dum_ctr] = ind1
 			offspring[dum_ctr+1] = ind2
 			del offspring[dum_ctr].fitness.values, offspring[dum_ctr+1].fitness.values
@@ -417,18 +413,11 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 	print("Pareto Front: ")
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
-
-
-
 	print("\ntest: test on one with min validation error", network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
 	tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front)
-
 	print("\n test: avg on sampled pareto set", tup)
-
 	st = str(network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup)
 	print(note_this_string(st, stringh))
-
-
 if __name__ == "__main__":
 	test_it_with_bp(play = 1, NGEN = 100, MU = 4*25, play_with_whole_pareto = 1)
 
