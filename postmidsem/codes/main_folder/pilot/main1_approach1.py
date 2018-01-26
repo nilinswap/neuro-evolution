@@ -47,28 +47,17 @@ def minimize_tar(individual):
 	#return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
 	return neg_log_likelihood_val, mean_square_error_val
 
-def minimize_tar_approach2(individual):
-	outputarr = network_obj_tar.feedforward_ne(individual, final_activation=network.softmax)
-	outputarr_src = network_obj_src.feedforward_ne( individual )
-	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
-	neg_log_likelihood_val_src = give_neg_log_likelihood( outputarr_src,network_obj_src.resty)
-
-	# anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
-	# return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
-	return neg_log_likelihood_val, neg_log_likelihood_val_src
 def mycross(ind1, ind2, gen_no):
 	child1 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
 	child2 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
 	return child1, child2
 
 
-def mymutate_src(ind1):
-	#do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, max_hidden_unit, rng)
-	new_ind = ind1.do_mutation(rate_conn_weight = 0.3, rate_conn_itself = 0.2, rate_node = 0.1, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
+def mymutate(ind1):
+	new_ind = ind1.do_mutation(rate_conn_weight=0.2, rate_conn_itself=0.1, rate_node=0.05, weight_factor=1,
+							   inputdim=indim, outputdim=outdim, max_hidden_unit=n_hidden, rng=random)
 	return ind1
-def mymutate_tar(ind1):
-	new_ind = ind1.do_mutation(rate_conn_weight = 0.2, rate_conn_itself = 0.1, rate_node = 0.05, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
-	return ind1
+
 
 def initIndividual(ind_class, inputdim, outputdim):
 	ind = ind_class(inputdim, outputdim)
@@ -80,7 +69,7 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 
 toolbox.register("mate", mycross)
-
+toolbox.register("mutate", mymutate)
 toolbox.register("select", tools.selNSGA2)
 
 bp_rate = 0.05
@@ -103,7 +92,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	logbook.header = "gen", "evals", "std", "min", "avg", "max"
 	toolbox.register("evaluate", minimize_src)
 	time1 = time.time()
-	toolbox.register("mutate", mymutate_src)
 	pop_src = toolbox.population(n=MU)
 	time2 = time.time()
 	print("After population initialisation", time2 - time1)
@@ -133,7 +121,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	# print(pop.__dir__())
 	time4 = time.time()
 	for gen in range(1, NGEN):
-
 		# Vary the population
 		if gen == 1:
 			time6 = time.time()
@@ -176,7 +163,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 			maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
 			toolbox.mutate(ind1)
 			toolbox.mutate(ind2)
-
 			offspring[dum_ctr] = ind1
 			offspring[dum_ctr+1] = ind2
 			del offspring[dum_ctr].fitness.values, offspring[dum_ctr+1].fitness.values
@@ -195,7 +181,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 		# Select the next generation population
 		pop_src = toolbox.select(pop_src + offspring, MU)
 
-
 		record = stats.compile(pop_src)
 		logbook.record(gen=gen, evals=len(invalid_ind), **record)
 		anost = logbook.stream
@@ -208,14 +193,13 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 		# file_ob.write(str(logbook.stream))
 		# print(len(pop))
 		# file_ob.close()
-
 	time5 = time.time()
 	print("Overall time", time5 - time4)
 	#print(stri)
 	print( ' ------------------------------------src done------------------------------------------- ')
 	fronts = tools.sortNondominated(pop_src, len(pop_src))
 
-	toolbox.register("mutate", mymutate_tar)
+	#toolbox.register("mutate", mymuta_tar)
 	pareto_front = fronts[0]
 	print(pareto_front)
 	print("Pareto Front: ")
@@ -228,12 +212,9 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 		assert( len(pareto_front) == MU)
 		pop_tar = pareto_front
 
-
-
 	#reiterating
 	CXPB = 0.9
-	toolbox.register("evaluate", minimize_tar_approach2)
-	pareto_front = fronts[0]
+
 	stats = tools.Statistics(lambda ind: ind.fitness.values[1])
 	# stats.register("avg", numpy.mean, axis=0)
 	# stats.register("std", numpy.std, axis=0)
@@ -242,7 +223,7 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 
 	logbook = tools.Logbook()
 	logbook.header = "gen", "evals", "std", "min", "avg", "max"
-	#toolbox.register("evaluate", minimize_tar)
+	toolbox.register("evaluate", minimize_tar)
 	#pop_tar = toolbox.population(n=MU)
 	print(type(pop_tar))
 	for item in pop_tar:
@@ -269,7 +250,6 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	flag= 0
 	# Begin the generational process
 	# print(pop.__dir__())
-	NGEN = NGEN
 	for gen in range(1, NGEN):
 
 		# Vary the population
@@ -402,6 +382,7 @@ def test_it_without_bp():
 		print(pareto_front[i].fitness.values)
 
 	neter = Neterr(indim, outdim, n_hidden, random)
+	neter = Neterr(indim, outdim, n_hidden, random)
 
 	print("\ntest: test on one with min validation error", neter.test_err(min(pop, key=lambda x: x.fitness.values[1])))
 	tup = neter.test_on_pareto_patch(pareto_front)
@@ -415,7 +396,7 @@ def test_it_without_bp():
 def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 
 	pop, stats = main( play = play, NGEN = NGEN, MU = MU)
-	stringh = "_with_bp_approach2"+str(play)+"_"+str(NGEN)
+	stringh = "_with_bp_approach1"+str(play)+"_"+str(NGEN)
 	fronts = tools.sortNondominated(pop, len(pop))
 
 	'''file_ob = open("./log_folder/log_for_graph.txt", "w+")
@@ -424,28 +405,19 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 		file_ob.write( st )
 	file_ob.close()'''
 
-
 	if play_with_whole_pareto or len(fronts[0]) < 30 :
 		pareto_front = fronts[0]
 	else:
 
 		pareto_front = random.sample(fronts[0], 30)
-
 	print("Pareto Front: ")
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
-
-
-
 	print("\ntest: test on one with min validation error", network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
 	tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front)
-
 	print("\n test: avg on sampled pareto set", tup)
-
 	st = str(network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1]))) + " " + str(tup)
 	print(note_this_string(st, stringh))
-
-
 if __name__ == "__main__":
 	test_it_with_bp(play = 1, NGEN = 100, MU = 4*25, play_with_whole_pareto = 1)
 
