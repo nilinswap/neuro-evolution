@@ -226,8 +226,13 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	pareto_front = fronts[0]
 	print(pareto_front)
 	print("Pareto Front: ")
+	st='\n\n'
+	pareto_log_fileo = open("./log_folder/log_pareto_main1_nll_mse_misc_com"+str(NGEN)+".txt", "a")
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
+		st += str(pareto_front[i].fitness.values)
+		pareto_log_fileo.write(st+'\n')
+	pareto_log_fileo.close()
 	if len(pareto_front) < MU:
 		diff = MU - len(pareto_front)
 		pop_tar = pareto_front + toolbox.population(n=diff)

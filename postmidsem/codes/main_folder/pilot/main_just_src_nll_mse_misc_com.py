@@ -232,7 +232,7 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 	print(pareto_front)
 	print("Pareto Front: ")
 	st='\n\n'
-	pareto_log_fileo = open("log_pareto_just_src_nll_mse_misc_com"+str(NGEN)+".txt", "a")
+	pareto_log_fileo = open("./log_folder/log_pareto_just_src_nll_mse_misc_com"+str(NGEN)+".txt", "a")
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
 		st += str(pareto_front[i].fitness.values)
