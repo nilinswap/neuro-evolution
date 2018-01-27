@@ -17,6 +17,8 @@ def make_confusion_mat(arr, oneDarr):
     for row, col in zip(output_one_d_arr, target_one_d_arr):
         row = int(row)
         col = int(col)
+        assert( type(row) == int)
+        assert(type(col) == int)
         return_arr[row][col] += 1
     #print(return_arr)
     return return_arr
