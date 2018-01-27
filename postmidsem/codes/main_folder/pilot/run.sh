@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#Required installation of screen: sudo apt-get install screen
+
 if [ "$1" != "" ]; then
     echo "Running main1.py $1 times..."
 else
