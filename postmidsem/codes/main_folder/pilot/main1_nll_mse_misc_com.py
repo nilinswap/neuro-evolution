@@ -56,7 +56,7 @@ def minimize_tar_approach2(individual):
 	outputarr = network_obj_tar.feedforward_ne(individual, final_activation=network.softmax)
 	outputarr_src = network_obj_src.feedforward_ne( individual )
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
-	neg_log_likelihood_val_src = give_neg_log_likelihood( outputarr_src,network_obj_src.resty)
+	neg_log_likelihood_val_src = give_neg_log_likelihood( outputarr_src, network_obj_src.resty)
 	mis_error = find_misclas_error(outputarr, network_obj_tar.resty)
 	complexity = lambda ind: len(ind.conn_arr)
 	ind_complexity = complexity(individual)
@@ -90,7 +90,7 @@ toolbox.register("mate", mycross)
 
 toolbox.register("select", tools.selNSGA2)
 
-bp_rate = 0.05
+bp_rate = 0.1
 
 
 def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
@@ -427,7 +427,7 @@ def test_it_without_bp():
 def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 
 	pop, stats = main( play = play, NGEN = NGEN, MU = MU)
-	stringh = "_with_bp_approach2"+str(play)+"_"+str(NGEN)
+	stringh = "_with_bp_approach2_nll_mse_misc_com"+str(play)+"_"+str(NGEN)
 	fronts = tools.sortNondominated(pop, len(pop))
 
 	'''file_ob = open("./log_folder/log_for_graph.txt", "w+")
@@ -459,7 +459,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 
 
 if __name__ == "__main__":
-	logf = open("log_error_tl.txt", "a")
+	logf = open("./log_error_tl_nll_mse_misc_com.txt", "a")
 	try:
 		test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=1)
 	except Exception as e:
