@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#Required installation of screen: sudo apt-get install screen
+
 if [ "$1" != "" ]; then
     echo "Running main1.py $1 times..."
 else
@@ -9,5 +11,5 @@ fi
 
 for run in {1..$1}
 do
-  screen -S "Forgit" python3 main1.py
+  screen  -dm -S forgit bash -c 'python3 main1.py; exec bash'
 done
