@@ -9,5 +9,5 @@ fi
 
 for run in {1..$1}
 do
-  screen -S "Forgit" python3 main1.py
+  screen  -dm -S forgit bash -c 'python3 main1.py; exec bash'
 done
