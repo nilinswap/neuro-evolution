@@ -5,13 +5,39 @@ import chromosome
 import tensorflow as tf
 import time
 import gene
-
 import copy
 
 
 
 
+def make_confusion_mat(arr, oneDarr):
+    output_one_d_arr = np.argmax(arr, axis=1)
+    target_one_d_arr = oneDarr
+    return_arr = np.zeros((chromosome.outputnumber, chromosome.outputnumber))
+    for row, col in zip(output_one_d_arr, target_one_d_arr):
+        row = int(row)
+        col = int(col)
+        return_arr[row][col] += 1
+    #print(return_arr)
+    return return_arr
 
+
+def find_misclas_error(arr, oneDarr):
+    con_mat = make_confusion_mat(arr, oneDarr)
+    mean_in_making = 0
+    for label in range(con_mat.shape[0]):
+        total_sum = np.sum(con_mat)
+        tp = con_mat[label][label]
+        row_sum = np.sum(con_mat[label, :])
+        col_sum = np.sum(con_mat[:, label])
+        fp = row_sum - tp
+        fn = col_sum - tp
+        tn = total_sum - tp - fn - fp
+        error = (fp+fn)/(tn+fp+fn+tp)
+        mean_in_making += error
+    mean_in_making = mean_in_making/con_mat.shape[0]
+    #print(mean_in_making)
+    return mean_in_making
 
 
 
