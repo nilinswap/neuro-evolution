@@ -191,6 +191,9 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 	print("Overall time", time5 - time4)
 	# print(stri)
 	print(' ------------------------------------src done------------------------------------------- ')
+	fronts = tools.sortNondominated(pop_src, len(pop_src))
+	pareto_front = fronts[0]
+	print(pareto_front)
 	st = '\n\n'
 	pareto_log_fileo = open("./log_folder/log_pareto_just_src_nll_mse_misc_com" + str(NGEN) + ".txt", "a")
 	for i in range(len(pareto_front)):
