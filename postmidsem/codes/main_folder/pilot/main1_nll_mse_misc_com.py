@@ -15,21 +15,19 @@ from population import *
 from network import Neterr
 from chromosome import Chromosome, crossover
 import traceback
-
 n_hidden = 100
 indim = 32
 outdim = 5
 #
-network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target=0, rng=random)
+network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target = 0, rng = random)
 
-network_obj_tar = Neterr(indim, outdim, n_hidden, change_to_target=1, rng=random)
+network_obj_tar = Neterr(indim, outdim, n_hidden,change_to_target = 1, rng = random)
+#creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))
+
 creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, -1.0, -1.0))
-
-#creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
 creator.create("Individual", Chromosome, fitness=creator.FitnessMin)
 print("here network object created")
 toolbox = base.Toolbox()
-
 
 def minimize_src(individual):
 	outputarr = network_obj_src.feedforward_ne(individual, final_activation=network.softmax)
@@ -43,27 +41,28 @@ def minimize_src(individual):
 	# return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
 	return (neg_log_likelihood_val, mean_square_error_val, mis_error, ind_complexity)
 
-
 def minimize_tar(individual):
 	outputarr = network_obj_tar.feedforward_ne(individual, final_activation=network.softmax)
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
 	mean_square_error_val = give_mse(outputarr, network_obj_tar.resty)
-	# anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
-	# return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
-	return neg_log_likelihood_val, mean_square_error_val, 0, 0
-
+	mis_error = find_misclas_error(outputarr, network_obj_tar.resty)
+	complexity = lambda ind: len(ind.conn_arr)
+	ind_complexity = complexity(individual)
+	#anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
+	#return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
+	return (neg_log_likelihood_val, mean_square_error_val, mis_error, ind_complexity)
 
 def minimize_tar_approach2(individual):
 	outputarr = network_obj_tar.feedforward_ne(individual, final_activation=network.softmax)
-	outputarr_src = network_obj_src.feedforward_ne(individual)
+	outputarr_src = network_obj_src.feedforward_ne( individual )
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_tar.resty)
-	neg_log_likelihood_val_src = give_neg_log_likelihood(outputarr_src, network_obj_src.resty)
-
+	neg_log_likelihood_val_src = give_neg_log_likelihood( outputarr_src,network_obj_src.resty)
+	mis_error = find_misclas_error(outputarr, network_obj_tar.resty)
+	complexity = lambda ind: len(ind.conn_arr)
+	ind_complexity = complexity(individual)
 	# anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
 	# return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
-	return neg_log_likelihood_val, neg_log_likelihood_val_src
-
-
+	return neg_log_likelihood_val, neg_log_likelihood_val_src,  mis_error, ind_complexity
 def mycross(ind1, ind2, gen_no):
 	child1 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
 	child2 = crossover(ind1, ind2, gen_no, inputdim=indim, outputdim=outdim)
@@ -71,26 +70,21 @@ def mycross(ind1, ind2, gen_no):
 
 
 def mymutate_src(ind1):
-	# do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, max_hidden_unit, rng)
-	new_ind = ind1.do_mutation(rate_conn_weight=0.3, rate_conn_itself=0.2, rate_node=0.1, weight_factor=1,
-							   inputdim=indim, outputdim=outdim, max_hidden_unit=n_hidden, rng=random)
+	#do_mutation(self, rate_conn_weight, rate_conn_itself, rate_node, inputdim, outputdim, max_hidden_unit, rng)
+	new_ind = ind1.do_mutation(rate_conn_weight = 0.3, rate_conn_itself = 0.2, rate_node = 0.1, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
 	return ind1
-
-
 def mymutate_tar(ind1):
-	new_ind = ind1.do_mutation(rate_conn_weight=0.2, rate_conn_itself=0.1, rate_node=0.05, weight_factor=1,
-							   inputdim=indim, outputdim=outdim, max_hidden_unit=n_hidden, rng=random)
+	new_ind = ind1.do_mutation(rate_conn_weight = 0.2, rate_conn_itself = 0.1, rate_node = 0.05, weight_factor = 1, inputdim = indim, outputdim = outdim, max_hidden_unit=  n_hidden, rng = random)
 	return ind1
-
 
 def initIndividual(ind_class, inputdim, outputdim):
 	ind = ind_class(inputdim, outputdim)
 	return ind
 
-
 old_chromosome = None
 toolbox.register("individual", initIndividual, creator.Individual, indim, outdim)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+
 
 toolbox.register("mate", mycross)
 
@@ -99,12 +93,13 @@ toolbox.register("select", tools.selNSGA2)
 bp_rate = 0.05
 
 
-def main(seed=None, play=0, NGEN=40, MU=4 * 10):
-	# random.seed(seed)
+def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
+	#random.seed(seed)
 
-	# MU has to be a multiple of 4. period.
+
+	  # MU has to be a multiple of 4. period.
 	CXPB = 0.9
-
+	
 	stats = tools.Statistics(lambda ind: ind.fitness.values[1])
 	# stats.register("avg", numpy.mean, axis=0)
 	# stats.register("std", numpy.std, axis=0)
@@ -120,8 +115,8 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 	time2 = time.time()
 	print("After population initialisation", time2 - time1)
 	print(type(pop_src))
-	# print("population initialized")
-	# network_obj = Neterr(indim, outdim, n_hidden, np.random)
+	#print("population initialized")
+	#network_obj = Neterr(indim, outdim, n_hidden, np.random)
 	# Evaluate the individuals with an invalid fitness
 	invalid_ind = [ind for ind in pop_src if not ind.fitness.valid]
 
@@ -133,14 +128,14 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 	# This is just to assign the crowding distance to the individuals
 	# no actual selection is done
 	pop_src = toolbox.select(pop_src, len(pop_src))
-	# print( "first population selected, still outside main loop")
+	#print( "first population selected, still outside main loop")
 	# print(pop)
 	record = stats.compile(pop_src)
 	logbook.record(gen=0, evals=len(invalid_ind), **record)
 	print(logbook.stream)
 	maxi = 0
 	stri = ''
-	flag = 0
+	flag= 0
 	# Begin the generational process
 	# print(pop.__dir__())
 	time4 = time.time()
@@ -149,25 +144,24 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 		# Vary the population
 		if gen == 1:
 			time6 = time.time()
-		if gen == NGEN - 1:
+		if gen == NGEN-1:
 			time7 = time.time()
 		print()
 		print("here in gen no.", gen)
 		offspring = tools.selTournamentDCD(pop_src, len(pop_src))
 		offspring = [toolbox.clone(ind) for ind in offspring]
-		if play:
+		if play :
 			if play == 1:
-				pgen = NGEN * 0.1
-			elif play == 2:
-				pgen = NGEN * 0.9
+				pgen = NGEN*0.1
+			elif play == 2 :
+				pgen = NGEN*0.9
 
 			if gen == int(pgen):
-				print("gen:", gen, "doing clustering")
-				to_bp_lis = cluster.give_cluster_head(offspring, int(MU * bp_rate))
-				assert (to_bp_lis[0] in offspring)
-				print("doing bp")
-				[item.modify_thru_backprop(indim, outdim, network_obj_src.rest_setx, network_obj_src.rest_sety,
-										   epochs=20, learning_rate=0.1, n_par=10) for item in to_bp_lis]
+				print("gen:",gen, "doing clustering")
+				to_bp_lis = cluster.give_cluster_head(offspring, int(MU*bp_rate))
+				assert (to_bp_lis[0] in offspring )
+				print( "doing bp")
+				[ item.modify_thru_backprop(indim, outdim, network_obj_src.rest_setx, network_obj_src.rest_sety, epochs=20, learning_rate=0.1, n_par=10) for item in to_bp_lis]
 
 				# Evaluate the individuals with an invalid fitness
 				invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -176,27 +170,27 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 					ind.fitness.values = fit
 		if gen == 1:
 			time8 = time.time()
-		if gen == NGEN - 1:
+		if gen == NGEN-1:
 			time9 = time.time()
 		dum_ctr = 0
 		for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
 			flag = 0
 			if random.random() <= CXPB:
 				ind1, ind2 = toolbox.mate(ind1, ind2, gen)
-				ind1 = creator.Individual(indim, outdim, ind1)
-				ind2 = creator.Individual(indim, outdim, ind2)
+				ind1 = creator.Individual(indim, outdim,  ind1 )
+				ind2 = creator.Individual( indim, outdim, ind2 )
 				flag = 1
 			maxi = max(maxi, ind1.node_ctr, ind2.node_ctr)
 			toolbox.mutate(ind1)
 			toolbox.mutate(ind2)
 
 			offspring[dum_ctr] = ind1
-			offspring[dum_ctr + 1] = ind2
-			del offspring[dum_ctr].fitness.values, offspring[dum_ctr + 1].fitness.values
-			dum_ctr += 2
+			offspring[dum_ctr+1] = ind2
+			del offspring[dum_ctr].fitness.values, offspring[dum_ctr+1].fitness.values
+			dum_ctr+=2
 		if gen == 1:
-			print("1st gen after newpool", time.time() - time8)
-		if gen == NGEN - 1:
+			print("1st gen after newpool",time.time() - time8)
+		if gen == NGEN-1:
 			print("last gen after newpool", time.time() - time9)
 
 		# Evaluate the individuals with an invalid fitness
@@ -208,6 +202,7 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 		# Select the next generation population
 		pop_src = toolbox.select(pop_src + offspring, MU)
 
+
 		record = stats.compile(pop_src)
 		logbook.record(gen=gen, evals=len(invalid_ind), **record)
 		anost = logbook.stream
@@ -217,35 +212,32 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 		print(anost)
 		stri += anost + '\n'
 		print("generation done")
-	# file_ob.write(str(logbook.stream))
-	# print(len(pop))
-	# file_ob.close()
+		# file_ob.write(str(logbook.stream))
+		# print(len(pop))
+		# file_ob.close()
 
 	time5 = time.time()
 	print("Overall time", time5 - time4)
-	# print(stri)
-	print(' ------------------------------------src done------------------------------------------- ')
+	#print(stri)
+	print( ' ------------------------------------src done------------------------------------------- ')
 	fronts = tools.sortNondominated(pop_src, len(pop_src))
 
 	toolbox.register("mutate", mymutate_tar)
 	pareto_front = fronts[0]
 	print(pareto_front)
 	print("Pareto Front: ")
-	st='\n\n'
-	pareto_log_fileo = open("log_pareto_just_src_nll_mse_misc_com"+str(NGEN)+".txt", "a")
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
-		st += str(pareto_front[i].fitness.values)
-		pareto_log_fileo.write(st+'\n')
-	pareto_log_fileo.close()
 	if len(pareto_front) < MU:
 		diff = MU - len(pareto_front)
 		pop_tar = pareto_front + toolbox.population(n=diff)
 	else:
-		assert (len(pareto_front) == MU)
+		assert( len(pareto_front) == MU)
 		pop_tar = pareto_front
 
-	# reiterating
+
+
+	#reiterating
 	CXPB = 0.9
 	toolbox.register("evaluate", minimize_tar_approach2)
 	pareto_front = fronts[0]
@@ -257,13 +249,13 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 
 	logbook = tools.Logbook()
 	logbook.header = "gen", "evals", "std", "min", "avg", "max"
-	# toolbox.register("evaluate", minimize_tar)
-	# pop_tar = toolbox.population(n=MU)
+	#toolbox.register("evaluate", minimize_tar)
+	#pop_tar = toolbox.population(n=MU)
 	print(type(pop_tar))
 	for item in pop_tar:
-		del item.fitness.values
-	# print("population initialized")
-	# network_obj = Neterr(indim, outdim, n_hidden, np.random)
+	   del item.fitness.values
+	#print("population initialized")
+	#network_obj = Neterr(indim, outdim, n_hidden, np.random)
 	# Evaluate the individuals with an invalid fitness
 	invalid_ind = [ind for ind in pop_tar if not ind.fitness.valid]
 
@@ -274,14 +266,14 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 	# This is just to assign the crowding distance to the individuals
 	# no actual selection is done
 	pop_tar = toolbox.select(pop_tar, len(pop_tar))
-	# print( "first population selected, still outside main loop")
+	#print( "first population selected, still outside main loop")
 	# print(pop)
 	record = stats.compile(pop_tar)
 	logbook.record(gen=0, evals=len(invalid_ind), **record)
 	print(logbook.stream)
 	maxi = 0
 	stri = ''
-	flag = 0
+	flag= 0
 	# Begin the generational process
 	# print(pop.__dir__())
 	NGEN = NGEN
@@ -292,19 +284,18 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 		print("here in gen no.", gen)
 		offspring = tools.selTournamentDCD(pop_tar, len(pop_tar))
 		offspring = [toolbox.clone(ind) for ind in offspring]
-		if play:
+		if play :
 			if play == 1:
-				pgen = NGEN * 0.1
-			elif play == 2:
-				pgen = NGEN * 0.9
+				pgen = NGEN*0.1
+			elif play == 2 :
+				pgen = NGEN*0.9
 
 			if gen == int(pgen):
-				print("gen:", gen, "doing clustering")
-				to_bp_lis = cluster.give_cluster_head(offspring, int(MU * bp_rate))
-				assert (to_bp_lis[0] in offspring)
-				print("doing bp")
-				[item.modify_thru_backprop(indim, outdim, network_obj_tar.rest_setx, network_obj_tar.rest_sety,
-										   epochs=20, learning_rate=0.1, n_par=10) for item in to_bp_lis]
+				print("gen:",gen, "doing clustering")
+				to_bp_lis = cluster.give_cluster_head(offspring, int(MU*bp_rate))
+				assert (to_bp_lis[0] in offspring )
+				print( "doing bp")
+				[ item.modify_thru_backprop(indim, outdim, network_obj_tar.rest_setx, network_obj_tar.rest_sety, epochs=20, learning_rate=0.1, n_par=10) for item in to_bp_lis]
 				# Evaluate the individuals with an invalid fitness
 				invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
 				fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -351,10 +342,11 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 		print(anost)
 		stri += anost + '\n'
 		print("generation done")
-	# file_ob.write(str(logbook.stream))
-	# print(len(pop))
-	# file_ob.close()
-	# print(stri)
+		# file_ob.write(str(logbook.stream))
+		# print(len(pop))
+		# file_ob.close()
+	#print(stri)
+
 
 	##from here starting target
 	return pop_tar, logbook
@@ -427,9 +419,10 @@ def test_it_without_bp():
 	print(note_this_string(st, stringh))
 
 
-def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
-	pop, stats = main(play=play, NGEN=NGEN, MU=MU)
-	stringh = "_with_bp_just_src_nll_mse_misc_comp" + str(play) + "_" + str(NGEN)
+def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
+
+	pop, stats = main( play = play, NGEN = NGEN, MU = MU)
+	stringh = "_with_bp_approach2"+str(play)+"_"+str(NGEN)
 	fronts = tools.sortNondominated(pop, len(pop))
 
 	'''file_ob = open("./log_folder/log_for_graph.txt", "w+")
@@ -438,7 +431,8 @@ def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
 		file_ob.write( st )
 	file_ob.close()'''
 
-	if play_with_whole_pareto or len(fronts[0]) < 30:
+
+	if play_with_whole_pareto or len(fronts[0]) < 30 :
 		pareto_front = fronts[0]
 	else:
 
@@ -448,8 +442,9 @@ def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
 
-	print("\ntest: test on one with min validation error",
-		  network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
+
+
+	print("\ntest: test on one with min validation error", network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
 	tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front)
 
 	print("\n test: avg on sampled pareto set", tup)
