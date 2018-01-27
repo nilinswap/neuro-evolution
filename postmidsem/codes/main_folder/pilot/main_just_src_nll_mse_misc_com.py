@@ -37,7 +37,7 @@ def minimize_src(individual):
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_src.resty)
 	mean_square_error_val = give_mse(outputarr, network_obj_src.resty)
 	mis_error = find_misclas_error(outputarr, network_obj_src.resty)
-	complexity = lambda ind: len(ind.conn_arr) * ind.node_ctr
+	complexity = lambda ind: len(ind.conn_arr) 
 	ind_complexity = complexity(individual)
 	# anyways not using these as you can see in 'creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0, 0.0, 0.0))'
 	# return neg_log_likelihood_val, mean_square_error_val, false_positve_rat, false_negative_rat
@@ -429,7 +429,7 @@ def test_it_without_bp():
 
 def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
 	pop, stats = main(play=play, NGEN=NGEN, MU=MU)
-	stringh = "_with_bp_approach2" + str(play) + "_" + str(NGEN)
+	stringh = "_with_bp_just_src_nll_mse_misc_comp" + str(play) + "_" + str(NGEN)
 	fronts = tools.sortNondominated(pop, len(pop))
 
 	'''file_ob = open("./log_folder/log_for_graph.txt", "w+")
