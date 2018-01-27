@@ -231,8 +231,13 @@ def main(seed=None, play=0, NGEN=40, MU=4 * 10):
 	pareto_front = fronts[0]
 	print(pareto_front)
 	print("Pareto Front: ")
+	st='\n\n'
+	pareto_log_fileo = open("log_pareto_just_src_nll_mse_misc_com"+str(NGEN)+".txt", "a")
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
+		st += str(pareto_front[i].fitness.values)
+		pareto_log_fileo.write(st+'\n')
+	pareto_log_fileo.close()
 	if len(pareto_front) < MU:
 		diff = MU - len(pareto_front)
 		pop_tar = pareto_front + toolbox.population(n=diff)
@@ -456,7 +461,7 @@ def test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=0):
 if __name__ == "__main__":
 	logf = open("log_error_tl.txt", "a")
 	try:
-		test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=1)
+		test_it_with_bp(play=1, NGEN=10, MU=4 * 5, play_with_whole_pareto=1)
 	except Exception as e:
 		print("Error! Error! Error!")
 		logf.write('\n\n')
