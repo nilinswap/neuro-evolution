@@ -46,6 +46,33 @@ def find_features_dslr( file_st ):
 	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(500, 500),block_norm = 'L1-sqrt',
 						cells_per_block=(1, 1), visualise=True)
 	return fd
+def find_features_webcam( file_st ):
+	image = np.asarray(PIL.Image.open(file_st))
+	image = to_gray(image)
+	#print(image.shape)
+	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(211, 211),block_norm = 'L1-sqrt',
+						cells_per_block=(1, 1), visualise=True)
+	return fd
+
+
+def make_data_from_image_webcam(stri, dir_lis):
+	lislis = []
+	label_lis = []
+	for dirnum, dir_st in enumerate(dir_lis):
+		new_dir_stri = stri + dir_st + '/'
+		file_lis = list(files(new_dir_stri))
+		lis = []
+		print(file_lis)
+
+		for file_st in file_lis:
+			fd_ar = find_features_webcam(new_dir_stri + file_st)
+			lis.append(list(fd_ar))
+			label_lis.append(dirnum)
+		lislis += lis
+	oned_ar = np.array(label_lis, dtype='float64')
+	twod_ar = np.array(lislis, dtype='float64')
+	assert (twod_ar.shape[0] == oned_ar.shape[0])
+	return twod_ar, oned_ar
 def make_data_from_image_amazon( stri, dir_lis ):
 	lislis = []
 	label_lis = []
@@ -102,6 +129,7 @@ def make_target_data():
 	fs = open( pstri+"pickle_jar/tar_data.pickle", "wb")
 	pickle.dump( tup , fs)
 	fs.close()
+	
 if __name__ == '__main__':
 	make_source_data()
 	make_target_data()

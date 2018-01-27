@@ -24,10 +24,10 @@ def to_gray(image_ar):
 	return grey_ar
 
 
-image = np.asarray(PIL.Image.open('Downloads/domain_adaptation_images/dslr/images/back_pack/frame_0001.jpg'))
+image = np.asarray(PIL.Image.open('/Users/swapnilsharma/Downloads/domain_adaptation_images/webcam/images/back_pack/frame_0001.jpg'))
 image = to_gray(image)
 print(image.shape)
-fd, hog_image = hog(image, orientations=8, pixels_per_cell=(250, 250),block_norm = 'L1-sqrt',
+fd, hog_image = hog(image, orientations=8, pixels_per_cell=(211, 211),block_norm = 'L1-sqrt',
 					cells_per_block=(1, 1), visualise=True)
 print(fd.shape)
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
