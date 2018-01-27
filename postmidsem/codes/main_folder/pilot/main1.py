@@ -18,7 +18,7 @@ import traceback
 n_hidden = 100
 indim = 32
 outdim = 5
-
+#
 network_obj_src = Neterr(indim, outdim, n_hidden, change_to_target = 0, rng = random)
 
 network_obj_tar = Neterr(indim, outdim, n_hidden,change_to_target = 1, rng = random)
