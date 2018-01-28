@@ -9,7 +9,7 @@ else
 	exit
 fi
 
-for run in {1..$1}
+for (( i=1; i <= $1; ++i ))
 do
   screen  -dm -S forgit bash -c 'python3 main1_nll_mse_misc_com.py; exec bash'
 done
