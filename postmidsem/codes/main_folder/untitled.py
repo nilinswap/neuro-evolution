@@ -33,10 +33,13 @@ old_size = image.size[0]  # old_size[0] is in (width, height) format
 ratio = float(desired_size)/max(old_size)
 new_size = tuple([int(x*ratio) for x in old_size])
 image = image.resize(new_size, Image.ANTIALIAS)
+image = image.resize(new_size, Image.ANTIALIAS)
+# create a new image and paste the resized on it
+new_im = Image.new("L", (desired_size, desired_size))
+new_im.paste(image, ((desired_size-new_size[0])//2,
+                    (desired_size-new_size[1])//2))
+image = new_image
 
-image.thumbnail((500,500), PIL.Image.ANTIALIAS)
-new_im = PIL.Image.new("L", desired_size)
-new_im.paste(image, )
 image = np.asarray(image)
 image = to_gray(image)
 print(image.shape)
