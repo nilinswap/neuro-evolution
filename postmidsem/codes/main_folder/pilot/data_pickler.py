@@ -37,7 +37,8 @@ def to_gray(image_ar):
 
 def find_features(file_st):
 	image = np.asarray(PIL.Image.open(file_st))
-	image = to_gray(image)
+	if len(image.shape)) != 2:
+		image = to_gray(image)
 	# print(image.shape)
 	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(image.shape[0]//2, image.shape[1]//2), block_norm='L1-sqrt',
 						cells_per_block=(1, 1), visualise=True)
