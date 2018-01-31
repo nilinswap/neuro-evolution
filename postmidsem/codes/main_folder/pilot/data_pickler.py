@@ -8,7 +8,7 @@ from skimage import data, exposure
 import PIL
 import pickle
 pstri = './'
-fstri = '/home/placements2018/forgit/Dataset3/'
+fstri = '/Users/swapnilsharma/forgit/Dataset3/'
 dir_lis_src = [ '062.eiffel-tower', '216.tennis-ball', '065.elk', '207.swan', '034.centipede']
 dir_lis_tar = ['245.windmill', '017.golf-ball', '105.horse', '060.duck', '190.snake']
 def files(path):
@@ -39,6 +39,8 @@ def find_features(file_st):
 	desired_size = 500
 	#file_st = '/home/placements2018/forgit/Dataset3/060.duck/060_0032.jpg'
 	image = PIL.Image.open(file_st)
+	print(image.size)
+
 	old_size = image.size  # old_size[0] is in (width, height) format
 	ratio = float(desired_size) / max(old_size)
 	new_size = tuple([int(x * ratio) for x in old_size])
@@ -48,13 +50,18 @@ def find_features(file_st):
 	new_im = PIL.Image.new("RGB", (desired_size, desired_size))
 	new_im.paste(image, ((desired_size - new_size[0]) // 2,
 						 (desired_size - new_size[1]) // 2))
-	image = new_im
+	new_im.save(file_st)
+	#image = new_im
+	#print(image.size)
 	image = np.asarray(PIL.Image.open(file_st))
+	print(image.shape)
 	if len(image.shape) != 2:
 		image = to_gray(image)
 	# print(image.shape)
 	fd, hog_image = hog(image, orientations=8, pixels_per_cell=(image.shape[0]//2, image.shape[1]//2), block_norm='L1-sqrt',
 						cells_per_block=(1, 1), visualise=True)
+	print(file_st)
+	print(fd.shape)
 	assert( fd.shape[0] == 32)
 	return fd
 
