@@ -111,6 +111,6 @@ def make_target_data():
 	fs.close()
 	
 if __name__ == '__main__':
-	make_source_data()
-	#make_target_data()
+	#make_source_data()
+	make_target_data()
 
