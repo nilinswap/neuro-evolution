@@ -67,7 +67,7 @@ def find_features(file_st):
 
 
 
-def make_data_from_image(stri, dir_lis):
+def make_data_from_image(stri, dir_lis, num = None):
 	lislis = []
 	label_lis = []
 	for dirnum, dir_st in enumerate(dir_lis):
@@ -75,7 +75,9 @@ def make_data_from_image(stri, dir_lis):
 		file_lis = list(files(new_dir_stri))
 		lis = []
 		print(file_lis)
-
+		file_lis = random.sample(file_lis, len(file_lis))
+		if num is not None:
+			file_lis = file_lis[:num]
 		for file_st in file_lis:
 			fd_ar = find_features(new_dir_stri + file_st)
 			lis.append(list(fd_ar))
@@ -99,7 +101,7 @@ def make_target_data():
 	global fstri, dir_lis_tar
 	stri = fstri
 	
-	tup = make_data_from_image( stri, dir_lis_tar )
+	tup = make_data_from_image( stri, dir_lis_tar, num = 20 )
 	fs = open( pstri+"pickle_jar/tar_data.pickle", "wb")
 	pickle.dump( tup , fs)
 	fs.close()
