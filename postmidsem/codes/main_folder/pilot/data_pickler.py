@@ -10,7 +10,7 @@ import pickle
 pstri = './'
 fstri = '/home/placements2018/forgit/Dataset3/'
 dir_lis_src = [ '062.eiffel-tower', '216.tennis-ball', '065.elk', '207.swan', '034.centipede']
-dir_lis_tar = ['245.windmill', '017.golf-ball', '105.horse', '060.duck', '190.snake']
+dir_lis_tar = ['245.windmill', '017.bowling-ball', '105.horse', '060.duck', '190.snake']
 def files(path):
     for file in os.listdir(path):
         if os.path.isfile(os.path.join(path, file)):
