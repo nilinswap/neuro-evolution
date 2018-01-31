@@ -22,13 +22,27 @@ def to_gray(image_ar):
 		for colnum in range(image_ar.shape[1]):
 			grey_ar[rownum][colnum] = do_weighted_avg(image_ar[rownum][colnum])
 	return grey_ar
+desired_size = 250000
 
 
-image = np.asarray(PIL.Image.open('/Users/swapnilsharma/Downloads/domain_adaptation_images/webcam/images/back_pack/frame_0001.jpg'))
+
+desired_size = 500
+file_st= '/home/placements2018/forgit/Dataset3/062.eiffel-tower/062_0064.jpg'
+image = PIL.Image.open(file_st)
+old_size = image.size[0]  # old_size[0] is in (width, height) format
+ratio = float(desired_size)/max(old_size)
+new_size = tuple([int(x*ratio) for x in old_size])
+image = image.resize(new_size, Image.ANTIALIAS)
+
+image.thumbnail((500,500), PIL.Image.ANTIALIAS)
+new_im = PIL.Image.new("L", desired_size)
+new_im.paste(image, )
+image = np.asarray(image)
 image = to_gray(image)
 print(image.shape)
-fd, hog_image = hog(image, orientations=8, pixels_per_cell=(211, 211),block_norm = 'L1-sqrt',
-					cells_per_block=(1, 1), visualise=True)
+
+fd, hog_image = hog(image, orientations=8, pixels_per_cell=(image.shape[0]//2, image.shape[1]//2),block_norm = 'L1-sqrt',
+					cells_per_block=(2,2), visualise=True)
 print(fd.shape)
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
 
