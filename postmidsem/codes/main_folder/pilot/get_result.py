@@ -12,11 +12,11 @@ def GetResult(st):
     name = "./log_folder/final_log_folder/" + st
 
     file_ob = open(name, "r+")
-
+    print(st)
     stlis = file_ob.readlines()
     stlis = [ item.rstrip().split(' ') for item in stlis ]
     #print(len(stlis))
-    stlis = random.sample( stlis, 15)
+    #stlis = random.sample( stlis, 15)
     result_lis = [[float(item[1]), float(item[2])] for item in stlis]
     result_arr = np.array(result_lis)
 
@@ -57,6 +57,7 @@ def GiveTTestResult(st1, st2):
     return t_val, p_val
 
 
-print(GetResult("single_log_without_bp_80.txt"))
+print(GetResult("mega_new_1.txt"), GetResult("mega_new_just_tar.txt"))
+print(GiveTTestResult("mega_new_1.txt", "mega_new_just_tar.txt"))
 #print(GiveTTestResult("single_log_without_bp.txt", "single_log_with_bp_without_clustring1_80.txt"))
 
