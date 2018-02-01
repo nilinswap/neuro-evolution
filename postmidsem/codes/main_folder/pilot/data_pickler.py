@@ -7,6 +7,8 @@ from skimage.feature import hog
 from skimage import data, exposure
 import PIL
 import pickle
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 pstri = './'
 fstri = '/home/placements2018/forgit/Dataset3/'
 dir_lis_src = [ '062.eiffel-tower', '216.tennis-ball', '065.elk', '207.swan', '034.centipede']
