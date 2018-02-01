@@ -204,7 +204,7 @@ class Neterr:
                     print("correct ", self.test_sety[i])
                     st += "correct " + str(self.test_sety[i])+'\n'
             st+='\n'
-            file_ob = open("./log_folder/log_correct", "a")
+            file_ob = open("./log_folder/log_correct.txt", "a")
             file_ob.write(st)
             file_ob.close()
 
