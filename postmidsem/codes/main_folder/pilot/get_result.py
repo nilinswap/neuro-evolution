@@ -56,7 +56,7 @@ def GiveTTestResult(st1, st2):
     stlis = file_ob.readlines()
     stlis = [item.rstrip().split(' ') for item in stlis]
     # print(len(stlis))
-    #stlis = random.sample(stlis, 37)
+    stlis = random.sample(stlis, 37)
     result_lis = [[float(item[1]), float(item[2])] for item in stlis]
     result_arr1 = np.array(result_lis)
 
@@ -64,7 +64,7 @@ def GiveTTestResult(st1, st2):
     stlis = file_ob.readlines()
     stlis = [item.rstrip().split(' ') for item in stlis]
     # print(len(stlis))
-    #stlis = random.sample(stlis, 37)
+    stlis = random.sample(stlis, 37)
     result_lis = [[float(item[1]), float(item[2])] for item in stlis]
     result_arr2 = np.array(result_lis)
 
@@ -73,7 +73,7 @@ def GiveTTestResult(st1, st2):
     arr2 = result_arr2[:, 1]
     #print(arr1, arr2)
 
-    t_val, p_val = stats.ttest_rel(arr1, arr2)
+    t_val, p_val = stats.ttest_ind(arr1, arr2)
     return t_val, p_val
 def GiveTTestResult_one(st1, st2):
     name1 = "./log_folder/final_log_folder/" + st1
