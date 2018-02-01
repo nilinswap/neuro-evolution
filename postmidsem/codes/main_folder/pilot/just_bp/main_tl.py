@@ -159,7 +159,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 
 def main():
 	for i in range(int(sys.argv[1])):
- 		test_mlp(n_hidden = 5, n_epochs = 400)
+ 		test_mlp(n_hidden = 5, n_epochs = 1000)
 if __name__ == '__main__':
     main()
 
