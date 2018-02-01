@@ -199,7 +199,7 @@ class Neterr:
         assert (grand_lis_arr.shape == self.testy.shape)
         if log_correct is not None:
             st = '\n\n'
-            for i in range( self.test_sety.shape[0]):
+            for i in range( self.testy.shape[0]):
                 if self.test_sety[i] - grand_lis_arr[i] == 0:
                     print("correct ", self.test_sety[i])
                     st += "correct " + str(self.test_sety[i])+'\n'
