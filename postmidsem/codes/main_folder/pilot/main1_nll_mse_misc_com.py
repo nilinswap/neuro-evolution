@@ -475,7 +475,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 if __name__ == "__main__":
 	logf = open("./log_folder/log_error_tl_nll_mse_misc_com.txt", "a")
 	try:
-		test_it_with_bp(play=0, NGEN=5, MU=4 , play_with_whole_pareto=1)
+		test_it_with_bp(play=1, NGEN=100, MU=4 * 25 , play_with_whole_pareto=1)
 	except Exception as e:
 		print("Error! Error! Error!")
 		logf.write('\n\n')
