@@ -228,10 +228,18 @@ def main(seed=None, play = 0, NGEN = 40, MU = 4 * 10):
 	print("Pareto Front: ")
 	st='\n\n'
 	pareto_log_fileo = open("./log_folder/log_pareto_main1_nll_mse_misc_com"+str(NGEN)+".txt", "a")
+	pareto_logo = open("pareto_front.txt", "a")
+	sti = 'source\n\n'
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
-		st += str(pareto_front[i].fitness.values)
-		pareto_log_fileo.write(st+'\n')
+		st += str(pareto_front[i].fitness.values)+'\n'
+		for obj_val in pareto_front[i].fitness.values:
+			sti += str(obj_val)+' '
+		sti += '\n'
+	pareto_log_fileo.write(st + '\n')
+	pareto_logo.write(sti)
+	pareto_logo.write("\n")
+	pareto_logo.close()
 	pareto_log_fileo.close()
 	if len(pareto_front) < MU:
 		diff = MU - len(pareto_front)
@@ -444,10 +452,16 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 		pareto_front = random.sample(fronts[0], 30)
 
 	print("Pareto Front: ")
+	fileob = open("pareto_front.txt", "a")
+	st = 'target\n'
 	for i in range(len(pareto_front)):
 		print(pareto_front[i].fitness.values)
-
-
+		for obj_val in pareto_front[i].fitness.values:
+			st += str(obj_val)+' '
+		st += '\n'
+	st += '\n\n'
+	fileob.write(st)
+	fileob.close()
 
 	print("\ntest: test on one with min validation error", network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
 	tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front, log_correct=True)
@@ -459,9 +473,9 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 
 
 if __name__ == "__main__":
-	logf = open("./log_error_tl_nll_mse_misc_com.txt", "a")
+	logf = open("./log_folder/log_error_tl_nll_mse_misc_com.txt", "a")
 	try:
-		test_it_with_bp(play=1, NGEN=100, MU=4 * 25, play_with_whole_pareto=1)
+		test_it_with_bp(play=0, NGEN=5, MU=4 , play_with_whole_pareto=1)
 	except Exception as e:
 		print("Error! Error! Error!")
 		logf.write('\n\n')
