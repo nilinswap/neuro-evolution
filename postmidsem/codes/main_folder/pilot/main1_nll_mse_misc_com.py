@@ -450,7 +450,7 @@ def test_it_with_bp(play = 1,NGEN = 100, MU = 4*25, play_with_whole_pareto = 0):
 
 
 	print("\ntest: test on one with min validation error", network_obj_tar.test_err(min(pop, key=lambda x: x.fitness.values[1])))
-	tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front)
+	tup = network_obj_tar.test_on_pareto_patch_correctone(pareto_front, log_correct=True)
 
 	print("\n test: avg on sampled pareto set", tup)
 
