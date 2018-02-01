@@ -200,7 +200,7 @@ class Neterr:
         if log_correct is not None:
             st = '\n\n'
             for i in range( self.testy.shape[0]):
-                if self.test_sety[i] - grand_lis_arr[i] == 0:
+                if self.testy[i] - grand_lis_arr[i] == 0:
                     print("correct ", self.testy[i])
                     st += "correct " + str(self.testy[i])+'\n'
             st+='\n'
