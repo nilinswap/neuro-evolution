@@ -177,7 +177,7 @@ class Neterr:
         return np.mean(lis),minh,ind
 
 
-    def test_on_pareto_patch_correctone(self,pareto_set):
+    def test_on_pareto_patch_correctone(self,pareto_set, log_correct = None):
         temp = self.inputarr
         temper = copy.deepcopy(self.testx)
         grand_lis  = []
@@ -197,7 +197,17 @@ class Neterr:
             grand_lis.append(argmax_at_avg)
         grand_lis_arr = np.array(grand_lis)
         assert (grand_lis_arr.shape == self.testy.shape)
-        
+        if log_correct is not None:
+            st = '\n\n'
+            for i in range( self.test_sety.shape[0]):
+                if self.test_sety[i] == grand_lis_arr[i]:
+                    print("correct ", self.test_sety[i])
+                    st += "correct " + str(self.test_sety[i])+'\n'
+            st+='\n'
+            file_ob = open("log_correct", "a")
+            file_ob.write(st)
+            file_ob.close()
+
         difference = self.testy - grand_lis_arr
 
         to_find_mean_arr = np.where( difference != 0, 1, 0 )
