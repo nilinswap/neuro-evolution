@@ -83,7 +83,7 @@ def GiveTTestResult_one(st1, st2):
     stlis = file_ob.readlines()
     stlis = [item.rstrip().split(' ') for item in stlis]
     # print(len(stlis))
-    #stlis = random.sample(stlis, 37)
+    stlis = random.sample(stlis, 24)
     result_lis = [[float(item[0])] for item in stlis]
     result_arr1 = np.array(result_lis)
 
@@ -91,7 +91,7 @@ def GiveTTestResult_one(st1, st2):
     stlis = file_ob.readlines()
     stlis = [item.rstrip().split(' ') for item in stlis]
     # print(len(stlis))
-    #stlis = random.sample(stlis, 37)
+    #stlis = random.sample(stlis, 24)
     result_lis = [[float(item[0])] for item in stlis]
     result_arr2 = np.array(result_lis)
 
@@ -112,9 +112,13 @@ print(GetResult("mega_new_1.txt"), GetResult("mega_new_just_tar.txt"))
 print()
 print(GiveTTestResult("mega_new_1.txt", "mega_new_just_tar.txt"))
 print()
-print(GiveTTestResult_one("mega_new_bp_tar.txt", "mega_new_bp_tl.txt"))
+print(GiveTTestResult_one("mega_new_1.txt", "mega_new_just_src.txt"))
 print()
-print(GiveTTestResult_one("mega_gas_tar.txt", "mega_gas_tl.txt"))
+#print(GiveTTestResult_one("mega_new_bp_tar.txt", "mega_new_bp_tl.txt"))
+print()
+print(GiveTTestResult_one("mega_new_just_tar.txt", "mega_new_just_src.txt"))
+print()
+#print(GiveTTestResult_one("mega_gas_tar.txt", "mega_gas_tl.txt"))
 print()
 print(GetResult_one("mega_gas_tar.txt"))
 print()
