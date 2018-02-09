@@ -5,6 +5,7 @@
 ## Abstract
 
 In this variant, We seek performance of our model(: Neuro-evolution) on **Transfer Learning**. We used famous Caltech-256 dataset and divided ten classes in two buckets - Source (eiffel-tower, tennis-ball, elk, swan, centipede) and Target(windmill, bowling-ball, horse, duck, snake). Transfer Learning's presence was proven statistically with a low p-value.
+
 In our core model, we implement a **memetic algorithm**, in that, we are training neural networks using **evolutionary algorithms** and occasionally apply **back-propagation** on cluster-heads.
 We used **NEAT** techniques to realise Neural Network and combined it with **NSGA-II** to implement Genetic algorithm.
 
