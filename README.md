@@ -6,7 +6,7 @@
 
 In this project we implement a **memetic algorithm**, in that, we are training neural networks using **evolutionary algorithms** and occasionally apply **back-propagation** on cluster-heads.
 We used **NEAT** techniques to realise Neural Network and combined it with **NSGA-II** to implement Genetic algorithm.
-
+We have also done experiments on Transfer learning using this model. See branch 'dataset3_tl' for that.
 ## Contributors
 
 1. Swapnil Sharma
