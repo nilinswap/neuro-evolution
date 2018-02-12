@@ -26,7 +26,7 @@ toolbox = base.Toolbox()
 
 
 def minimize(individual):
-	outputarr = network_obj.feedforward_ne(individual)
+	outputarr = network_obj.feedforward_ne(individual, final_activation= network.softmax)
 
 	neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj.resty)
 	mean_square_error_val = give_mse(outputarr, network_obj.resty)

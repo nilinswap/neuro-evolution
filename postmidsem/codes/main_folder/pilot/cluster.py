@@ -2,8 +2,8 @@ import numpy as np
 import chromosome
 import random
 import copy
-indim = 8
-outdim = 2
+indim = 32
+outdim = 5
 def distance ( chromoA, chromoB):
 
     same_num = 0
@@ -31,15 +31,15 @@ def give_new_head(dic):
         assert ( len(st) != 0)
         minfreq = -10000000
         for element in st:
-            mapp = {}
+            mp = {}
             for element2 in st:
 
                 dis = distance(element, element2)
-                if dis not in mapp.keys():
-                    mapp[dis] = 1
+                if dis not in mp.keys():
+                    mp[dis] = 1
                 else:
-                    mapp[dis] += 1
-            maxx = max(mapp.values())
+                    mp[dis] += 1
+            maxx = max(mp.values())
             if maxx > minfreq:
                 minfreq = maxx
                 new_head = element
@@ -71,20 +71,17 @@ def give_cluster_head(chromo_list, k):
         dic = {key: set([key]) for key in current_cluster_head_list}
         for chromo in chromo_list:
             #min_head = None
-            min_head = -1
             minn = 10000000000000
             assert (len(current_cluster_head_list) != 0)
             for cluster_head in current_cluster_head_list:
                 assert (chromo is not None)
-                if chromo == cluster_head:
+                if chromo == cluster_head and len(current_cluster_head_list) != 1:
                     continue
                 dist = distance(chromo, cluster_head)
 
                 if minn > dist:
                     minn = dist
                     min_head = cluster_head
-            if(min_head == -1):
-                print("Min_head chutiyapa kar rha.. -1 aa rha")
             dic[min_head].add(chromo)
 
         current_cluster_head_list = give_new_head(dic)
