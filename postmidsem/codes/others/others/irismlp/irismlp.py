@@ -6,6 +6,8 @@ import mlp
 import trainedmlp
 import numpy as np
 import pylab as pl
+import sklearn
+from sklearn import datasets
 def makesetpool(inputs,targets,k):
 	if k>np.shape(inputs)[0]:
 		print("give k properly")
@@ -75,7 +77,7 @@ def convert_iris():
 	fileob.close()
 	return len(stlis)-1
 
-def irismain():
+def irismain(dataset):
 	#1. make iris.data in usable form
 	#2. make input set and output set out of it
 	#3. make setpool out of the dataset
@@ -84,19 +86,28 @@ def irismain():
 
 
 
-	convert_iris()
-	irisdata=np.loadtxt("/home/swapnil/forgit/neuro-evolution/05/dataset/iris/newiris.data", delimiter=',')
-	
-	nin=4# for four features of iris
-	nout=3# for 3 sets of iris flowers
+	#convert_iris()
+	if dataset == 'iris':
+		irisdata=np.loadtxt("newiris.data", delimiter=',')
+
+		nin=4# for four features of iris
+		nout=3# for 3 sets of iris flowers
+		order = np.arange(np.shape(irisdata)[0])
+		np.random.shuffle(order)
+		irisdata = irisdata[order, :]
+		irisdata[:, :4] = irisdata[:, :4] - irisdata[:, :4].mean(axis=0)
+		imax = np.concatenate((irisdata.max(axis=0) * np.ones((1, 7)), np.abs(irisdata.min(axis=0)) * np.ones((1, 7))),
+							  axis=0).max(axis=0)
+		irisdata[:, :4] = irisdata[:, :4] / imax[:4]
+	elif dataset == '2moon':
+		tupa = datasets.make_moons(240, True, 0.01)
+		irisdata = np.concatenate((tupa[0], tupa[1].reshape((tupa[1].shape[0], 1))), axis=1)
+
+		nin = 2
+		nout = 1
 	minerr=10000000
 	lis=[]
-	order=np.arange(np.shape(irisdata)[0])
-	np.random.shuffle(order)
-	irisdata = irisdata[order,:]
-	irisdata[:,:4] = irisdata[:,:4]-irisdata[:,:4].mean(axis=0)
-	imax = np.concatenate((irisdata.max(axis=0)*np.ones((1,7)),np.abs(irisdata.min(axis=0))*np.ones((1,7))),axis=0).max(axis=0)
-	irisdata[:,:4] = irisdata[:,:4]/imax[:4]
+
 	errcal='confmat'
 	eta=0.29
 	niterations=500
@@ -151,8 +162,14 @@ def irismain():
 	pl.show()
 
 	print("\n best network is attained with no. of nodes as ",bestnet.numnodes)
-	leasterr=bestnet.test()
+	leasterr = bestnet.test()
 	print("error on test is %f while on valid  is %f" %(leasterr,bestnet.validmeanerr));
-	
-irismain()
+
+import sys
+choice = sys.argv[1]
+if choice in {'iris', '2moon'}:
+	irismain(choice)
+else:
+	print("Error!, next time enter one in {'iris', '2moon'} ")
+
 
