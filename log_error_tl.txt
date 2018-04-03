@@ -1,0 +1,30 @@
+
+
+time.struct_time(tm_year=2018, tm_mon=4, tm_mday=3, tm_hour=19, tm_min=41, tm_sec=2, tm_wday=1, tm_yday=93, tm_isdst=0)
+Traceback (most recent call last):
+  File "main1.py", line 316, in <module>
+    test_it_with_bp(play=1, NGEN=10, MU=4 * 5, play_with_whole_pareto=1)
+  File "main1.py", line 281, in test_it_with_bp
+    pop, stats = main( play = play, NGEN = NGEN, MU = MU)
+  File "main1.py", line 101, in main
+    for ind, fit in zip(invalid_ind, fitnesses):
+  File "main1.py", line 33, in minimize_src
+    outputarr = network_obj_src.feedforward_ne(individual, final_activation=network.softmax)
+NameError: name 'network' is not defined
+
+
+
+
+time.struct_time(tm_year=2018, tm_mon=4, tm_mday=3, tm_hour=19, tm_min=42, tm_sec=34, tm_wday=1, tm_yday=93, tm_isdst=0)
+Traceback (most recent call last):
+  File "main1.py", line 317, in <module>
+    test_it_with_bp(play=1, NGEN=10, MU=4 * 5, play_with_whole_pareto=1)
+  File "main1.py", line 282, in test_it_with_bp
+    pop, stats = main( play = play, NGEN = NGEN, MU = MU)
+  File "main1.py", line 102, in main
+    for ind, fit in zip(invalid_ind, fitnesses):
+  File "main1.py", line 36, in minimize_src
+    neg_log_likelihood_val = give_neg_log_likelihood(outputarr, network_obj_src.resty)
+NameError: name 'give_neg_log_likelihood' is not defined
+
+

@@ -6,13 +6,12 @@ import time
 import gene
 import matenc
 import chromosome
-#import pimadataf
-#import mnistdataf
-import deep_net
+import dataset2_dataf
 from chromosome import *
 import copy
-import population
+
 import dataset3_dataf
+import pickle
 def sigmoid(arr):
     return 1 / (1 + np.exp(-arr))
 def relu(arr):
@@ -42,11 +41,27 @@ class Neterr:
         self.rng = rng
         #rest_set, test_set = pimadataf.give_data()#a two tuple of ( two tuple of array)
         if not change_to_target:
-            rest_set, test_set = dataset3_dataf.give_source_data()  # a two tuple of ( two tuple of array)
+            rest_set, test_set = dataset2_dataf.give_source_data()  # a two tuple of ( two tuple of array)
         elif change_to_target == 1:
-            rest_set, test_set = dataset3_dataf.give_target_data()
+            rest_set, test_set = dataset2_dataf.give_target_data()
         elif change_to_target == 2:
-            rest_set, test_set = dataset3_dataf.give_target_data_just_src_just_tar()
+            rest_set, test_set = dataset2_dataf.give_target_data_just_src_just_tar()
+        elif change_to_target == 100:
+
+            with open("./pickle_jar/src_tup.pickle", "rb") as fp:
+                rest_set, _ = pickle.load(fp)
+                #print(rest_set[0].shape, rest_set[1].shape)
+            with open("./pickle_jar/tar_tup.pickle", "rb") as fp:
+                trest_set, ttest_set = pickle.load(fp)
+                #print(trest_set[0].shape, trest_set[1].shape, ttest_set[0].shape, ttest_set[1].shape)
+            with open("./pickle_jar/dublue.pickle", "rb") as fp:
+                W_mat = pickle.load(fp)
+
+            rest_set = np.concatenate((rest_set[0], np.transpose(np.dot(W_mat, np.transpose(trest_set[0]))))), np.concatenate((rest_set[1], trest_set[1]))
+
+            #print("here ", rest_set[0].shape, rest_set[1].shape)
+            test_set = (np.transpose( np.dot(W_mat, np.transpose(ttest_set[0]))), ttest_set[1])
+            #print("here ", test_set[0].shape, test_set[1].shape)
         # FOR ANY CHANGE IN DATASET, CHANGE DIMENSION NO. MENTIONED IN THESE THREE FILES - cluster.py, chromosome.py and main_just_tar.py
         self.restx = rest_set[0]
         resty = rest_set[1]
