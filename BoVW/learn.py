@@ -84,7 +84,7 @@ def computeHistograms(codebook, descriptors):
     return histogram_of_words
 
 
-def writeHistogramsToFile(nwords, labels, fnames, all_word_histgrams, features_fname,data_type):
+def writeHistogramsToFile(nwords, labels, fnames, all_word_histgrams, features_fname,data_type,num_features):
     file_ob = open("features.txt","w+")
     data_rows = zeros(nwords + 1)  # +1 for the category label
     twodarr=[]	
@@ -118,28 +118,39 @@ def writeHistogramsToFile(nwords, labels, fnames, all_word_histgrams, features_f
     pickledic[temp]=(start,sumi)
     tup = (twodarr, onedarr, pickledic)
     if(data_type == "source"):
-        fs = open("pickle_jar/src_data_with_dic.pickle","wb")
+        fs = open("pickle_jar/"+str(num_features)+"src_data_with_dic.pickle","wb")
         pickle.dump(tup,fs) 
         fs.close()
     elif(data_type=="target"):
-        fs = open("pickle_jar/tar_data_with_dic.pickle","wb")
+        fs = open("pickle_jar/"+str(num_features)+"tar_data_with_dic.pickle","wb")
         pickle.dump(tup,fs) 
-        fs.close()    
-    fs1=open("pickle_jar/src_data_with_dic.pickle","rb")          
-    tup_t = pickle.load(fs1)
-    fs1.close()
-    print(tup_t)
+        fs.close()
+        
+    
+    
     data_rows = data_rows[1:]
     fmt = '%i '
     for i in range(nwords):
         fmt = fmt + str(i) + ':%f '
     savetxt(features_fname, data_rows, fmt)
+    
     file_ob.close()
+    
+    if data_type=="source":
+        fs1=open("pickle_jar/"+str(num_features)+"src_data_with_dic.pickle","rb")          
+        tup_t = pickle.load(fs1)
+        fs1.close()
+    elif data_type=="target":
+        fs1=open("pickle_jar/"+str(num_features)+"tar_data_with_dic.pickle","rb")          
+        tup_t = pickle.load(fs1)
+        fs1.close()
 
 
 if __name__ == '__main__':
     print("Source dataset or target dataset\n")
     data_type = input()	
+    print("Enter the number of features")
+    num_features = int(input())
     print ("---------------------")
     print ("## loading the images and extracting the sift features")
     args = parse_arguments()
@@ -197,7 +208,7 @@ if __name__ == '__main__':
                           all_files_labels,
                           all_files,
                           all_word_histgrams,
-                          datasetpath + HISTOGRAMS_FILE,data_type)
+                          datasetpath + HISTOGRAMS_FILE,data_type,num_features)
 
     '''
     print ("---------------------")
